@@ -1,0 +1,8 @@
+*.json.key
+wallet*/
+*.passphrase
+.passphrase
+znn-*/
+datadir*/
+*.log
+/bin/
