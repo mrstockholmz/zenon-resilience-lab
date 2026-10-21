@@ -1,0 +1,78 @@
+fuse 100 QSR: height=2 pow_ms=18262 included=true latency=981.269µs momentum=3 plasma=0
+{
+  "workload": "ordinary",
+  "plasma_regime": "static",
+  "attempted": 5,
+  "submitted": 5,
+  "included": 5,
+  "rejected": 0,
+  "unresolved": 0,
+  "pow_count": 4,
+  "total_pow_ms": 99792,
+  "latencies_ms": [
+    0,
+    0,
+    0,
+    0,
+    1
+  ],
+  "p50_ms": 0,
+  "p90_ms": 1,
+  "p99_ms": 1,
+  "start_momentum": 3,
+  "end_momentum": 5,
+  "duration_sec": 99.816842237,
+  "generator_cpu_sec": 101.87,
+  "results": [
+    {
+      "idx": 0,
+      "block_height": 3,
+      "submit_momentum": 3,
+      "pow_ms": 40016,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 3,
+      "plasma_after": 0
+    },
+    {
+      "idx": 1,
+      "block_height": 4,
+      "submit_momentum": 4,
+      "pow_ms": 7787,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 4,
+      "plasma_after": 0
+    },
+    {
+      "idx": 2,
+      "block_height": 5,
+      "submit_momentum": 4,
+      "pow_ms": 32306,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 4,
+      "plasma_after": 0
+    },
+    {
+      "idx": 3,
+      "block_height": 6,
+      "submit_momentum": 5,
+      "pow_ms": 19683,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 5,
+      "plasma_after": 210000
+    },
+    {
+      "idx": 4,
+      "block_height": 7,
+      "submit_momentum": 5,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 5,
+      "plasma_after": 189000
+    }
+  ]
+}

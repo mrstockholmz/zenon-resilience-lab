@@ -1,0 +1,77 @@
+{
+  "workload": "burst",
+  "plasma_regime": "static",
+  "attempted": 5,
+  "submitted": 5,
+  "included": 5,
+  "rejected": 0,
+  "unresolved": 0,
+  "pow_count": 0,
+  "total_pow_ms": 0,
+  "latencies_ms": [
+    0,
+    0,
+    1,
+    1,
+    1
+  ],
+  "p50_ms": 1,
+  "p90_ms": 1,
+  "p99_ms": 1,
+  "start_momentum": 7,
+  "end_momentum": 7,
+  "duration_sec": 0.052758922,
+  "generator_cpu_sec": 0.01999999999999999,
+  "results": [
+    {
+      "idx": 0,
+      "block_height": 28,
+      "submit_momentum": 7,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 7,
+      "plasma_after": 84000
+    },
+    {
+      "idx": 1,
+      "block_height": 29,
+      "submit_momentum": 7,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 7,
+      "plasma_after": 63000
+    },
+    {
+      "idx": 2,
+      "block_height": 30,
+      "submit_momentum": 7,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 7,
+      "plasma_after": 42000
+    },
+    {
+      "idx": 3,
+      "block_height": 31,
+      "submit_momentum": 7,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 7,
+      "plasma_after": 21000
+    },
+    {
+      "idx": 4,
+      "block_height": 32,
+      "submit_momentum": 7,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 7,
+      "plasma_after": 0
+    }
+  ]
+}

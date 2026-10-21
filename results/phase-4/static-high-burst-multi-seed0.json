@@ -1,0 +1,88 @@
+{
+  "workload": "multi-burst",
+  "plasma_regime": "static",
+  "attempted": 6,
+  "submitted": 3,
+  "included": 3,
+  "rejected": 3,
+  "unresolved": 0,
+  "pow_count": 0,
+  "total_pow_ms": 0,
+  "latencies_ms": [
+    0,
+    0,
+    0
+  ],
+  "p50_ms": 0,
+  "p90_ms": 0,
+  "p99_ms": 0,
+  "start_momentum": 12,
+  "end_momentum": 13,
+  "duration_sec": 31.089973082,
+  "generator_cpu_sec": 31.7,
+  "results": [
+    {
+      "idx": 1000,
+      "block_height": 2,
+      "submit_momentum": 12,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 12,
+      "plasma_after": 10479000
+    },
+    {
+      "idx": 1001,
+      "block_height": 3,
+      "submit_momentum": 12,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 12,
+      "plasma_after": 10458000
+    },
+    {
+      "idx": 1002,
+      "block_height": 4,
+      "submit_momentum": 12,
+      "pow_ms": 0,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 12,
+      "plasma_after": 10437000
+    },
+    {
+      "idx": 2000,
+      "block_height": 1,
+      "submit_momentum": 12,
+      "pow_ms": 2346,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "acct2: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "idx": 2001,
+      "block_height": 1,
+      "submit_momentum": 13,
+      "pow_ms": 26849,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "acct2: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "idx": 2002,
+      "block_height": 1,
+      "submit_momentum": 13,
+      "pow_ms": 1884,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "acct2: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    }
+  ]
+}

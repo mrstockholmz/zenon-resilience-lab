@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 4
+next_phase: 5
 cloud_sessions_run: 1
-local_sessions_run: 1
+local_sessions_run: 2
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-21
+updated: 2026-10-22
 ```
 
 ## Phase log
@@ -17,8 +17,8 @@ updated: 2026-10-21
 | 1 gap check + baseline | partial-pass | results/phase-1/20261020-cloud-phase1-baseline.md, results/phase-1/20261021-gap-check.md | Baseline proven (round trip, PoW fallback, plasma regime pinned). Gap check redone locally 2026-10-21: no existing suite measures plasma/demand/latency — lab fills a real gap. Genesis defect found; fix merged upstream as PR #201. |
 | 2 smallest experiment | done | results/phase-2/20261021-phase2-static-results.md, results/phase-2/20261021-phase2-dynamic-results.md | Ordinary + burst workloads in static (<30) and dynamic (>=30) regimes. Key finding: fused plasma eliminates PoW and enables instant inclusion; single-account burst rejection is caused by PoW delay, not account-chain limits. |
 | 3 resource matrix | done | results/phase-3/20261021-phase3-matrix-results.md | Low vs high fused x steady vs burst x 1 vs multi accounts, 3 seeds each. 100% inclusion for sequential (all regimes) and for fused burst. 20-40% inclusion for unfused burst (PoW race). |
-| 4 comparison | open | | Compare static vs dynamic with fused plasma. Current data shows no difference for unfused accounts. Need fused-plasma runs in both regimes. |
-| 5 package | partial | suite/ | One-command runner (suite/run-suite.sh), labctl tool, raw JSON results. Reports per phase. Need: regression assertions, CSV export. |
+| 4 comparison | done | results/phase-4/20261022-phase4-comparison-results.md | Fused plasma static vs dynamic: no observable difference for existing fusion holders at low volume. Dynamic pricing (nextFusionPrice/workPrice=1000) only affects new fusions and PoW fallback under high demand. |
+| 5 package | partial | suite/ | One-command runner (suite/run-suite.sh with phase2/phase3/phase4/check/all), labctl tool, raw JSON results, CSV export (json2csv.py), regression assertions (check-regressions.py). Reports per phase. Need: finalize documentation. |
 | 6 next experiment | open | | |
 
 ## Genesis defect (found in phase 1, verified locally)
@@ -44,6 +44,18 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 4. **No significant static vs dynamic difference for unfused accounts at low volume.**
    Dynamic Plasma pricing only activates when momentum-level plasma usage exceeds
    the target.
+5. **No observable static vs dynamic difference for fused accounts at low volume.**
+   Dynamic pricing (nextFusionPrice/workPrice=1000) does not affect existing fusion
+   holders making simple transfers. The repricing threshold is never reached at
+   our test volumes.
+
+## Suite tooling
+
+- `suite/cmd/labctl/main.go` — Go CLI: info, ordinary, burst, multiburst, probe,
+  fuse, fund, fusefor, receive, waitfor, matrix. Disposable devnet keys only.
+- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|check|all.
+- `suite/json2csv.py` — exports all JSON results to summary.csv.
+- `suite/check-regressions.py` — regression assertions R1-R5.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under
