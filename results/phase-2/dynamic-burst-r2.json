@@ -1,0 +1,77 @@
+{
+  "workload": "burst",
+  "plasma_regime": "dynamic",
+  "attempted": 5,
+  "submitted": 2,
+  "included": 2,
+  "rejected": 3,
+  "unresolved": 0,
+  "pow_count": 2,
+  "total_pow_ms": 9300,
+  "latencies_ms": [
+    0,
+    1
+  ],
+  "p50_ms": 1,
+  "p90_ms": 1,
+  "p99_ms": 1,
+  "start_momentum": 36,
+  "end_momentum": 38,
+  "duration_sec": 43.056007473,
+  "generator_cpu_sec": 79.65,
+  "results": [
+    {
+      "idx": 2,
+      "block_height": 26,
+      "submit_momentum": 37,
+      "pow_ms": 3266,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 37,
+      "plasma_after": 0
+    },
+    {
+      "idx": 3,
+      "block_height": 26,
+      "submit_momentum": 37,
+      "pow_ms": 6034,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 37,
+      "plasma_after": 0
+    },
+    {
+      "idx": 1,
+      "block_height": 26,
+      "submit_momentum": 37,
+      "pow_ms": 8553,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "rpc ledger.publishRawTransaction error: hash tie-break is worse for current block"
+    },
+    {
+      "idx": 0,
+      "block_height": 26,
+      "submit_momentum": 37,
+      "pow_ms": 17626,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "rpc ledger.publishRawTransaction error: hash tie-break is worse for current block"
+    },
+    {
+      "idx": 4,
+      "block_height": 26,
+      "submit_momentum": 38,
+      "pow_ms": 43010,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "rpc ledger.publishRawTransaction error: account-block prevHash exists but it has a cemented block on top of it"
+    }
+  ]
+}

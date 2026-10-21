@@ -1,0 +1,77 @@
+{
+  "workload": "burst",
+  "plasma_regime": "static",
+  "attempted": 5,
+  "submitted": 1,
+  "included": 1,
+  "rejected": 4,
+  "unresolved": 0,
+  "pow_count": 1,
+  "total_pow_ms": 1542,
+  "latencies_ms": [
+    0
+  ],
+  "p50_ms": 0,
+  "p90_ms": 0,
+  "p99_ms": 0,
+  "start_momentum": 17,
+  "end_momentum": 18,
+  "duration_sec": 15.992610307,
+  "generator_cpu_sec": 46.01,
+  "results": [
+    {
+      "idx": 1,
+      "block_height": 14,
+      "submit_momentum": 17,
+      "pow_ms": 1542,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 17,
+      "plasma_after": 0
+    },
+    {
+      "idx": 4,
+      "block_height": 14,
+      "submit_momentum": 18,
+      "pow_ms": 5414,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "rpc ledger.publishRawTransaction error: account-block prevHash exists but it has a cemented block on top of it"
+    },
+    {
+      "idx": 0,
+      "block_height": 14,
+      "submit_momentum": 18,
+      "pow_ms": 8917,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "rpc ledger.publishRawTransaction error: account-block prevHash exists but it has a cemented block on top of it"
+    },
+    {
+      "idx": 3,
+      "block_height": 14,
+      "submit_momentum": 18,
+      "pow_ms": 13583,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "rpc ledger.publishRawTransaction error: account-block prevHash exists but it has a cemented block on top of it"
+    },
+    {
+      "idx": 2,
+      "block_height": 14,
+      "submit_momentum": 18,
+      "pow_ms": 15968,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "rpc ledger.publishRawTransaction error: account-block prevHash exists but it has a cemented block on top of it"
+    }
+  ]
+}

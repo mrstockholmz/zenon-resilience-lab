@@ -1,0 +1,44 @@
+{
+  "workload": "probe",
+  "plasma_regime": "dynamic",
+  "attempted": 2,
+  "submitted": 2,
+  "included": 2,
+  "rejected": 0,
+  "unresolved": 0,
+  "pow_count": 2,
+  "total_pow_ms": 56821,
+  "latencies_ms": [
+    1,
+    1
+  ],
+  "p50_ms": 1,
+  "p90_ms": 1,
+  "p99_ms": 1,
+  "start_momentum": 39,
+  "end_momentum": 41,
+  "duration_sec": 76.869486306,
+  "generator_cpu_sec": 58,
+  "results": [
+    {
+      "idx": 0,
+      "block_height": 28,
+      "submit_momentum": 39,
+      "pow_ms": 2308,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 39,
+      "plasma_after": 0
+    },
+    {
+      "idx": 1,
+      "block_height": 29,
+      "submit_momentum": 40,
+      "pow_ms": 54513,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 40,
+      "plasma_after": 0
+    }
+  ]
+}
