@@ -1,0 +1,17 @@
+{
+  "burst_size": 100,
+  "baseline": [
+    {"method":"ledger.getFrontierMomentum","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":7,"max_ms":10},
+    {"method":"ledger.getFrontierAccountBlock","p50_ms":10,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"embedded.plasma.get","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"embedded.plasma.getRequiredPoWForAccountBlock","p50_ms":9,"p90_ms":9,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"stats.get","p50_ms":9,"p90_ms":9,"p99_ms":9,"min_ms":8,"max_ms":9}
+  ],
+  "under_load": [
+    {"method":"ledger.getFrontierMomentum","p50_ms":9,"p90_ms":11,"p99_ms":11,"min_ms":8,"max_ms":11},
+    {"method":"ledger.getFrontierAccountBlock","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"embedded.plasma.get","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"embedded.plasma.getRequiredPoWForAccountBlock","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"stats.get","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10}
+  ]
+}

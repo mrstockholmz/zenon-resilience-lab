@@ -1,0 +1,35 @@
+=== RPC Latency Under Load ===
+Burst size: 500 txs
+
+--- Baseline (no load) ---
+  Measuring ledger.getFrontierMomentum...
+  Measuring ledger.getFrontierAccountBlock...
+  Measuring embedded.plasma.get...
+  Measuring embedded.plasma.getRequiredPoWForAccountBlock...
+  Measuring stats.get...
+
+--- Starting background burst (500 txs) ---
+
+--- Under load (burst running) ---
+  Measuring ledger.getFrontierMomentum...
+  Measuring ledger.getFrontierAccountBlock...
+  Measuring embedded.plasma.get...
+  Measuring embedded.plasma.getRequiredPoWForAccountBlock...
+  Measuring stats.get...
+{
+  "burst_size": 500,
+  "baseline": [
+    {"method":"ledger.getFrontierMomentum","p50_ms":10,"p90_ms":10,"p99_ms":11,"min_ms":8,"max_ms":11},
+    {"method":"ledger.getFrontierAccountBlock","p50_ms":10,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"embedded.plasma.get","p50_ms":10,"p90_ms":10,"p99_ms":10,"min_ms":9,"max_ms":10},
+    {"method":"embedded.plasma.getRequiredPoWForAccountBlock","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":7,"max_ms":10},
+    {"method":"stats.get","p50_ms":9,"p90_ms":10,"p99_ms":10,"min_ms":8,"max_ms":10}
+  ],
+  "under_load": [
+    {"method":"ledger.getFrontierMomentum","p50_ms":11,"p90_ms":11,"p99_ms":15,"min_ms":9,"max_ms":15},
+    {"method":"ledger.getFrontierAccountBlock","p50_ms":10,"p90_ms":11,"p99_ms":11,"min_ms":9,"max_ms":11},
+    {"method":"embedded.plasma.get","p50_ms":10,"p90_ms":11,"p99_ms":14,"min_ms":9,"max_ms":14},
+    {"method":"embedded.plasma.getRequiredPoWForAccountBlock","p50_ms":10,"p90_ms":11,"p99_ms":11,"min_ms":9,"max_ms":11},
+    {"method":"stats.get","p50_ms":9,"p90_ms":10,"p99_ms":12,"min_ms":8,"max_ms":12}
+  ]
+}

@@ -96,11 +96,14 @@ go build -o labctl ./cmd/labctl
 | `sustain <secs> <accounts>` | Sustained multi-account burst for repricing tests (phase 6) |
 | `contend <n> <txPerAcct> <amt>` | Multi-sender contention with plasma gradient (phase 7) |
 | `deplete <idx> <qsr> <maxTx>` | Plasma depletion + regeneration test (phase 8) |
+| `powlat <n> <amt>` | PoW latency measurement from N unfused accounts (phase 9) |
+| `powburst <n> <secs> <amt>` | PoW repricing attempt via sustained burst (phase 9) |
+| `mixcontend <fused> <unfused> <txPerAcct> <amt>` | Mixed fused/unfused contention (phase 10) |
 
 ## run-suite.sh
 
 ```bash
-./run-suite.sh [phase2|phase3|phase4|check|all]
+./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|check|all]
 ```
 
 | Target | What it runs |
@@ -108,7 +111,11 @@ go build -o labctl ./cmd/labctl
 | `phase2` | Ordinary + burst + probe in current regime |
 | `phase3` | Full 4-case matrix x 3 seeds (12 runs) |
 | `phase4` | High-fused steady + burst x 3 seeds (comparison data) |
-| `check` | Regression assertions (R1-R5) + CSV export |
+| `phase6` | hvburst 200 txs x 3 seeds (repricing test) |
+| `phase7` | contend 10 accounts x 30 txs x 3 seeds (contention test) |
+| `phase8` | deplete 100 QSR x 3 seeds (plasma depletion/regeneration) |
+| `phase9` | powlat 14 accounts x 3 seeds (PoW latency measurement) |
+| `check` | Regression assertions (R1-R8) + CSV export |
 | `all` | phase2 + phase3 + phase4 + check |
 
 Results are written to `../results/phase-N/*.json`.
@@ -127,6 +134,7 @@ CSV summary: `../results/summary.csv`.
 | R5 | Each simple self-transfer consumes exactly 21000 plasma |
 | R6 | Under contention, plasma availability correlates with inclusion rate (Spearman rho > 0) |
 | R7 | Plasma depletes by exactly 21000 per simple self-transfer and regenerates to full fused amount after confirmation |
+| R8 | PoW transactions from unfused accounts have 100% inclusion when sent sequentially (1 tx per account) |
 
 Run: `python3 check-regressions.py ../results`
 

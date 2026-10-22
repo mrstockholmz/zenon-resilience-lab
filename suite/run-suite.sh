@@ -1,6 +1,6 @@
 #!/bin/bash
 # Zenon Resilience Lab — one-command suite runner
-# Usage: ./run-suite.sh [phase2|phase3|phase4|check|all]
+# Usage: ./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|check|all]
 #
 # Prerequisites:
 #   - lab devnet running (znnd on 127.0.0.1:57997)
@@ -17,7 +17,11 @@ RESULTS_DIR="$(dirname "$0")/../results"
 PHASE2_DIR="$RESULTS_DIR/phase-2"
 PHASE3_DIR="$RESULTS_DIR/phase-3"
 PHASE4_DIR="$RESULTS_DIR/phase-4"
-mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR"
+PHASE6_DIR="$RESULTS_DIR/phase-6"
+PHASE7_DIR="$RESULTS_DIR/phase-7"
+PHASE8_DIR="$RESULTS_DIR/phase-8"
+PHASE9_DIR="$RESULTS_DIR/phase-9"
+mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR"
 
 # Check node is reachable
 if ! curl -s http://127.0.0.1:57997 -X POST -H 'Content-Type: application/json' \
@@ -76,6 +80,44 @@ run_phase4_case() {
     echo ""
 }
 
+run_phase6() {
+    local seed=$1
+    echo "--- Phase 6: hvburst 200 txs (seed=$seed) ---"
+    ./labctl hvburst 200 1 2>&1 | tee "$PHASE6_DIR/hvburst-200-dynamic-seed${seed}.json"
+    echo ""
+    echo "--- Phase 6: waiting 3 momenta for price decay ---"
+    ./labctl waitfor $(( $(./labctl info | grep momentum_height | awk '{print $2}') + 3 ))
+    echo ""
+}
+
+run_phase7() {
+    local seed=$1
+    echo "--- Phase 7: contend 10 accounts x 30 txs (seed=$seed) ---"
+    ./labctl contend 10 30 1 2>&1 | tee "$PHASE7_DIR/contend-10acct-30tx-seed${seed}-v2.json"
+    echo ""
+    echo "--- Phase 7: waiting 3 momenta for plasma regen ---"
+    ./labctl waitfor $(( $(./labctl info | grep momentum_height | awk '{print $2}') + 3 ))
+    echo ""
+}
+
+run_phase8() {
+    local idx=$1
+    local seed=$2
+    echo "--- Phase 8: deplete account $idx with 100 QSR (seed=$seed) ---"
+    ./labctl deplete "$idx" 100 15 2>&1 | tee "$PHASE8_DIR/deplete-acct${idx}-100qsr-seed${seed}.json"
+    echo ""
+    echo "--- Phase 8: waiting 3 momenta for plasma regen ---"
+    ./labctl waitfor $(( $(./labctl info | grep momentum_height | awk '{print $2}') + 3 ))
+    echo ""
+}
+
+run_phase9() {
+    local seed=$1
+    echo "--- Phase 9: powlat 14 accounts (seed=$seed) ---"
+    ./labctl powlat 14 1 2>&1 | tee "$PHASE9_DIR/powlat-14acct-seed${seed}.json"
+    echo ""
+}
+
 case "${1:-all}" in
     phase2)
         if [ "$REGIME" = "static" ]; then
@@ -100,6 +142,30 @@ case "${1:-all}" in
             run_phase4_case high-burst-1 "$seed" "$REGIME"
         done
         ;;
+    phase6)
+        # Phase 6: Dynamic Plasma repricing (3 seeds)
+        for seed in 0 1 2; do
+            run_phase6 "$seed"
+        done
+        ;;
+    phase7)
+        # Phase 7: multi-sender contention (3 seeds)
+        for seed in 0 1 2; do
+            run_phase7 "$seed"
+        done
+        ;;
+    phase8)
+        # Phase 8: plasma depletion + regeneration (3 seeds, accounts 21-23)
+        for seed in 0 1 2; do
+            run_phase8 $((21 + seed)) "$seed"
+        done
+        ;;
+    phase9)
+        # Phase 9: PoW latency (3 seeds)
+        for seed in 0 1 2; do
+            run_phase9 "$seed"
+        done
+        ;;
     check)
         echo "Running regression assertions..."
         python3 check-regressions.py "$RESULTS_DIR"
@@ -108,7 +174,7 @@ case "${1:-all}" in
         python3 json2csv.py "$RESULTS_DIR" "$RESULTS_DIR/summary.csv"
         ;;
     all)
-        echo "Running full suite (phase 2 + phase 3 + phase 4)..."
+        echo "Running full suite (phases 2-4)..."
         run_phase2 "$REGIME" r1
         for seed in 0 1 2; do
             for case in low-steady-1 low-burst-1 high-steady-1 high-burst-1; do
@@ -127,7 +193,7 @@ case "${1:-all}" in
         python3 json2csv.py "$RESULTS_DIR" "$RESULTS_DIR/summary.csv"
         ;;
     *)
-        echo "Usage: $0 [phase2|phase3|phase4|check|all]" >&2
+        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|check|all]" >&2
         exit 1
         ;;
 esac

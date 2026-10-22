@@ -15,6 +15,7 @@
 //   matrix <case> <seed>              run one phase-3 matrix case
 //   contend <numAccounts> <txPerAccount> <amount>  multi-sender contention experiment (phase 7)
 //   powburst <numAccounts> <txPerAcct> <amount>    PoW repricing experiment (phase 9)
+//   mixcontend <fused> <unfused> <txPerAcct> <amt>  mixed fused/unfused contention (phase 10)
 package main
 
 import (
@@ -379,7 +380,7 @@ func getCPUTime() float64 {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>")
 		os.Exit(1)
 	}
 
@@ -488,6 +489,13 @@ func main() {
 		numAccounts, _ := strconv.Atoi(os.Args[2])
 		amt, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		runPowLat(numAccounts, amt)
+
+	case "mixcontend":
+		numFused, _ := strconv.Atoi(os.Args[2])
+		numUnfused, _ := strconv.Atoi(os.Args[3])
+		txPerAccount, _ := strconv.Atoi(os.Args[4])
+		amt, _ := strconv.ParseInt(os.Args[5], 10, 64)
+		runMixContend(numFused, numUnfused, txPerAccount, amt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -1961,6 +1969,405 @@ func runPowLat(numAccounts int, amt int64) {
 		PreWorkPrice:    fmBefore.NextWorkPrice,
 		PostFusionPrice: fmAfter.NextFusionPrice,
 		PostWorkPrice:   fmAfter.NextWorkPrice,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+// ---- Phase 10: Mixed fused/unfused contention ----
+
+type mixGroupBreakdown struct {
+	Group           string `json:"group"` // "fused" or "unfused"
+	AccountIndex    int    `json:"account_index"`
+	Address         string `json:"address"`
+	FusedQSR        int64  `json:"fused_qsr"`
+	PlasmaAvailable uint64 `json:"plasma_available"`
+	Attempted       int    `json:"attempted"`
+	Submitted       int    `json:"submitted"`
+	Included        int    `json:"included"`
+	Rejected        int    `json:"rejected"`
+	Unresolved      int    `json:"unresolved"`
+	PoWCount        int    `json:"pow_count"`
+	TotalPoWMs      int64  `json:"total_pow_ms"`
+	P50Ms           int64  `json:"p50_ms"`
+	P90Ms           int64  `json:"p90_ms"`
+}
+
+// runMixContend: mixed fused/unfused contention experiment (phase 10).
+//
+// Sets up two groups of accounts:
+//   - "fused" accounts: funded + fused with varying QSR (like phase 7)
+//   - "unfused" accounts: funded but 0 QSR fused (must use PoW for every tx)
+//
+// All accounts send self-transfers simultaneously, competing for momentum space.
+// Measures whether fused plasma transactions get priority over PoW transactions
+// when demand exceeds per-momentum capacity.
+//
+// Fused accounts use indices 1..numFused, unfused use indices 300..300+numUnfused-1.
+func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
+	// ---- Setup: fund all accounts ----
+	fmt.Fprintf(os.Stderr, "mixcontend setup: funding %d fused + %d unfused accounts...\n", numFused, numUnfused)
+	for i := 1; i <= numFused; i++ {
+		w := derivedAccount(uint32(i))
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "  funding fused account %d (%s)...\n", i, w.addrStr)
+			runFund(uint32(i), 100)
+		}
+	}
+	for j := 0; j < numUnfused; j++ {
+		idx := uint32(300 + j)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "  funding unfused account %d (%s)...\n", idx, w.addrStr)
+			runFund(idx, 100)
+		}
+	}
+
+	// Wait for funding inclusion
+	targetHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "mixcontend setup: waiting for funding inclusion (height %d)...\n", targetHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Receive funded blocks
+	fmt.Fprintf(os.Stderr, "mixcontend setup: receiving funded blocks...\n")
+	for i := 1; i <= numFused; i++ {
+		w := derivedAccount(uint32(i))
+		receiveAll(w)
+	}
+	for j := 0; j < numUnfused; j++ {
+		w := derivedAccount(uint32(300 + j))
+		receiveAll(w)
+	}
+
+	// ---- Setup: fuse only the fused group ----
+	fmt.Fprintf(os.Stderr, "mixcontend setup: fusing QSR for %d fused accounts...\n", numFused)
+	for i := 1; i <= numFused; i++ {
+		fuseAmt := int64(i * 20) // 20, 40, 60, ... QSR
+		fmt.Fprintf(os.Stderr, "  fusing %d QSR for fused account %d...\n", fuseAmt, i)
+		runFuseFor(uint32(i), fuseAmt)
+	}
+
+	// Wait for fusion inclusion
+	fuseHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "mixcontend setup: waiting for fusion inclusion (height %d)...\n", fuseHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= fuseHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Record plasma levels
+	fusedPlasma := make(map[int]uint64)
+	for i := 1; i <= numFused; i++ {
+		w := derivedAccount(uint32(i))
+		fusedPlasma[i] = plasmaLevel(w.addrStr)
+		fmt.Fprintf(os.Stderr, "  fused account %d: plasma=%d\n", i, fusedPlasma[i])
+	}
+	unfusedPlasma := make(map[int]uint64)
+	for j := 0; j < numUnfused; j++ {
+		idx := 300 + j
+		w := derivedAccount(uint32(idx))
+		unfusedPlasma[idx] = plasmaLevel(w.addrStr)
+		fmt.Fprintf(os.Stderr, "  unfused account %d: plasma=%d\n", idx, unfusedPlasma[idx])
+	}
+
+	fmt.Fprintf(os.Stderr, "mixcontend: starting contention (%d fused x %d txs + %d unfused x %d txs)...\n",
+		numFused, txPerAccount, numUnfused, txPerAccount)
+
+	// ---- Contention phase ----
+	fmBefore := frontierMomentum()
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+
+	var allResults []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	// Fused accounts send with plasma (no PoW needed)
+	for i := 1; i <= numFused; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			w := derivedAccount(uint32(idx))
+			for j := 0; j < txPerAccount; j++ {
+				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
+				if err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: idx*100000 + j, Error: fmt.Sprintf("fused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				subM := frontierMomentum().Height
+				if err := publish(b); err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: idx*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs, Error: fmt.Sprintf("fused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: idx*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+					Included: true,
+				})
+				mu.Unlock()
+			}
+		}(i)
+	}
+
+	// Unfused accounts send with PoW
+	for j := 0; j < numUnfused; j++ {
+		wg.Add(1)
+		go func(j int) {
+			defer wg.Done()
+			idx := 300 + j
+			w := derivedAccount(uint32(idx))
+			for k := 0; k < txPerAccount; k++ {
+				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
+				if err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: idx*100000 + k, Error: fmt.Sprintf("unfused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				subM := frontierMomentum().Height
+				if err := publish(b); err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: idx*100000 + k, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs, Error: fmt.Sprintf("unfused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: idx*100000 + k, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+					Included: true,
+				})
+				mu.Unlock()
+			}
+		}(j)
+	}
+	wg.Wait()
+
+	// Wait for last transactions to be included
+	fmt.Fprintf(os.Stderr, "mixcontend: waiting 30s for final inclusions (PoW txs are slow)...\n")
+	time.Sleep(30 * time.Second)
+
+	// ---- Verify inclusion ----
+	mu.Lock()
+	for i := range allResults {
+		r := &allResults[i]
+		if r.Error != "" {
+			r.Included = false
+			continue
+		}
+		acctIdx := r.Idx / 100000
+		w := derivedAccount(uint32(acctIdx))
+		_, h := frontierAccount(w.addrStr)
+		if h >= r.BlockHeight {
+			r.LatencyMs = 0
+			r.InclMomentum = 0
+		} else {
+			r.Included = false
+		}
+	}
+	mu.Unlock()
+
+	fmAfter := frontierMomentum()
+	endM := fmAfter.Height
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+
+	// ---- Per-momentum content tracking ----
+	fmt.Fprintf(os.Stderr, "mixcontend: analyzing momentum contents (%d to %d)...\n", startM, endM)
+	momentumContents := make([]momentumContent, 0)
+	for h := startM; h <= endM; h++ {
+		var ml struct {
+			List []struct {
+				Height  uint64 `json:"height"`
+				Content []struct {
+					Address string `json:"address"`
+				} `json:"content"`
+			} `json:"list"`
+		}
+		if err := rpc("ledger.getMomentumsByHeight", []interface{}{h, 1}, &ml); err != nil {
+			continue
+		}
+		if len(ml.List) == 0 {
+			continue
+		}
+		acctCounts := make(map[int]int)
+		for _, blk := range ml.List[0].Content {
+			// Check fused accounts
+			for i := 1; i <= numFused; i++ {
+				w := derivedAccount(uint32(i))
+				if blk.Address == w.addrStr {
+					acctCounts[i]++
+					break
+				}
+			}
+			// Check unfused accounts
+			for j := 0; j < numUnfused; j++ {
+				idx := 300 + j
+				w := derivedAccount(uint32(idx))
+				if blk.Address == w.addrStr {
+					acctCounts[idx]++
+					break
+				}
+			}
+		}
+		if len(acctCounts) > 0 {
+			momentumContents = append(momentumContents, momentumContent{
+				Height:   ml.List[0].Height,
+				Accounts: acctCounts,
+			})
+		}
+	}
+
+	// ---- Per-account breakdown ----
+	var breakdowns []mixGroupBreakdown
+	for i := 1; i <= numFused; i++ {
+		w := derivedAccount(uint32(i))
+		bd := mixGroupBreakdown{
+			Group:           "fused",
+			AccountIndex:    i,
+			Address:         w.addrStr,
+			FusedQSR:        int64(i * 20),
+			PlasmaAvailable: fusedPlasma[i],
+		}
+		var lats []int64
+		for _, r := range allResults {
+			if r.Idx/100000 != i {
+				continue
+			}
+			bd.Attempted++
+			if r.Error != "" {
+				bd.Rejected++
+				continue
+			}
+			bd.Submitted++
+			if r.Included {
+				bd.Included++
+				lats = append(lats, r.LatencyMs)
+			} else {
+				bd.Unresolved++
+			}
+			if r.PoWMs > 0 {
+				bd.PoWCount++
+				bd.TotalPoWMs += r.PoWMs
+			}
+		}
+		sort.Slice(lats, func(a, b int) bool { return lats[a] < lats[b] })
+		bd.P50Ms = percentile(lats, 0.50)
+		bd.P90Ms = percentile(lats, 0.90)
+		breakdowns = append(breakdowns, bd)
+	}
+	for j := 0; j < numUnfused; j++ {
+		idx := 300 + j
+		w := derivedAccount(uint32(idx))
+		bd := mixGroupBreakdown{
+			Group:           "unfused",
+			AccountIndex:    idx,
+			Address:         w.addrStr,
+			FusedQSR:        0,
+			PlasmaAvailable: unfusedPlasma[idx],
+		}
+		var lats []int64
+		for _, r := range allResults {
+			if r.Idx/100000 != idx {
+				continue
+			}
+			bd.Attempted++
+			if r.Error != "" {
+				bd.Rejected++
+				continue
+			}
+			bd.Submitted++
+			if r.Included {
+				bd.Included++
+				lats = append(lats, r.LatencyMs)
+			} else {
+				bd.Unresolved++
+			}
+			if r.PoWMs > 0 {
+				bd.PoWCount++
+				bd.TotalPoWMs += r.PoWMs
+			}
+		}
+		sort.Slice(lats, func(a, b int) bool { return lats[a] < lats[b] })
+		bd.P50Ms = percentile(lats, 0.50)
+		bd.P90Ms = percentile(lats, 0.90)
+		breakdowns = append(breakdowns, bd)
+	}
+
+	// ---- Summary ----
+	s := summarize("mixcontend", allResults, startM, endM, duration, cpuSec)
+
+	// Count per-group totals
+	var fusedAttempted, fusedIncluded, fusedRejected, fusedUnresolved int
+	var unfusedAttempted, unfusedIncluded, unfusedRejected, unfusedUnresolved int
+	for _, bd := range breakdowns {
+		if bd.Group == "fused" {
+			fusedAttempted += bd.Attempted
+			fusedIncluded += bd.Included
+			fusedRejected += bd.Rejected
+			fusedUnresolved += bd.Unresolved
+		} else {
+			unfusedAttempted += bd.Attempted
+			unfusedIncluded += bd.Included
+			unfusedRejected += bd.Rejected
+			unfusedUnresolved += bd.Unresolved
+		}
+	}
+
+	totalMomentumTxs := 0
+	for _, mc := range momentumContents {
+		for _, c := range mc.Accounts {
+			totalMomentumTxs += c
+		}
+	}
+
+	type mixContendOutput struct {
+		runSummary
+		FusedAccounts         int                  `json:"fused_accounts"`
+		UnfusedAccounts       int                  `json:"unfused_accounts"`
+		FusedAttempted        int                  `json:"fused_attempted"`
+		FusedIncluded         int                  `json:"fused_included"`
+		FusedRejected         int                  `json:"fused_rejected"`
+		FusedUnresolved       int                  `json:"fused_unresolved"`
+		UnfusedAttempted      int                  `json:"unfused_attempted"`
+		UnfusedIncluded       int                  `json:"unfused_included"`
+		UnfusedRejected       int                  `json:"unfused_rejected"`
+		UnfusedUnresolved     int                  `json:"unfused_unresolved"`
+		Breakdowns            []mixGroupBreakdown  `json:"breakdowns"`
+		MomentumContents      []momentumContent    `json:"momentum_contents"`
+		TotalMomentumTxs      int                  `json:"total_momentum_txs"`
+	}
+	out := mixContendOutput{
+		runSummary:        s,
+		FusedAccounts:     numFused,
+		UnfusedAccounts:   numUnfused,
+		FusedAttempted:    fusedAttempted,
+		FusedIncluded:     fusedIncluded,
+		FusedRejected:     fusedRejected,
+		FusedUnresolved:   fusedUnresolved,
+		UnfusedAttempted:  unfusedAttempted,
+		UnfusedIncluded:   unfusedIncluded,
+		UnfusedRejected:   unfusedRejected,
+		UnfusedUnresolved: unfusedUnresolved,
+		Breakdowns:        breakdowns,
+		MomentumContents:  momentumContents,
+		TotalMomentumTxs:  totalMomentumTxs,
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
