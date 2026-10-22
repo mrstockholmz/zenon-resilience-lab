@@ -11,6 +11,7 @@ Invariants tested:
   R4: Fused plasma eliminates PoW for simple sends (single-account cases)
   R5: Each simple self-transfer consumes exactly 21000 plasma (single-account cases)
   R6: Under multi-sender contention, accounts with more plasma have >= inclusion rate of accounts with less plasma
+  R7: Plasma depletes by exactly 21000 per simple self-transfer and regenerates to full fused amount after confirmation
 """
 import json, sys, os, glob
 
@@ -152,6 +153,35 @@ def check_contention_plasma_gradient(results_dir):
             print(f"  R6 info: {os.path.basename(f)} Spearman rho={rho:.3f}")
     return failures
 
+def check_plasma_depletion(results_dir):
+    """R7: Plasma depletes by exactly 21000 per tx and regenerates after confirmation."""
+    failures = []
+    for f in glob.glob(os.path.join(results_dir, "phase-8", "deplete-*.json")):
+        data = load_result(f)
+        if not data:
+            continue
+        # Skip failed runs (0 included txs)
+        if data.get("included", 0) == 0:
+            continue
+        results = data.get("results", [])
+        
+        # Check linear depletion: each tx consumes exactly 21000 plasma
+        for i in range(1, len(results)):
+            prev = results[i-1].get("plasma_after", 0)
+            curr = results[i].get("plasma_after", 0)
+            if prev > 0 and curr > 0:
+                consumed = prev - curr
+                if consumed != 21000:
+                    failures.append(f"R7 FAIL: {os.path.basename(f)} tx {results[i]['idx']} consumed {consumed} plasma (expected 21000)")
+        
+        # Check regeneration: after waiting, plasma should be >= fused amount
+        regen = data.get("regen_test_plasma", 0)
+        qsr_fused = data.get("qsr_fused", 0)
+        expected_min = qsr_fused * 2100  # 2100 plasma per QSR
+        if regen < expected_min:
+            failures.append(f"R7 FAIL: {os.path.basename(f)} regen plasma {regen} < expected minimum {expected_min} ({qsr_fused} QSR fused)")
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -163,6 +193,7 @@ def main():
         ("R4: plasma eliminates PoW (single-account)", check_plasma_eliminates_pow),
         ("R5: 21000 plasma per transfer (single-account)", check_plasma_consumption),
         ("R6: contention plasma gradient (phase-7)", check_contention_plasma_gradient),
+        ("R7: plasma depletion + regeneration (phase-8)", check_plasma_depletion),
     ]
     
     for name, check_fn in checks:

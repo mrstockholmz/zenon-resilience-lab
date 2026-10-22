@@ -1,0 +1,21 @@
+deplete: account[21]=z1qr2sncmtcy2kuhdhuksgvz8srey40w34zpg65q initial_plasma=0
+deplete: funding account[21] with 100 ZNN...
+deplete: fusing 100 QSR on account[21]...
+deplete: receiving pending blocks on account[21]...
+deplete: received 1 blocks on account[21]
+deplete: post-fusion plasma=0 (fused 100 QSR)
+deplete: tx 0 included=true plasma_before=0 plasma_after=210000 pow_ms=47168
+deplete: tx 1 included=true plasma_before=210000 plasma_after=189000 pow_ms=0
+deplete: tx 2 included=true plasma_before=189000 plasma_after=168000 pow_ms=0
+deplete: tx 3 included=true plasma_before=168000 plasma_after=147000 pow_ms=0
+deplete: tx 4 included=true plasma_before=147000 plasma_after=126000 pow_ms=0
+deplete: tx 5 included=true plasma_before=126000 plasma_after=105000 pow_ms=0
+deplete: tx 6 included=true plasma_before=105000 plasma_after=84000 pow_ms=0
+deplete: tx 7 included=true plasma_before=84000 plasma_after=63000 pow_ms=0
+deplete: tx 8 included=true plasma_before=63000 plasma_after=42000 pow_ms=0
+deplete: tx 9 included=true plasma_before=42000 plasma_after=21000 pow_ms=0
+deplete: tx 10 included=true plasma_before=21000 plasma_after=0 pow_ms=0
+deplete: plasma exhausted at tx 10
+deplete: waiting 5 momenta for regeneration test...
+deplete: after 5 momenta, plasma=210000 (was 210000 at last tx)
+deplete: testing PoW fallback...

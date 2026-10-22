@@ -95,6 +95,7 @@ go build -o labctl ./cmd/labctl
 | `hvburst <n> <amt>` | High-volume burst with per-momentum price tracking (phase 6) |
 | `sustain <secs> <accounts>` | Sustained multi-account burst for repricing tests (phase 6) |
 | `contend <n> <txPerAcct> <amt>` | Multi-sender contention with plasma gradient (phase 7) |
+| `deplete <idx> <qsr> <maxTx>` | Plasma depletion + regeneration test (phase 8) |
 
 ## run-suite.sh
 
@@ -125,6 +126,7 @@ CSV summary: `../results/summary.csv`.
 | R4 | Fused plasma eliminates PoW for simple sends |
 | R5 | Each simple self-transfer consumes exactly 21000 plasma |
 | R6 | Under contention, plasma availability correlates with inclusion rate (Spearman rho > 0) |
+| R7 | Plasma depletes by exactly 21000 per simple self-transfer and regenerates to full fused amount after confirmation |
 
 Run: `python3 check-regressions.py ../results`
 

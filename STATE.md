@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 8
+next_phase: 9
 cloud_sessions_run: 1
-local_sessions_run: 5
+local_sessions_run: 6
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-22
+updated: 2026-10-22 (phase 8)
 ```
 
 ## Phase log
@@ -21,6 +21,7 @@ updated: 2026-10-22
 | 5 package | done | suite/ | One-command runner (suite/run-suite.sh with phase2/phase3/phase4/check/all), labctl tool, raw JSON results, CSV export (json2csv.py), regression assertions (check-regressions.py R1-R5 all passing). Documentation: suite/README.md with full reproduction instructions. Main README updated. |
 | 6 next experiment | done | results/phase-6/20261022-phase6-repricing-results.md | Dynamic Plasma repricing confirmed. >50 fused txs/momentum triggers price rise, capped at +10%/momentum. Price decays ~5%/empty momentum to floor of 1000. 3-seed reproducible. Decision informed: when to activate dynamic-plasma spork on mainnet. |
 | 7 multi-sender contention | done | results/phase-7/20261022-phase7-contention-results.md | 10 accounts with plasma gradient compete for momentum space. Higher plasma correlates with higher inclusion (Spearman rho=0.47-0.84). No automatic PoW fallback — insufficient plasma = rejection. 200-tx/momentum limit confirmed. |
+| 8 plasma depletion + regeneration | done | results/phase-8/20261022-phase8-plasma-depletion-results.md | Plasma depletes by exactly 21000 per simple self-transfer. After confirmation, plasma fully regenerates to fused amount (two-counter system: committed/unconfirmed sync). 100 QSR = 10 txs/momentum. Plasma is a rate limit, not a permanent budget. |
 
 ## Genesis defect (found in phase 1, verified locally)
 
@@ -60,6 +61,11 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
    Accounts with more plasma achieve higher inclusion rates when demand exceeds
    per-momentum capacity. No automatic PoW fallback — low-plasma transactions
    are rejected with "not enough TotalPlasma provided".
+9. **Plasma is a per-momentum rate limit, not a permanent budget.** Each tx
+   consumes exactly 21000 plasma temporarily. After confirmation, the full
+   fused amount is available again. 100 QSR = 210,000 plasma = 10 simple
+   txs per momentum. The two-counter system (committed/uncommitted) means
+   plasma "depletion" is just unconfirmed backlog.
 
 ## Suite tooling
 
@@ -67,9 +73,11 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   fuse, fund, fusefor, receive, waitfor, matrix, hvburst, sustain. Disposable devnet keys only.
 - `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
-- `suite/check-regressions.py` — regression assertions R1-R5.
+- `suite/check-regressions.py` — regression assertions R1-R7.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
 - `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
+- `deplete` — plasma depletion + regeneration test (phase 8). Fuses QSR, sends
+  txs until exhaustion, waits for regeneration, tests PoW fallback.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

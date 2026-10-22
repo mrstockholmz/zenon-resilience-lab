@@ -378,7 +378,7 @@ func getCPUTime() float64 {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <numAccounts> <txPerAccount> <amount>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>")
 		os.Exit(1)
 	}
 
@@ -471,10 +471,232 @@ func main() {
 		amt, _ := strconv.ParseInt(os.Args[4], 10, 64)
 		runContend(numAccounts, txPerAccount, amt)
 
+	case "deplete":
+		idx, _ := strconv.Atoi(os.Args[2])
+		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		maxTx, _ := strconv.Atoi(os.Args[4])
+		runDeplete(uint32(idx), qsrAmt, maxTx)
+
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
 		os.Exit(1)
 	}
+}
+
+// runDeplete: plasma depletion experiment (phase 8).
+//
+// Uses a derived account, funds it, fuses a known QSR amount, then sends
+// self-transfers until plasma is exhausted. Records plasma after each tx.
+// After exhaustion, waits several momenta and re-checks plasma (regeneration
+// test), then tries a PoW-fallback transaction.
+//
+// The go-zenon code (vm/plasma.go) shows plasma is a monotonically decreasing
+// resource: available = fused - cumulative_used - unconfirmed. This experiment
+// verifies that model empirically.
+func runDeplete(idx uint32, qsrAmt int64, maxTx int) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+
+	// Step 0: Record initial state
+	initialPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "deplete: account[%d]=%s initial_plasma=%d\n", idx, target.addrStr, initialPlasma)
+
+	// Step 1: Fund the target account with ZNN for self-transfers
+	_, targetHeight := frontierAccount(target.addrStr)
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "deplete: funding account[%d] with 100 ZNN...\n", idx)
+		b, _, err := buildSend(agent, target.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Step 2: Fuse QSR for plasma on the target account
+	fmt.Fprintf(os.Stderr, "deplete: fusing %d QSR on account[%d]...\n", qsrAmt, idx)
+	data := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, target.addr)
+	b, _, err := buildSend(agent, types.PlasmaContract, qsr, dec(qsrAmt), data, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL fuse: %v\n", err)
+		os.Exit(1)
+	}
+	if err := publish(b); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL publish fuse: %v\n", err)
+		os.Exit(1)
+	}
+	waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+
+	// Step 2b: Wait for funding to be visible as unreceived, then receive all pending blocks
+	fmt.Fprintf(os.Stderr, "deplete: waiting for funding to arrive at account[%d]...\n", idx)
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{target.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	// Also wait for fuse to be included
+	time.Sleep(5 * time.Second)
+	fmt.Fprintf(os.Stderr, "deplete: receiving pending blocks on account[%d]...\n", idx)
+	received := receiveAll(target)
+	fmt.Fprintf(os.Stderr, "deplete: received %d blocks on account[%d]\n", received, idx)
+
+	// Step 2c: Verify the account has ZNN balance
+	var acctInfo struct {
+		BalanceList []struct {
+			Token   string `json:"token"`
+			Balance string `json:"balance"`
+		} `json:"balanceInfoList"`
+	}
+	mustRPC("ledger.getAccountInfoByAddress", []interface{}{target.addrStr}, &acctInfo)
+	for _, bi := range acctInfo.BalanceList {
+		fmt.Fprintf(os.Stderr, "deplete: account[%d] balance: %s = %s\n", idx, bi.Token, bi.Balance)
+	}
+
+	postFusionPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "deplete: post-fusion plasma=%d (fused %d QSR)\n", postFusionPlasma, qsrAmt)
+
+	// Step 3: Send self-transfers until plasma exhausted
+	type depleteResult struct {
+		runSummary
+		AccountIndex     uint64 `json:"account_index"`
+		AccountAddress   string `json:"account_address"`
+		QSRFused         int64  `json:"qsr_fused"`
+		InitialPlasma    uint64 `json:"initial_plasma"`
+		PostFusionPlasma uint64 `json:"post_fusion_plasma"`
+		PlasmaPerTx      []uint64 `json:"plasma_per_tx"`
+		ExpectedPlasmaPerTx uint64 `json:"expected_plasma_per_tx"`
+		RegenTestPlasma  uint64 `json:"regen_test_plasma"`
+		RegenWaitMomenta int    `json:"regen_wait_momenta"`
+		PoWFallbackUsed  bool   `json:"pow_fallback_used"`
+		PoWFallbackMs    int64  `json:"pow_fallback_ms"`
+		PoWFallbackOK    bool   `json:"pow_fallback_ok"`
+		DepletedAtTx     int    `json:"depleted_at_tx"`
+	}
+
+	startM := frontierMomentum().Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+
+	var results []txResult
+	var plasmaLevels []uint64
+
+	for i := 0; i < maxTx; i++ {
+		// Check plasma before send
+		plasmaBefore := plasmaLevel(target.addrStr)
+		plasmaLevels = append(plasmaLevels, plasmaBefore)
+
+		b, powMs, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, txResult{
+				Idx: i, Error: fmt.Sprintf("build: %v", err),
+				PlasmaAfter: plasmaBefore,
+			})
+			fmt.Fprintf(os.Stderr, "deplete: tx %d BUILD FAILED: %v (plasma=%d)\n", i, err, plasmaBefore)
+			break
+		}
+
+		subM := frontierMomentum().Height
+		if err := publish(b); err != nil {
+			results = append(results, txResult{
+				Idx: i, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+				Error: fmt.Sprintf("publish: %v", err), PlasmaAfter: plasmaBefore,
+			})
+			fmt.Fprintf(os.Stderr, "deplete: tx %d PUBLISH FAILED: %v (plasma=%d)\n", i, err, plasmaBefore)
+			break
+		}
+
+		lat, mh, ok := waitIncluded(target.addrStr, b.Height, 60*time.Second)
+		plasmaAfter := plasmaLevel(target.addrStr)
+		results = append(results, txResult{
+			Idx: i, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+			Included: ok, LatencyMs: lat.Milliseconds(), InclMomentum: mh,
+			PlasmaAfter: plasmaAfter,
+		})
+		fmt.Fprintf(os.Stderr, "deplete: tx %d included=%v plasma_before=%d plasma_after=%d pow_ms=%d\n",
+			i, ok, plasmaBefore, plasmaAfter, powMs)
+
+		if !ok {
+			fmt.Fprintf(os.Stderr, "deplete: tx %d NOT INCLUDED, stopping\n", i)
+			break
+		}
+
+		// If plasma dropped to 0 or near 0, try one more then stop
+		if plasmaAfter == 0 && i > 0 {
+			fmt.Fprintf(os.Stderr, "deplete: plasma exhausted at tx %d\n", i)
+			break
+		}
+	}
+
+	depletedAtTx := len(results)
+
+	// Step 4: Regeneration test — wait 5 momenta, check plasma
+	fmt.Fprintf(os.Stderr, "deplete: waiting 5 momenta for regeneration test...\n")
+	fmNow := frontierMomentum()
+	targetHeight2 := fmNow.Height + 5
+	for {
+		fmCur := frontierMomentum()
+		if fmCur.Height >= targetHeight2 {
+			break
+		}
+		time.Sleep(3 * time.Second)
+	}
+	regenPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "deplete: after 5 momenta, plasma=%d (was %d at last tx)\n",
+		regenPlasma, plasmaLevel(target.addrStr))
+
+	// Step 5: PoW fallback test — try to send with PoW when plasma is 0
+	fmt.Fprintf(os.Stderr, "deplete: testing PoW fallback...\n")
+	powFallbackUsed := false
+	powFallbackMs := int64(0)
+	powFallbackOK := false
+	if regenPlasma < 21000 {
+		powFallbackUsed = true
+		b, powMs, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "deplete: PoW fallback build failed: %v\n", err)
+		} else {
+			powFallbackMs = powMs
+			if err := publish(b); err != nil {
+				fmt.Fprintf(os.Stderr, "deplete: PoW fallback publish failed: %v\n", err)
+			} else {
+				_, _, ok := waitIncluded(target.addrStr, b.Height, 60*time.Second)
+				powFallbackOK = ok
+				fmt.Fprintf(os.Stderr, "deplete: PoW fallback included=%v pow_ms=%d\n", ok, powMs)
+			}
+		}
+	}
+
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+	endM := frontierMomentum().Height
+	s := summarize("deplete", results, startM, endM, duration, cpuSec)
+
+	out := depleteResult{
+		runSummary:          s,
+		AccountIndex:        uint64(idx),
+		AccountAddress:      target.addrStr,
+		QSRFused:            qsrAmt,
+		InitialPlasma:       initialPlasma,
+		PostFusionPlasma:    postFusionPlasma,
+		PlasmaPerTx:         plasmaLevels,
+		ExpectedPlasmaPerTx: 21000,
+		RegenTestPlasma:     regenPlasma,
+		RegenWaitMomenta:    5,
+		PoWFallbackUsed:     powFallbackUsed,
+		PoWFallbackMs:       powFallbackMs,
+		PoWFallbackOK:       powFallbackOK,
+		DepletedAtTx:        depletedAtTx,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
 }
 
 // runHVBurst: high-volume burst designed to trigger Dynamic Plasma repricing.
