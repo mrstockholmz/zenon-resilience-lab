@@ -10,6 +10,7 @@ Invariants tested:
   R3: Unfused burst has < 100% inclusion (account-chain conflict is real)
   R4: Fused plasma eliminates PoW for simple sends (single-account cases)
   R5: Each simple self-transfer consumes exactly 21000 plasma (single-account cases)
+  R6: Under multi-sender contention, accounts with more plasma have >= inclusion rate of accounts with less plasma
 """
 import json, sys, os, glob
 
@@ -92,6 +93,65 @@ def check_plasma_consumption(results_dir):
                         failures.append(f"R5 FAIL: {os.path.basename(f)} tx {results[i]['idx']} consumed {consumed} plasma (expected 21000)")
     return failures
 
+def check_contention_plasma_gradient(results_dir):
+    """R6: Under contention, higher-plasma accounts have >= inclusion rate than lower-plasma accounts.
+    
+    Relaxed check: computes Spearman rank correlation between plasma_available and inclusion rate.
+    Requires positive correlation (rho > 0) when contention is present.
+    """
+    failures = []
+    for f in glob.glob(os.path.join(results_dir, "phase-7", "contend-*-v2.json")):
+        data = load_result(f)
+        if not data:
+            continue
+        breakdowns = data.get("account_breakdowns", [])
+        if len(breakdowns) < 3:
+            continue
+        # Only check when there's real contention (some rejections)
+        rejected_any = any(bd["rejected"] > 0 for bd in breakdowns)
+        if not rejected_any:
+            continue
+        
+        # Compute Spearman rank correlation
+        plasma_ranks = []
+        rate_ranks = []
+        for bd in breakdowns:
+            plasma_ranks.append(bd["plasma_available"])
+            rate_ranks.append(bd["included"] / max(bd["attempted"], 1))
+        
+        # Rank transform
+        def rank(data):
+            sorted_idx = sorted(range(len(data)), key=lambda i: data[i])
+            ranks = [0] * len(data)
+            for rank_pos, idx in enumerate(sorted_idx):
+                ranks[idx] = rank_pos
+            return ranks
+        
+        pr = rank(plasma_ranks)
+        rr = rank(rate_ranks)
+        n = len(pr)
+        
+        # Pearson correlation on ranks
+        mean_pr = sum(pr) / n
+        mean_rr = sum(rr) / n
+        cov = sum((pr[i] - mean_pr) * (rr[i] - mean_rr) for i in range(n))
+        std_pr = (sum((pr[i] - mean_pr)**2 for i in range(n))) ** 0.5
+        std_rr = (sum((rr[i] - mean_rr)**2 for i in range(n))) ** 0.5
+        
+        if std_pr == 0 or std_rr == 0:
+            continue  # no variation, skip
+        
+        rho = cov / (std_pr * std_rr)
+        
+        if rho <= 0:
+            failures.append(
+                f"R6 FAIL: {os.path.basename(f)} Spearman rho={rho:.3f} "
+                f"(expected > 0: higher plasma should correlate with higher inclusion)"
+            )
+        else:
+            print(f"  R6 info: {os.path.basename(f)} Spearman rho={rho:.3f}")
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -102,6 +162,7 @@ def main():
         ("R3: unfused burst < 100% inclusion", check_unfused_burst),
         ("R4: plasma eliminates PoW (single-account)", check_plasma_eliminates_pow),
         ("R5: 21000 plasma per transfer (single-account)", check_plasma_consumption),
+        ("R6: contention plasma gradient (phase-7)", check_contention_plasma_gradient),
     ]
     
     for name, check_fn in checks:

@@ -1,0 +1,76 @@
+contend setup: funding 10 accounts...
+contend setup: waiting for funding inclusion (height 1475)...
+contend setup: receiving funded blocks...
+  account 1: received 50 blocks
+  account 2: received 50 blocks
+  account 3: received 50 blocks
+  account 4: received 50 blocks
+  account 5: received 50 blocks
+  account 6: received 21 blocks
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qq8gll9ey70n: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+  account 7: received 13 blocks
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qpeet8dcjg0m: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+  account 8: received 15 blocks
+  account 9: received 23 blocks
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err z1qqp22leuqa32: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+  account 10: received 19 blocks
+contend setup: fusing QSR for plasma gradient...
+  fusing 10 QSR for account 1...
+  fusing 20 QSR for account 2...
+  fusing 30 QSR for account 3...
+  fusing 40 QSR for account 4...
+  fusing 50 QSR for account 5...
+  fusing 60 QSR for account 6...
+  fusing 70 QSR for account 7...
+  fusing 80 QSR for account 8...
+  fusing 90 QSR for account 9...
+  fusing 100 QSR for account 10...
+contend setup: waiting for fusion inclusion (height 1482)...
+  account 1: plasma=50463000
+  account 2: plasma=8526000
+  account 3: plasma=22239000
+  account 4: plasma=8652000
+  account 5: plasma=8715000
+  account 6: plasma=252000
+  account 7: plasma=294000
+  account 8: plasma=336000
+  account 9: plasma=378000
+  account 10: plasma=420000
+contend: starting contention phase (10 accounts x 30 txs each)...
+contend: waiting 15s for final inclusions...
+contend: analyzing momentum contents (1482 to 1485)...

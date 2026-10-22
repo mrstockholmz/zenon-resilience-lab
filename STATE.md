@@ -2,9 +2,9 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 7
+next_phase: 8
 cloud_sessions_run: 1
-local_sessions_run: 4
+local_sessions_run: 5
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
@@ -20,6 +20,7 @@ updated: 2026-10-22
 | 4 comparison | done | results/phase-4/20261022-phase4-comparison-results.md | Fused plasma static vs dynamic: no observable difference for existing fusion holders at low volume. Dynamic pricing (nextFusionPrice/workPrice=1000) only affects new fusions and PoW fallback under high demand. |
 | 5 package | done | suite/ | One-command runner (suite/run-suite.sh with phase2/phase3/phase4/check/all), labctl tool, raw JSON results, CSV export (json2csv.py), regression assertions (check-regressions.py R1-R5 all passing). Documentation: suite/README.md with full reproduction instructions. Main README updated. |
 | 6 next experiment | done | results/phase-6/20261022-phase6-repricing-results.md | Dynamic Plasma repricing confirmed. >50 fused txs/momentum triggers price rise, capped at +10%/momentum. Price decays ~5%/empty momentum to floor of 1000. 3-seed reproducible. Decision informed: when to activate dynamic-plasma spork on mainnet. |
+| 7 multi-sender contention | done | results/phase-7/20261022-phase7-contention-results.md | 10 accounts with plasma gradient compete for momentum space. Higher plasma correlates with higher inclusion (Spearman rho=0.47-0.84). No automatic PoW fallback — insufficient plasma = rejection. 200-tx/momentum limit confirmed. |
 
 ## Genesis defect (found in phase 1, verified locally)
 
@@ -55,6 +56,10 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 7. **The repricing formula is** `change = price * (used - target) / target / 20`,
    capped at ±10% per momentum. At max capacity (200 txs = 4x target), the raw
    change would be +150 but the cap limits it to +100 (1100).
+8. **Under multi-sender contention, plasma availability determines inclusion.**
+   Accounts with more plasma achieve higher inclusion rates when demand exceeds
+   per-momentum capacity. No automatic PoW fallback — low-plasma transactions
+   are rejected with "not enough TotalPlasma provided".
 
 ## Suite tooling
 

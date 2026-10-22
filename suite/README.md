@@ -94,6 +94,7 @@ go build -o labctl ./cmd/labctl
 | `matrix <case> <seed>` | Run one phase-3 matrix case (low/high x steady/burst x 1/multi) |
 | `hvburst <n> <amt>` | High-volume burst with per-momentum price tracking (phase 6) |
 | `sustain <secs> <accounts>` | Sustained multi-account burst for repricing tests (phase 6) |
+| `contend <n> <txPerAcct> <amt>` | Multi-sender contention with plasma gradient (phase 7) |
 
 ## run-suite.sh
 
@@ -123,6 +124,7 @@ CSV summary: `../results/summary.csv`.
 | R3 | Unfused burst has < 100% inclusion (account-chain conflict is real) |
 | R4 | Fused plasma eliminates PoW for simple sends |
 | R5 | Each simple self-transfer consumes exactly 21000 plasma |
+| R6 | Under contention, plasma availability correlates with inclusion rate (Spearman rho > 0) |
 
 Run: `python3 check-regressions.py ../results`
 
