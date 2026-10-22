@@ -1,0 +1,17 @@
+powlat: verifying 14 accounts are funded...
+pre-powlat: momentum=2459 nextFusionPrice=1000 nextWorkPrice=1000
+powlat: account 206 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 205 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 200 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 209 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 203 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 207 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 208 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 202 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 213 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 201 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 212 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 211 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 204 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+powlat: account 210 requiredDifficulty=31500000 availablePlasma=0 basePlasma=21000
+post-powlat: momentum=2462 nextFusionPrice=1000 nextWorkPrice=1000

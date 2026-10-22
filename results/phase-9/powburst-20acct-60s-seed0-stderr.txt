@@ -1,0 +1,16 @@
+powburst setup: funding 20 accounts with ZNN (no fusion)...
+powburst setup: waiting for funding inclusion (height 2420)...
+powburst setup: receiving funded blocks...
+  account 200: received 2 blocks
+  account 201: received 2 blocks
+  account 202: received 2 blocks
+  account 203: received 2 blocks
+  account 204: received 2 blocks
+  account 205: received 2 blocks
+  account 206: received 2 blocks
+  account 207: received 2 blocks
+  account 208: received 2 blocks
+  account 209: received 2 blocks
+  account 210: received 2 blocks
+  account 211: received 2 blocks
+  account 212: received 2 blocks

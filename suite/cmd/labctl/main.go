@@ -14,6 +14,7 @@
 //   fusefor <index> <qsr>             fuse QSR with beneficiary=derived account[index]
 //   matrix <case> <seed>              run one phase-3 matrix case
 //   contend <numAccounts> <txPerAccount> <amount>  multi-sender contention experiment (phase 7)
+//   powburst <numAccounts> <txPerAcct> <amount>    PoW repricing experiment (phase 9)
 package main
 
 import (
@@ -378,7 +379,7 @@ func getCPUTime() float64 {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>")
 		os.Exit(1)
 	}
 
@@ -476,6 +477,17 @@ func main() {
 		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		maxTx, _ := strconv.Atoi(os.Args[4])
 		runDeplete(uint32(idx), qsrAmt, maxTx)
+
+	case "powburst":
+		numAccounts, _ := strconv.Atoi(os.Args[2])
+		durationSecs, _ := strconv.Atoi(os.Args[3])
+		amt, _ := strconv.ParseInt(os.Args[4], 10, 64)
+		runPowBurst(numAccounts, durationSecs, amt)
+
+	case "powlat":
+		numAccounts, _ := strconv.Atoi(os.Args[2])
+		amt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runPowLat(numAccounts, amt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -1612,6 +1624,339 @@ func runSustain(secs int, numAccounts int) {
 	out := sustainOutput{
 		runSummary:      s,
 		MomentumPrices:  deduped,
+		PreFusionPrice:  fmBefore.NextFusionPrice,
+		PreWorkPrice:    fmBefore.NextWorkPrice,
+		PostFusionPrice: fmAfter.NextFusionPrice,
+		PostWorkPrice:   fmAfter.NextWorkPrice,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+
+// ---- Phase 9: PoW Repricing ----
+
+// runPowBurst: PoW repricing experiment.
+//
+// Funds N fresh derived accounts with ZNN but NO QSR fusion. All accounts
+// simultaneously send self-transfers with PoW (since they have no fused
+// plasma). This drives PoW-covered plasma usage high enough to trigger
+// workPrice repricing.
+//
+// The PoW plasma target is 1,050,000 (50 simple txs). When PoW-covered
+// base plasma in a momentum exceeds this target, nextWorkPrice rises.
+// We track nextWorkPrice per momentum and the required difficulty per
+// transaction to observe the repricing effect.
+//
+// Key difference from hvburst (phase 6): hvburst used the fused agent
+// account (fusion price repricing). powburst uses unfused accounts
+// (work price repricing).
+func runPowBurst(numAccounts int, durationSecs int, amt int64) {
+	agent := agentAccount()
+
+	// ---- Setup: fund accounts with ZNN (no fusion) ----
+	fmt.Fprintf(os.Stderr, "powburst setup: funding %d accounts with ZNN (no fusion)...\n", numAccounts)
+	baseIdx := uint32(200) // use high indices to avoid conflicts with prior phases
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		// Fund with enough ZNN for self-transfers
+		b, _, err := buildSend(agent, w.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FUND FAIL acct %d: %v\n", idx, err)
+			continue
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FUND PUBLISH FAIL acct %d: %v\n", idx, err)
+			continue
+		}
+		// Wait for this funding tx to be included before sending the next one
+		// (agent account-chain is sequential)
+		waitIncluded(agent.addrStr, b.Height, 60*time.Second)
+	}
+
+	// Wait for all funding to be included, then receive
+	targetHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "powburst setup: waiting for funding inclusion (height %d)...\n", targetHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	fmt.Fprintf(os.Stderr, "powburst setup: receiving funded blocks...\n")
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		count := receiveAll(w)
+		if count > 0 {
+			fmt.Fprintf(os.Stderr, "  account %d: received %d blocks\n", idx, count)
+		}
+	}
+	// Wait for receive blocks to be included
+	recvHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "powburst setup: waiting for receive inclusion (height %d)...\n", recvHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= recvHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	fmt.Fprintf(os.Stderr, "powburst setup: funding complete\n")
+
+	// Record prices before the burst
+	fmBefore := frontierMomentum()
+	fmt.Fprintf(os.Stderr, "pre-powburst: momentum=%d nextFusionPrice=%d nextWorkPrice=%d\n",
+		fmBefore.Height, fmBefore.NextFusionPrice, fmBefore.NextWorkPrice)
+
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+	deadline := tStart.Add(time.Duration(durationSecs) * time.Second)
+
+	// Momentum watcher: record price changes
+	type momentumPrice struct {
+		Height          uint64 `json:"height"`
+		NextFusionPrice uint64 `json:"nextFusionPrice"`
+		NextWorkPrice   uint64 `json:"nextWorkPrice"`
+	}
+	var prices []momentumPrice
+	var pricesMu sync.Mutex
+	prices = append(prices, momentumPrice{fmBefore.Height, fmBefore.NextFusionPrice, fmBefore.NextWorkPrice})
+
+	stopWatcher := make(chan struct{})
+	var watcherWG sync.WaitGroup
+	watcherWG.Add(1)
+	go func() {
+		defer watcherWG.Done()
+		lastHeight := fmBefore.Height
+		for {
+			select {
+			case <-stopWatcher:
+				return
+			default:
+				fm := frontierMomentum()
+				if fm.Height > lastHeight {
+					pricesMu.Lock()
+					prices = append(prices, momentumPrice{fm.Height, fm.NextFusionPrice, fm.NextWorkPrice})
+					pricesMu.Unlock()
+					lastHeight = fm.Height
+				}
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}()
+
+	// Send transactions from all accounts in parallel until deadline
+	var allResults []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	for i := 0; i < numAccounts; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			idx := baseIdx + uint32(i)
+			w := derivedAccount(idx)
+			txIdx := 0
+			for time.Now().Before(deadline) {
+				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
+				if err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{
+						Idx: i*100000 + txIdx, Error: fmt.Sprintf("acct%d: %v", idx, err),
+					})
+					mu.Unlock()
+					txIdx++
+					continue
+				}
+				subM := frontierMomentum().Height
+				reqDiff := b.Difficulty
+				if err := publish(b); err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{
+						Idx: i*100000 + txIdx, BlockHeight: b.Height, SubmitMomentum: subM,
+						PoWMs: powMs, Error: fmt.Sprintf("acct%d: %v", idx, err),
+					})
+					mu.Unlock()
+					txIdx++
+					continue
+				}
+				lat, mh, ok := waitIncluded(w.addrStr, b.Height, 120*time.Second)
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: i*100000 + txIdx, BlockHeight: b.Height, SubmitMomentum: subM,
+					PoWMs: powMs, Included: ok, LatencyMs: lat.Milliseconds(),
+					InclMomentum: mh, PlasmaAfter: reqDiff, // reuse PlasmaAfter to store required difficulty
+				})
+				mu.Unlock()
+				txIdx++
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	// Stop the watcher
+	close(stopWatcher)
+	watcherWG.Wait()
+
+	// Record final prices
+	fmAfter := frontierMomentum()
+	pricesMu.Lock()
+	seen := make(map[uint64]int)
+	var deduped []momentumPrice
+	for _, p := range prices {
+		if _, ok := seen[p.Height]; !ok {
+			deduped = append(deduped, p)
+			seen[p.Height] = len(deduped) - 1
+		} else {
+			deduped[seen[p.Height]] = p
+		}
+	}
+	pricesMu.Unlock()
+
+	fmt.Fprintf(os.Stderr, "post-powburst: momentum=%d nextFusionPrice=%d nextWorkPrice=%d\n",
+		fmAfter.Height, fmAfter.NextFusionPrice, fmAfter.NextWorkPrice)
+
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+	endM := fmAfter.Height
+	s := summarize("powburst", allResults, startM, endM, duration, cpuSec)
+
+	type powBurstOutput struct {
+		runSummary
+		MomentumPrices  []momentumPrice `json:"momentum_prices"`
+		PreFusionPrice  uint64          `json:"pre_fusion_price"`
+		PreWorkPrice    uint64          `json:"pre_work_price"`
+		PostFusionPrice uint64          `json:"post_fusion_price"`
+		PostWorkPrice   uint64          `json:"post_work_price"`
+	}
+	out := powBurstOutput{
+		runSummary:      s,
+		MomentumPrices:  deduped,
+		PreFusionPrice:  fmBefore.NextFusionPrice,
+		PreWorkPrice:    fmBefore.NextWorkPrice,
+		PostFusionPrice: fmAfter.NextFusionPrice,
+		PostWorkPrice:   fmAfter.NextWorkPrice,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+
+// ---- Phase 9: PoW Latency Measurement ----
+
+// runPowLat: measure PoW transaction latency for unfused accounts.
+//
+// Uses pre-funded unfused accounts (0 plasma). Each account sends one
+// self-transfer with PoW. Measures:
+//   - PoW computation time
+//   - Total latency (build → publish → inclusion)
+//   - Required difficulty (from RPC)
+//
+// This gives concrete numbers for the cost of using PoW vs fused plasma.
+// On the lab hardware (i7-4770), PoW for a simple send takes ~30-60s.
+func runPowLat(numAccounts int, amt int64) {
+	baseIdx := uint32(200)
+
+	// Verify accounts are funded
+	fmt.Fprintf(os.Stderr, "powlat: verifying %d accounts are funded...\n", numAccounts)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "powlat: account %d not funded, skipping\n", idx)
+			continue
+		}
+	}
+
+	fmBefore := frontierMomentum()
+	fmt.Fprintf(os.Stderr, "pre-powlat: momentum=%d nextFusionPrice=%d nextWorkPrice=%d\n",
+		fmBefore.Height, fmBefore.NextFusionPrice, fmBefore.NextWorkPrice)
+
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+
+	// Each account sends 1 tx with PoW, all in parallel
+	var allResults []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	for i := 0; i < numAccounts; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			idx := baseIdx + uint32(i)
+			w := derivedAccount(idx)
+
+			// Check plasma level (should be 0)
+			plasma := plasmaLevel(w.addrStr)
+			if plasma > 0 {
+				fmt.Fprintf(os.Stderr, "powlat: account %d has %d plasma, expected 0\n", idx, plasma)
+			}
+
+			// Query required difficulty
+			req := requiredPoW(w.addrStr, nom.BlockTypeUserSend, &w.addr, nil)
+			fmt.Fprintf(os.Stderr, "powlat: account %d requiredDifficulty=%d availablePlasma=%d basePlasma=%d\n",
+				idx, req.RequiredDifficulty, req.AvailablePlasma, req.BasePlasma)
+
+			// Build and send
+			b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
+			if err != nil {
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: i, Error: fmt.Sprintf("acct%d: %v", idx, err),
+				})
+				mu.Unlock()
+				return
+			}
+			subM := frontierMomentum().Height
+			reqDiff := b.Difficulty
+			if err := publish(b); err != nil {
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: i, BlockHeight: b.Height, SubmitMomentum: subM,
+					PoWMs: powMs, Error: fmt.Sprintf("acct%d: %v", idx, err),
+				})
+				mu.Unlock()
+				return
+			}
+			lat, mh, ok := waitIncluded(w.addrStr, b.Height, 180*time.Second)
+			mu.Lock()
+			allResults = append(allResults, txResult{
+				Idx: i, BlockHeight: b.Height, SubmitMomentum: subM,
+				PoWMs: powMs, Included: ok, LatencyMs: lat.Milliseconds(),
+				InclMomentum: mh, PlasmaAfter: reqDiff,
+			})
+			mu.Unlock()
+		}(i)
+	}
+	wg.Wait()
+
+	fmAfter := frontierMomentum()
+	fmt.Fprintf(os.Stderr, "post-powlat: momentum=%d nextFusionPrice=%d nextWorkPrice=%d\n",
+		fmAfter.Height, fmAfter.NextFusionPrice, fmAfter.NextWorkPrice)
+
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+	endM := fmAfter.Height
+	s := summarize("powlat", allResults, startM, endM, duration, cpuSec)
+
+	type powLatOutput struct {
+		runSummary
+		PreFusionPrice  uint64 `json:"pre_fusion_price"`
+		PreWorkPrice    uint64 `json:"pre_work_price"`
+		PostFusionPrice uint64 `json:"post_fusion_price"`
+		PostWorkPrice   uint64 `json:"post_work_price"`
+	}
+	out := powLatOutput{
+		runSummary:      s,
 		PreFusionPrice:  fmBefore.NextFusionPrice,
 		PreWorkPrice:    fmBefore.NextWorkPrice,
 		PostFusionPrice: fmAfter.NextFusionPrice,
