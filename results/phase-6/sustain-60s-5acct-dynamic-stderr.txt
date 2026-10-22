@@ -1,0 +1,2 @@
+pre-sustain: momentum=987 nextFusionPrice=1100 nextWorkPrice=1000
+post-sustain: momentum=992 nextFusionPrice=1000 nextWorkPrice=1000

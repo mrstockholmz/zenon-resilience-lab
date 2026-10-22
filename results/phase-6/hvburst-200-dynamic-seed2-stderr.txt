@@ -1,0 +1,1 @@
+pre-burst: momentum=1002 nextFusionPrice=1100 nextWorkPrice=1000 plasma=22050000\npost-burst: momentum=1002 nextFusionPrice=1100 nextWorkPrice=1000 plasma=21483000\n

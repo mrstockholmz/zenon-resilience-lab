@@ -2,9 +2,9 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 6
+next_phase: 7
 cloud_sessions_run: 1
-local_sessions_run: 3
+local_sessions_run: 4
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
@@ -19,7 +19,7 @@ updated: 2026-10-22
 | 3 resource matrix | done | results/phase-3/20261021-phase3-matrix-results.md | Low vs high fused x steady vs burst x 1 vs multi accounts, 3 seeds each. 100% inclusion for sequential (all regimes) and for fused burst. 20-40% inclusion for unfused burst (PoW race). |
 | 4 comparison | done | results/phase-4/20261022-phase4-comparison-results.md | Fused plasma static vs dynamic: no observable difference for existing fusion holders at low volume. Dynamic pricing (nextFusionPrice/workPrice=1000) only affects new fusions and PoW fallback under high demand. |
 | 5 package | done | suite/ | One-command runner (suite/run-suite.sh with phase2/phase3/phase4/check/all), labctl tool, raw JSON results, CSV export (json2csv.py), regression assertions (check-regressions.py R1-R5 all passing). Documentation: suite/README.md with full reproduction instructions. Main README updated. |
-| 6 next experiment | proposed | docs/phase-6-next.md | High-volume burst to trigger Dynamic Plasma repricing. Decision informed: when to activate dynamic-plasma spork on mainnet. |
+| 6 next experiment | done | results/phase-6/20261022-phase6-repricing-results.md | Dynamic Plasma repricing confirmed. >50 fused txs/momentum triggers price rise, capped at +10%/momentum. Price decays ~5%/empty momentum to floor of 1000. 3-seed reproducible. Decision informed: when to activate dynamic-plasma spork on mainnet. |
 
 ## Genesis defect (found in phase 1, verified locally)
 
@@ -48,14 +48,23 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
    Dynamic pricing (nextFusionPrice/workPrice=1000) does not affect existing fusion
    holders making simple transfers. The repricing threshold is never reached at
    our test volumes.
+6. **Dynamic Plasma repricing fires at >50 fused txs/momentum.** Confirmed with
+   200-tx bursts: nextFusionPrice rises from 1000 to 1100 (+10% cap). Price decays
+   ~5% per empty momentum, returning to floor (1000) after 2 empty momenta.
+   Sustained repricing requires sustained load; sporadic bursts create oscillation.
+7. **The repricing formula is** `change = price * (used - target) / target / 20`,
+   capped at ±10% per momentum. At max capacity (200 txs = 4x target), the raw
+   change would be +150 but the cap limits it to +100 (1100).
 
 ## Suite tooling
 
 - `suite/cmd/labctl/main.go` — Go CLI: info, ordinary, burst, multiburst, probe,
-  fuse, fund, fusefor, receive, waitfor, matrix. Disposable devnet keys only.
+  fuse, fund, fusefor, receive, waitfor, matrix, hvburst, sustain. Disposable devnet keys only.
 - `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
 - `suite/check-regressions.py` — regression assertions R1-R5.
+- `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
+- `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

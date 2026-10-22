@@ -454,10 +454,156 @@ func main() {
 		seed, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		runMatrix(caseName, seed)
 
+	case "hvburst":
+		n, _ := strconv.Atoi(os.Args[2])
+		amt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runHVBurst(n, amt)
+
+	case "sustain":
+		secs, _ := strconv.Atoi(os.Args[2])
+		numAccounts, _ := strconv.Atoi(os.Args[3])
+		runSustain(secs, numAccounts)
+
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
 		os.Exit(1)
 	}
+}
+
+// runHVBurst: high-volume burst designed to trigger Dynamic Plasma repricing.
+// Sends n transactions as fast as possible from the agent account, records
+// nextFusionPrice/nextWorkPrice before and after each momentum to detect repricing.
+func runHVBurst(n int, amt int64) {
+	a := agentAccount()
+
+	// Record prices before the burst
+	fmBefore := frontierMomentum()
+	fmt.Fprintf(os.Stderr, "pre-burst: momentum=%d nextFusionPrice=%d nextWorkPrice=%d plasma=%d\\n",
+		fmBefore.Height, fmBefore.NextFusionPrice, fmBefore.NextWorkPrice, plasmaLevel(a.addrStr))
+
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+
+	// Track prices per momentum during the burst
+	type momentumPrice struct {
+		Height          uint64 `json:"height"`
+		NextFusionPrice uint64 `json:"nextFusionPrice"`
+		NextWorkPrice   uint64 `json:"nextWorkPrice"`
+	}
+	var prices []momentumPrice
+	var pricesMu sync.Mutex
+	prices = append(prices, momentumPrice{fmBefore.Height, fmBefore.NextFusionPrice, fmBefore.NextWorkPrice})
+
+	// Momentum watcher: record price changes
+	stopWatcher := make(chan struct{})
+	var watcherWG sync.WaitGroup
+	watcherWG.Add(1)
+	go func() {
+		defer watcherWG.Done()
+		lastHeight := fmBefore.Height
+		for {
+			select {
+			case <-stopWatcher:
+				return
+			default:
+				fm := frontierMomentum()
+				if fm.Height > lastHeight {
+					pricesMu.Lock()
+					prices = append(prices, momentumPrice{fm.Height, fm.NextFusionPrice, fm.NextWorkPrice})
+					pricesMu.Unlock()
+					lastHeight = fm.Height
+				}
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}()
+
+	// Send n transactions as fast as possible
+	var results []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	for i := 0; i < n; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			b, powMs, err := buildSend(a, a.addr, znn, dec(amt), nil, true)
+			if err != nil {
+				mu.Lock()
+				results = append(results, txResult{Idx: idx, Error: err.Error()})
+				mu.Unlock()
+				return
+			}
+			subM := frontierMomentum().Height
+			if err := publish(b); err != nil {
+				mu.Lock()
+				results = append(results, txResult{Idx: idx, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs, Error: err.Error()})
+				mu.Unlock()
+				return
+			}
+			lat, mh, ok := waitIncluded(a.addrStr, b.Height, 120*time.Second)
+			mu.Lock()
+			results = append(results, txResult{
+				Idx: idx, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+				Included: ok, LatencyMs: lat.Milliseconds(), InclMomentum: mh,
+				PlasmaAfter: plasmaLevel(a.addrStr),
+			})
+			mu.Unlock()
+		}(i)
+		// Minimal stagger — just enough to avoid RPC overload
+		time.Sleep(2 * time.Millisecond)
+	}
+	wg.Wait()
+
+	// Stop the watcher
+	close(stopWatcher)
+	watcherWG.Wait()
+
+	// Record final prices
+	fmAfter := frontierMomentum()
+	pricesMu.Lock()
+	// Deduplicate: only keep the last entry per height
+	seen := make(map[uint64]int)
+	var deduped []momentumPrice
+	for _, p := range prices {
+		if _, ok := seen[p.Height]; !ok {
+			deduped = append(deduped, p)
+			seen[p.Height] = len(deduped) - 1
+		} else {
+			deduped[seen[p.Height]] = p
+		}
+	}
+	pricesMu.Unlock()
+
+	fmt.Fprintf(os.Stderr, "post-burst: momentum=%d nextFusionPrice=%d nextWorkPrice=%d plasma=%d\\n",
+		fmAfter.Height, fmAfter.NextFusionPrice, fmAfter.NextWorkPrice, plasmaLevel(a.addrStr))
+
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+	endM := fmAfter.Height
+	s := summarize("hvburst", results, startM, endM, duration, cpuSec)
+
+	// Add price tracking to output
+	type hvOutput struct {
+		runSummary
+		MomentumPrices []momentumPrice `json:"momentum_prices"`
+		PreFusionPrice  uint64          `json:"pre_fusion_price"`
+		PreWorkPrice    uint64          `json:"pre_work_price"`
+		PostFusionPrice uint64          `json:"post_fusion_price"`
+		PostWorkPrice   uint64          `json:"post_work_price"`
+	}
+	out := hvOutput{
+		runSummary:      s,
+		MomentumPrices:  deduped,
+		PreFusionPrice:  fmBefore.NextFusionPrice,
+		PreWorkPrice:    fmBefore.NextWorkPrice,
+		PostFusionPrice: fmAfter.NextFusionPrice,
+		PostWorkPrice:   fmAfter.NextWorkPrice,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
 }
 
 // runOrdinary: sequential self-transfers, waiting for each to be included
@@ -821,4 +967,165 @@ func receiveAll(a account) int {
 		}
 	}
 	return count
+}
+
+// runSustain: continuously send transactions from multiple accounts for N seconds.
+// Designed to trigger sustained Dynamic Plasma repricing across multiple momenta.
+func runSustain(secs int, numAccounts int) {
+	fmBefore := frontierMomentum()
+	fmt.Fprintf(os.Stderr, "pre-sustain: momentum=%d nextFusionPrice=%d nextWorkPrice=%d\n",
+		fmBefore.Height, fmBefore.NextFusionPrice, fmBefore.NextWorkPrice)
+
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+	deadline := tStart.Add(time.Duration(secs) * time.Second)
+
+	// Momentum watcher: record price changes
+	type momentumPrice struct {
+		Height          uint64 `json:"height"`
+		NextFusionPrice uint64 `json:"nextFusionPrice"`
+		NextWorkPrice   uint64 `json:"nextWorkPrice"`
+	}
+	var prices []momentumPrice
+	var pricesMu sync.Mutex
+	prices = append(prices, momentumPrice{fmBefore.Height, fmBefore.NextFusionPrice, fmBefore.NextWorkPrice})
+
+	stopWatcher := make(chan struct{})
+	var watcherWG sync.WaitGroup
+	watcherWG.Add(1)
+	go func() {
+		defer watcherWG.Done()
+		lastHeight := fmBefore.Height
+		for {
+			select {
+			case <-stopWatcher:
+				return
+			default:
+				fm := frontierMomentum()
+				if fm.Height > lastHeight {
+					pricesMu.Lock()
+					prices = append(prices, momentumPrice{fm.Height, fm.NextFusionPrice, fm.NextWorkPrice})
+					pricesMu.Unlock()
+					lastHeight = fm.Height
+				}
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}()
+
+	// Send transactions from all accounts in parallel until deadline
+	var allResults []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	for i := 1; i <= numAccounts; i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+			w := derivedAccount(uint32(idx))
+			txIdx := 0
+			for time.Now().Before(deadline) {
+				b, powMs, err := buildSend(w, w.addr, znn, dec(1), nil, true)
+				if err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: idx*100000 + txIdx, Error: fmt.Sprintf("acct%d: %v", idx, err)})
+					mu.Unlock()
+					time.Sleep(100 * time.Millisecond)
+					txIdx++
+					continue
+				}
+				subM := frontierMomentum().Height
+				if err := publish(b); err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: idx*100000 + txIdx, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs, Error: fmt.Sprintf("acct%d: %v", idx, err)})
+					mu.Unlock()
+					time.Sleep(100 * time.Millisecond)
+					txIdx++
+					continue
+				}
+				// Don't wait for inclusion — just fire and move on
+				// Check inclusion asynchronously at the end
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: idx*100000 + txIdx, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+					Included: true, // optimistic; will verify below
+				})
+				mu.Unlock()
+				txIdx++
+			}
+		}(i)
+	}
+	wg.Wait()
+
+	// Wait a bit for last transactions to be included
+	time.Sleep(15 * time.Second)
+
+	// Now verify inclusion for all
+	mu.Lock()
+	for i := range allResults {
+		r := &allResults[i]
+		if r.Error != "" {
+			r.Included = false
+			continue
+		}
+		// Check if the block height was reached
+		acctIdx := r.Idx / 100000
+		w := derivedAccount(uint32(acctIdx))
+		_, h := frontierAccount(w.addrStr)
+		if h >= r.BlockHeight {
+			lat := int64(0) // can't measure individual latency in fire-and-forget
+			r.LatencyMs = lat
+			r.InclMomentum = 0
+		} else {
+			r.Included = false
+		}
+	}
+	mu.Unlock()
+
+	// Stop the watcher
+	close(stopWatcher)
+	watcherWG.Wait()
+
+	fmAfter := frontierMomentum()
+	pricesMu.Lock()
+	seen := make(map[uint64]int)
+	var deduped []momentumPrice
+	for _, p := range prices {
+		if _, ok := seen[p.Height]; !ok {
+			deduped = append(deduped, p)
+			seen[p.Height] = len(deduped) - 1
+		} else {
+			deduped[seen[p.Height]] = p
+		}
+	}
+	pricesMu.Unlock()
+
+	fmt.Fprintf(os.Stderr, "post-sustain: momentum=%d nextFusionPrice=%d nextWorkPrice=%d\n",
+		fmAfter.Height, fmAfter.NextFusionPrice, fmAfter.NextWorkPrice)
+
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+	endM := fmAfter.Height
+	s := summarize("sustain", allResults, startM, endM, duration, cpuSec)
+
+	type sustainOutput struct {
+		runSummary
+		MomentumPrices  []momentumPrice `json:"momentum_prices"`
+		PreFusionPrice  uint64          `json:"pre_fusion_price"`
+		PreWorkPrice    uint64          `json:"pre_work_price"`
+		PostFusionPrice uint64          `json:"post_fusion_price"`
+		PostWorkPrice   uint64          `json:"post_work_price"`
+	}
+	out := sustainOutput{
+		runSummary:      s,
+		MomentumPrices:  deduped,
+		PreFusionPrice:  fmBefore.NextFusionPrice,
+		PreWorkPrice:    fmBefore.NextWorkPrice,
+		PostFusionPrice: fmAfter.NextFusionPrice,
+		PostWorkPrice:   fmAfter.NextWorkPrice,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
 }

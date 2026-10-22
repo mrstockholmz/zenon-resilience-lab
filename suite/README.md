@@ -92,6 +92,8 @@ go build -o labctl ./cmd/labctl
 | `receive <index>` | Receive pending blocks on derived account[index] |
 | `waitfor <height>` | Block until momentum height >= target |
 | `matrix <case> <seed>` | Run one phase-3 matrix case (low/high x steady/burst x 1/multi) |
+| `hvburst <n> <amt>` | High-volume burst with per-momentum price tracking (phase 6) |
+| `sustain <secs> <accounts>` | Sustained multi-account burst for repricing tests (phase 6) |
 
 ## run-suite.sh
 
