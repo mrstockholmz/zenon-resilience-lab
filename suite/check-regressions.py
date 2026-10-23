@@ -13,6 +13,7 @@ Invariants tested:
   R6: Under multi-sender contention, accounts with more plasma have >= inclusion rate of accounts with less plasma
   R7: Plasma depletes by exactly 21000 per simple self-transfer and regenerates to full fused amount after confirmation
   R8: PoW transactions from unfused accounts have 100% inclusion when sent sequentially (1 tx per account)
+  R9: Mixed fused/unfused contention: fused accounts have 100% inclusion with 0 PoW; unfused accounts have 100% inclusion when demand is under per-momentum capacity
 """
 import json, sys, os, glob
 
@@ -201,6 +202,44 @@ def check_powlat_inclusion(results_dir):
                 failures.append(f"R8 FAIL: {os.path.basename(f)} tx {r['idx']} difficulty={diff} (expected 31500000 at workPrice=1000)")
     return failures
 
+def check_mixcontend(results_dir):
+    """R9: Mixed fused/unfused contention under low demand.
+    
+    Fused accounts: 100% inclusion, 0 PoW used.
+    Unfused accounts: 100% inclusion (under per-momentum capacity).
+    """
+    failures = []
+    for f in glob.glob(os.path.join(results_dir, "phase-11", "mixcontend-*.json")):
+        data = load_result(f)
+        if not data:
+            continue
+        # Skip empty or in-progress files
+        if data.get("attempted", 0) == 0:
+            continue
+        
+        # Fused accounts: 100% inclusion, 0 PoW
+        if data.get("fused_included", 0) != data.get("fused_attempted", 0):
+            failures.append(
+                f"R9 FAIL: {os.path.basename(f)} fused included={data['fused_included']} "
+                f"attempted={data['fused_attempted']} (expected 100%)"
+            )
+        
+        # Unfused accounts: 100% inclusion when under capacity
+        if data.get("unfused_included", 0) != data.get("unfused_attempted", 0):
+            failures.append(
+                f"R9 FAIL: {os.path.basename(f)} unfused included={data['unfused_included']} "
+                f"attempted={data['unfused_attempted']} (expected 100% under capacity)"
+            )
+        
+        # Fused accounts should use 0 PoW
+        for bd in data.get("breakdowns", []):
+            if bd["group"] == "fused" and bd["pow_count"] > 0:
+                failures.append(
+                    f"R9 FAIL: {os.path.basename(f)} fused acct {bd['account_index']} "
+                    f"used {bd['pow_count']} PoW (expected 0 with plasma available)"
+                )
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -214,6 +253,7 @@ def main():
         ("R6: contention plasma gradient (phase-7)", check_contention_plasma_gradient),
         ("R7: plasma depletion + regeneration (phase-8)", check_plasma_depletion),
         ("R8: PoW sequential 100% inclusion (phase-9)", check_powlat_inclusion),
+        ("R9: mixed contention fused 100% + unfused 100% (phase-11)", check_mixcontend),
     ]
     
     for name, check_fn in checks:

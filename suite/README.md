@@ -98,7 +98,7 @@ go build -o labctl ./cmd/labctl
 | `deplete <idx> <qsr> <maxTx>` | Plasma depletion + regeneration test (phase 8) |
 | `powlat <n> <amt>` | PoW latency measurement from N unfused accounts (phase 9) |
 | `powburst <n> <secs> <amt>` | PoW repricing attempt via sustained burst (phase 9) |
-| `mixcontend <fused> <unfused> <txPerAcct> <amt>` | Mixed fused/unfused contention (phase 10) |
+| `mixcontend <fused> <unfused> <txPerAcct> <amt>` | Mixed fused/unfused contention (phase 11) |
 
 ## run-suite.sh
 
@@ -115,6 +115,7 @@ go build -o labctl ./cmd/labctl
 | `phase7` | contend 10 accounts x 30 txs x 3 seeds (contention test) |
 | `phase8` | deplete 100 QSR x 3 seeds (plasma depletion/regeneration) |
 | `phase9` | powlat 14 accounts x 3 seeds (PoW latency measurement) |
+| `phase11` | mixcontend 5 fused + 5 unfused x 3 reps (mixed contention) |
 | `check` | Regression assertions (R1-R8) + CSV export |
 | `all` | phase2 + phase3 + phase4 + check |
 
@@ -135,6 +136,7 @@ CSV summary: `../results/summary.csv`.
 | R6 | Under contention, plasma availability correlates with inclusion rate (Spearman rho > 0) |
 | R7 | Plasma depletes by exactly 21000 per simple self-transfer and regenerates to full fused amount after confirmation |
 | R8 | PoW transactions from unfused accounts have 100% inclusion when sent sequentially (1 tx per account) |
+| R9 | Mixed fused/unfused contention: fused 100% inclusion with 0 PoW, unfused 100% inclusion under capacity |
 
 Run: `python3 check-regressions.py ../results`
 

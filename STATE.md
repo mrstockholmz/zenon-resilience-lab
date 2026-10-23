@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 11
+next_phase: 12
 cloud_sessions_run: 1
 local_sessions_run: 7
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-23 (phase 10)
+updated: 2026-10-23 (phase 11)
 ```
 
 ## Phase log
@@ -24,6 +24,7 @@ updated: 2026-10-23 (phase 10)
 | 8 plasma depletion + regeneration | done | results/phase-8/20261022-phase8-plasma-depletion-results.md | Plasma depletes by exactly 21000 per simple self-transfer. After confirmation, plasma fully regenerates to fused amount (two-counter system: committed/unconfirmed sync). 100 QSR = 10 txs/momentum. Plasma is a rate limit, not a permanent budget. |
 | 9 PoW latency + cost | done | results/phase-9/20261022-phase9-pow-latency-results.md | PoW tx time: 3.3-75.8s (avg ~25s), 100% inclusion for sequential sends, inclusion latency 0-34ms. workPrice repricing impractical via PoW on this hardware (14 txs < 50 target). PoW variance is inherent (geometric distribution). |
 | 10 RPC latency under load | done | results/phase-10/20261023-phase10-rpc-latency-results.md | RPC latency unchanged under burst load (100/200/500 txs). p50: 9-10ms baseline → 10-11ms under load. No endpoint disproportionately affected. Node is I/O-bound for RPC, not CPU-bound. |
+| 11 mixed fused/unfused contention | done | results/phase-11/20261023-phase11-mixed-contention-results.md | Fused txs: 100% first-momentum inclusion (0 PoW). Unfused txs: 100% inclusion but spread across 2-5 momenta (PoW delay). No discrimination against PoW txs — structural disadvantage from PoW computation time, not node policy. 4 reps reproducible. |
 
 ## Genesis defect (found in phase 1, verified locally)
 
@@ -89,10 +90,9 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   fuse, fund, fusefor, receive, waitfor, matrix, hvburst, sustain, contend,
   deplete, powlat, powburst, mixcontend. Disposable devnet keys only.
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
-- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|check|all.
-- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|check|all.
+- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
-- `suite/check-regressions.py` — regression assertions R1-R7.
+- `suite/check-regressions.py` — regression assertions R1-R9.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
 - `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
 - `deplete` — plasma depletion + regeneration test (phase 8). Fuses QSR, sends
@@ -101,6 +101,8 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   from N unfused accounts, measures PoW time + inclusion latency.
 - `powburst` — PoW repricing attempt (phase 9, impractical on this hardware).
   Sustained multi-account PoW burst; workPrice repricing not triggered.
+- `mixcontend` — mixed fused/unfused contention (phase 11). Fused accounts
+  get first-momentum inclusion; unfused accounts spread across momenta.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

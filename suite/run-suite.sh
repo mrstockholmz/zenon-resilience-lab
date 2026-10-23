@@ -1,6 +1,6 @@
 #!/bin/bash
 # Zenon Resilience Lab — one-command suite runner
-# Usage: ./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|check|all]
+# Usage: ./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|check|all]
 #
 # Prerequisites:
 #   - lab devnet running (znnd on 127.0.0.1:57997)
@@ -21,7 +21,8 @@ PHASE6_DIR="$RESULTS_DIR/phase-6"
 PHASE7_DIR="$RESULTS_DIR/phase-7"
 PHASE8_DIR="$RESULTS_DIR/phase-8"
 PHASE9_DIR="$RESULTS_DIR/phase-9"
-mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR"
+PHASE11_DIR="$RESULTS_DIR/phase-11"
+mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR"
 
 # Check node is reachable
 if ! curl -s http://127.0.0.1:57997 -X POST -H 'Content-Type: application/json' \
@@ -118,6 +119,13 @@ run_phase9() {
     echo ""
 }
 
+run_phase11() {
+    local rep=$1
+    echo "--- Phase 11: mixcontend 5 fused + 5 unfused (rep=$rep) ---"
+    ./labctl mixcontend 5 5 5 1 2>&1 | tee "$PHASE11_DIR/mixcontend-5f-5u-5tx-rep${rep}.json"
+    echo ""
+}
+
 case "${1:-all}" in
     phase2)
         if [ "$REGIME" = "static" ]; then
@@ -166,6 +174,12 @@ case "${1:-all}" in
             run_phase9 "$seed"
         done
         ;;
+    phase11)
+        # Phase 11: mixed fused/unfused contention (3 repetitions)
+        for rep in 0 1 2; do
+            run_phase11 "$rep"
+        done
+        ;;
     check)
         echo "Running regression assertions..."
         python3 check-regressions.py "$RESULTS_DIR"
@@ -193,7 +207,7 @@ case "${1:-all}" in
         python3 json2csv.py "$RESULTS_DIR" "$RESULTS_DIR/summary.csv"
         ;;
     *)
-        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|check|all]" >&2
+        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|check|all]" >&2
         exit 1
         ;;
 esac
