@@ -4,11 +4,11 @@
 ```
 next_phase: 16
 cloud_sessions_run: 1
-local_sessions_run: 10
+local_sessions_run: 11
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-23 (phase 15)
+updated: 2026-10-24 (local verification + gap check + crypto inventory)
 ```
 
 ## Phase log
@@ -28,6 +28,15 @@ updated: 2026-10-23 (phase 15)
 | 12 saturation behavior | done | results/phase-12/20261023-phase12-saturation-results.md | 200 tx/momentum limit strictly enforced (no momentum exceeds 200). Excess txs queued not rejected (100% inclusion with sufficient plasma). Queue drain: ~200 txs per 3 momenta (2 empty momenta between batches). Only rejection cause: plasma exhaustion from rapid-fire sending. 3 configs (300/500/450 txs). |
 | 13 mixed fused/unfused saturation | done | results/phase-13/20261023-phase13-mixed-saturation-results.md | No plasma-based prioritization under saturation. Mempool selection is FIFO by arrival time, not plasma amount. Fused txs are included first because they arrive instantly (0s PoW), not because of priority. Unfused txs with fast PoW (<20s) can get into the first momentum. 100% inclusion in all 3 seeds. R11 regression added. |
 | 14 content selector price priority | done | results/phase-14/20261023-phase14-price-priority-results.md | Price-based prioritization CONFIRMED. Content selector sorts by price-per-base-plasma; higher-priced txs included first under saturation. Corrects phase 13: priority exists when prices DIFFER, not when all txs pay floor price. Overpaying (FusedPlasma > BasePlasma) buys priority. Fee market is dormant at floor prices. |
+| 15 plasma regeneration rate | done | results/phase-15/20261023-phase15-plasma-regeneration-results.md | Plasma regenerates from 0 to full within 1 momentum. Two-counter model confirmed. An account with 100 QSR can send 10 txs per momentum indefinitely. Corrects phase 8: regeneration is on confirmation, not over time. |
+
+## Local verification session 2026-10-24
+
+- Phase 2 dynamic regime re-verified locally: ordinary (3/3 included, 0ms latency) + burst (5/5 included, 0-1ms latency).
+- Gap check redone from nummer13: sol-znn/go-zenon-fuzz (fuzzing, no overlap), 0x3639/testnet (infra tooling, no overlap). Conclusion unchanged: lab fills a real gap.
+- Suite runner verified: `run-suite.sh check` passes all R1-R12 regression assertions.
+- Non-JSON `.json` files renamed to `.log` (phases 7, 9, 13, 14) — CSV exporter now clean (74 rows, 0 skips).
+- Crypto dependency inventory completed: `docs/crypto-dependencies.md` — full inventory of signature scheme (Ed25519), hash functions (SHA3-256/SHA-256/Keccak-256/RIPEMD-160), producer keys (BIP-39+SLIP-0010), bridge keys (secp256k1 TSS), address derivation, PoW, wallet encryption (Argon2id+AES-256-GCM), PTLC, P2P transport crypto.
 
 ## Genesis defect (found in phase 1, verified locally)
 
