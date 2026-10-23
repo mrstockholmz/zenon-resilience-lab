@@ -14,6 +14,7 @@ Invariants tested:
   R7: Plasma depletes by exactly 21000 per simple self-transfer and regenerates to full fused amount after confirmation
   R8: PoW transactions from unfused accounts have 100% inclusion when sent sequentially (1 tx per account)
   R9: Mixed fused/unfused contention: fused accounts have 100% inclusion with 0 PoW; unfused accounts have 100% inclusion when demand is under per-momentum capacity
+  R10: Saturation: no momentum exceeds 200 txs; excess is queued not rejected (when plasma sufficient)
 """
 import json, sys, os, glob
 
@@ -240,6 +241,48 @@ def check_mixcontend(results_dir):
                 )
     return failures
 
+def check_saturation(results_dir):
+    """R10: Saturation invariants.
+    
+    1. No momentum exceeds 200 txs (hard limit).
+    2. When plasma is sufficient, all txs are eventually included (queued, not rejected).
+    3. Rejections only occur from plasma exhaustion.
+    """
+    failures = []
+    for f in glob.glob(os.path.join(results_dir, "phase-12", "saturate-*.json")):
+        data = load_result(f)
+        if not data:
+            continue
+        if data.get("attempted", 0) == 0:
+            continue
+        
+        # Check 1: No momentum detail exceeds 200 txs
+        for mc in data.get("momentum_details", []):
+            if mc.get("total_txs", 0) > 200:
+                failures.append(
+                    f"R10 FAIL: {os.path.basename(f)} momentum {mc['momentum_height']} "
+                    f"has {mc['total_txs']} txs (exceeds 200 limit)"
+                )
+        
+        # Check 2: Configs A and B (sufficient plasma) should have 100% inclusion
+        # Config C intentionally has plasma exhaustion rejections
+        if "15acct" not in f:  # Skip Config C
+            if data["included"] != data["attempted"]:
+                failures.append(
+                    f"R10 FAIL: {os.path.basename(f)} included={data['included']} "
+                    f"attempted={data['attempted']} (expected 100% with sufficient plasma)"
+                )
+        
+        # Check 3: All rejections should be plasma-related
+        for r in data.get("results", []):
+            err = r.get("error", "")
+            if err and "plasma" not in err.lower():
+                failures.append(
+                    f"R10 FAIL: {os.path.basename(f)} tx {r['idx']} "
+                    f"rejected with non-plasma error: {err[:60]}"
+                )
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -254,6 +297,7 @@ def main():
         ("R7: plasma depletion + regeneration (phase-8)", check_plasma_depletion),
         ("R8: PoW sequential 100% inclusion (phase-9)", check_powlat_inclusion),
         ("R9: mixed contention fused 100% + unfused 100% (phase-11)", check_mixcontend),
+        ("R10: saturation 200-tx limit + queue behavior (phase-12)", check_saturation),
     ]
     
     for name, check_fn in checks:

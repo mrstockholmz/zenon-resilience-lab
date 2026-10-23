@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 12
+next_phase: 13
 cloud_sessions_run: 1
 local_sessions_run: 7
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-23 (phase 11)
+updated: 2026-10-23 (phase 12)
 ```
 
 ## Phase log
@@ -25,6 +25,7 @@ updated: 2026-10-23 (phase 11)
 | 9 PoW latency + cost | done | results/phase-9/20261022-phase9-pow-latency-results.md | PoW tx time: 3.3-75.8s (avg ~25s), 100% inclusion for sequential sends, inclusion latency 0-34ms. workPrice repricing impractical via PoW on this hardware (14 txs < 50 target). PoW variance is inherent (geometric distribution). |
 | 10 RPC latency under load | done | results/phase-10/20261023-phase10-rpc-latency-results.md | RPC latency unchanged under burst load (100/200/500 txs). p50: 9-10ms baseline → 10-11ms under load. No endpoint disproportionately affected. Node is I/O-bound for RPC, not CPU-bound. |
 | 11 mixed fused/unfused contention | done | results/phase-11/20261023-phase11-mixed-contention-results.md | Fused txs: 100% first-momentum inclusion (0 PoW). Unfused txs: 100% inclusion but spread across 2-5 momenta (PoW delay). No discrimination against PoW txs — structural disadvantage from PoW computation time, not node policy. 4 reps reproducible. |
+| 12 saturation behavior | done | results/phase-12/20261023-phase12-saturation-results.md | 200 tx/momentum limit strictly enforced (no momentum exceeds 200). Excess txs queued not rejected (100% inclusion with sufficient plasma). Queue drain: ~200 txs per 3 momenta (2 empty momenta between batches). Only rejection cause: plasma exhaustion from rapid-fire sending. 3 configs (300/500/450 txs). |
 
 ## Genesis defect (found in phase 1, verified locally)
 
@@ -83,6 +84,13 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     10-11ms). No endpoint is disproportionately affected. The node is I/O-bound
     for RPC, not CPU-bound. Wallets and explorers should not experience RPC
     degradation during high-demand periods.
+13. **The 200 tx/momentum limit is strictly enforced; excess is queued.**
+    No momentum ever exceeds 200 txs. Excess transactions are queued in the
+    mempool and included in subsequent momenta (100% inclusion with sufficient
+    plasma). Queue drain rate: ~200 txs per 3 momenta (2 empty momenta between
+    batches). Effective throughput under sustained saturation is ~67 txs/momentum,
+    not 200/momentum. The only rejection cause under saturation is plasma
+    exhaustion (rapid-fire sending beyond per-account plasma capacity).
 
 ## Suite tooling
 
@@ -90,7 +98,7 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   fuse, fund, fusefor, receive, waitfor, matrix, hvburst, sustain, contend,
   deplete, powlat, powburst, mixcontend. Disposable devnet keys only.
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
-- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|check|all.
+- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
 - `suite/check-regressions.py` — regression assertions R1-R9.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
@@ -103,6 +111,8 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   Sustained multi-account PoW burst; workPrice repricing not triggered.
 - `mixcontend` — mixed fused/unfused contention (phase 11). Fused accounts
   get first-momentum inclusion; unfused accounts spread across momenta.
+- `saturate` — saturation test (phase 12). N accounts with equal plasma send
+  M txs each, exceeding 200 tx/momentum limit. Measures queue drain behavior.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

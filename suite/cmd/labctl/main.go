@@ -376,11 +376,275 @@ func getCPUTime() float64 {
 	return (utime + stime) / 100.0
 }
 
+// ---- Phase 12: Saturation ----
+
+type saturateBreakdown struct {
+	AccountIndex    int    `json:"account_index"`
+	Address         string `json:"address"`
+	FusedQSR        int64  `json:"fused_qsr"`
+	PlasmaAvailable uint64 `json:"plasma_available"`
+	Attempted       int    `json:"attempted"`
+	Submitted       int    `json:"submitted"`
+	Included        int    `json:"included"`
+	Rejected        int    `json:"rejected"`
+	Unresolved      int    `json:"unresolved"`
+}
+
+// runSaturate: saturation experiment (phase 12).
+//
+// N accounts with EQUAL plasma each send M self-transfers as fast as possible.
+// Total = N*M, designed to exceed the 200 tx/momentum limit.
+// Measures: per-momentum inclusion, queue drain rate, backlog clearance.
+//
+// Uses fresh derived accounts starting at index 100 to avoid contamination
+// from previous phases.
+func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int64) {
+	baseIdx := uint32(100)
+
+	// ---- Setup: fund all accounts ----
+	fmt.Fprintf(os.Stderr, "saturate setup: funding %d accounts (index %d-%d)...\n", numAccounts, baseIdx, baseIdx+uint32(numAccounts)-1)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "  funding account %d (%s)...\n", idx, w.addrStr)
+			runFund(idx, 100)
+		}
+	}
+
+	// Wait for funding inclusion
+	targetHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "saturate setup: waiting for funding inclusion (height %d)...\n", targetHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// ---- Setup: fuse equal QSR for all accounts (before receive, so receive txs have plasma) ----
+	fmt.Fprintf(os.Stderr, "saturate setup: fusing %d QSR for %d accounts...\n", qsrPerAccount, numAccounts)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		fmt.Fprintf(os.Stderr, "  fusing %d QSR for account %d...\n", qsrPerAccount, idx)
+		runFuseFor(idx, qsrPerAccount)
+	}
+
+	// Wait for fusion inclusion
+	fuseHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "saturate setup: waiting for fusion inclusion (height %d)...\n", fuseHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= fuseHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Receive funded blocks (now accounts have plasma from fusion, no PoW needed)
+	fmt.Fprintf(os.Stderr, "saturate setup: receiving funded blocks...\n")
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		receiveAll(w)
+	}
+
+	// Record plasma levels
+	plasmaLevels := make(map[uint32]uint64)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		plasmaLevels[idx] = plasmaLevel(w.addrStr)
+		fmt.Fprintf(os.Stderr, "  account %d: plasma=%d\n", idx, plasmaLevels[idx])
+	}
+
+	totalTxs := numAccounts * txPerAccount
+	fmt.Fprintf(os.Stderr, "saturate: starting saturation (%d accounts x %d txs = %d total, limit=200/momentum)...\n",
+		numAccounts, txPerAccount, totalTxs)
+
+	// ---- Saturation phase ----
+	fmBefore := frontierMomentum()
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+
+	var allResults []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	// Each account sends txPerAccount txs as fast as possible.
+	// Accounts run in parallel. Fire-and-forget, verify at end.
+	for i := 0; i < numAccounts; i++ {
+		wg.Add(1)
+		go func(idx uint32) {
+			defer wg.Done()
+			w := derivedAccount(idx)
+			for j := 0; j < txPerAccount; j++ {
+				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
+				if err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: int(idx)*100000 + j, Error: fmt.Sprintf("acct%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				subM := frontierMomentum().Height
+				if err := publish(b); err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: int(idx)*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs, Error: fmt.Sprintf("acct%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: int(idx)*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+					Included: true, // optimistic; verified below
+				})
+				mu.Unlock()
+			}
+		}(baseIdx + uint32(i))
+	}
+	wg.Wait()
+
+	// Wait for all transactions to be included (may take multiple momenta)
+	fmt.Fprintf(os.Stderr, "saturate: waiting 60s for all inclusions (backlog drain)...\n")
+	time.Sleep(60 * time.Second)
+
+	// ---- Verify inclusion ----
+	mu.Lock()
+	for i := range allResults {
+		r := &allResults[i]
+		if r.Error != "" {
+			r.Included = false
+			continue
+		}
+		acctIdx := uint32(r.Idx / 100000)
+		w := derivedAccount(acctIdx)
+		_, h := frontierAccount(w.addrStr)
+		if h >= r.BlockHeight {
+			r.LatencyMs = 0
+			r.InclMomentum = 0
+		} else {
+			r.Included = false
+		}
+	}
+	mu.Unlock()
+
+	fmAfter := frontierMomentum()
+	endM := fmAfter.Height
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+
+	// ---- Per-momentum content tracking ----
+	fmt.Fprintf(os.Stderr, "saturate: analyzing momentum contents (%d to %d)...\n", startM, endM)
+	type momentumDetail struct {
+		Height   uint64 `json:"momentum_height"`
+		TotalTxs int    `json:"total_txs"`
+		Accounts map[int]int `json:"accounts"`
+	}
+	var momentumDetails []momentumDetail
+	for h := startM; h <= endM; h++ {
+		var ml struct {
+			List []struct {
+				Height  uint64 `json:"height"`
+				Content []struct {
+					Address string `json:"address"`
+				} `json:"content"`
+			} `json:"list"`
+		}
+		if err := rpc("ledger.getMomentumsByHeight", []interface{}{h, 1}, &ml); err != nil {
+			continue
+		}
+		if len(ml.List) == 0 {
+			continue
+		}
+		acctCounts := make(map[int]int)
+		for _, blk := range ml.List[0].Content {
+			for i := 0; i < numAccounts; i++ {
+				idx := int(baseIdx) + i
+				w := derivedAccount(uint32(idx))
+				if blk.Address == w.addrStr {
+					acctCounts[idx]++
+					break
+				}
+			}
+		}
+		if len(acctCounts) > 0 {
+			momentumDetails = append(momentumDetails, momentumDetail{
+				Height:   ml.List[0].Height,
+				TotalTxs: len(ml.List[0].Content),
+				Accounts: acctCounts,
+			})
+		}
+	}
+
+	// ---- Per-account breakdown ----
+	var breakdowns []saturateBreakdown
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		bd := saturateBreakdown{
+			AccountIndex:    int(idx),
+			Address:         w.addrStr,
+			FusedQSR:        qsrPerAccount,
+			PlasmaAvailable: plasmaLevels[idx],
+		}
+		for _, r := range allResults {
+			if uint32(r.Idx/100000) != idx {
+				continue
+			}
+			bd.Attempted++
+			if r.Error != "" {
+				bd.Rejected++
+				continue
+			}
+			bd.Submitted++
+			if r.Included {
+				bd.Included++
+			} else {
+				bd.Unresolved++
+			}
+		}
+		breakdowns = append(breakdowns, bd)
+	}
+
+	// ---- Summary ----
+	s := summarize("saturate", allResults, startM, endM, duration, cpuSec)
+
+	type saturateOutput struct {
+		runSummary
+		NumAccounts      int                `json:"num_accounts"`
+		TxPerAccount     int                `json:"tx_per_account"`
+		QSRPerAccount    int64              `json:"qsr_per_account"`
+		TotalTxs         int                `json:"total_txs"`
+		MomentumLimit    int                `json:"momentum_limit"`
+		MomentaUsed      int                `json:"momenta_used"`
+		Breakdowns       []saturateBreakdown `json:"breakdowns"`
+		MomentumDetails  []momentumDetail   `json:"momentum_details"`
+	}
+
+	out := saturateOutput{
+		runSummary:      s,
+		NumAccounts:     numAccounts,
+		TxPerAccount:    txPerAccount,
+		QSRPerAccount:   qsrPerAccount,
+		TotalTxs:        totalTxs,
+		MomentumLimit:   200,
+		MomentaUsed:     int(endM - startM + 1),
+		Breakdowns:      breakdowns,
+		MomentumDetails: momentumDetails,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
 // ---- Main ----
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>")
 		os.Exit(1)
 	}
 
@@ -496,6 +760,13 @@ func main() {
 		txPerAccount, _ := strconv.Atoi(os.Args[4])
 		amt, _ := strconv.ParseInt(os.Args[5], 10, 64)
 		runMixContend(numFused, numUnfused, txPerAccount, amt)
+
+	case "saturate":
+		numAccounts, _ := strconv.Atoi(os.Args[2])
+		txPerAccount, _ := strconv.Atoi(os.Args[3])
+		qsrPerAccount, _ := strconv.ParseInt(os.Args[4], 10, 64)
+		amt, _ := strconv.ParseInt(os.Args[5], 10, 64)
+		runSaturate(numAccounts, txPerAccount, qsrPerAccount, amt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)

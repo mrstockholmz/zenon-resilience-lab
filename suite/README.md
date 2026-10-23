@@ -99,11 +99,12 @@ go build -o labctl ./cmd/labctl
 | `powlat <n> <amt>` | PoW latency measurement from N unfused accounts (phase 9) |
 | `powburst <n> <secs> <amt>` | PoW repricing attempt via sustained burst (phase 9) |
 | `mixcontend <fused> <unfused> <txPerAcct> <amt>` | Mixed fused/unfused contention (phase 11) |
+| `saturate <n> <txPerAcct> <qsr> <amt>` | Saturation test: N accounts with equal plasma exceed 200 tx/momentum limit (phase 12) |
 
 ## run-suite.sh
 
 ```bash
-./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|check|all]
+./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|check|all]
 ```
 
 | Target | What it runs |
@@ -116,7 +117,8 @@ go build -o labctl ./cmd/labctl
 | `phase8` | deplete 100 QSR x 3 seeds (plasma depletion/regeneration) |
 | `phase9` | powlat 14 accounts x 3 seeds (PoW latency measurement) |
 | `phase11` | mixcontend 5 fused + 5 unfused x 3 reps (mixed contention) |
-| `check` | Regression assertions (R1-R8) + CSV export |
+| `phase12` | saturate configs A/B/C (200-tx limit saturation behavior) |
+| `check` | Regression assertions (R1-R10) + CSV export |
 | `all` | phase2 + phase3 + phase4 + check |
 
 Results are written to `../results/phase-N/*.json`.
@@ -137,6 +139,7 @@ CSV summary: `../results/summary.csv`.
 | R7 | Plasma depletes by exactly 21000 per simple self-transfer and regenerates to full fused amount after confirmation |
 | R8 | PoW transactions from unfused accounts have 100% inclusion when sent sequentially (1 tx per account) |
 | R9 | Mixed fused/unfused contention: fused 100% inclusion with 0 PoW, unfused 100% inclusion under capacity |
+| R10 | Saturation: no momentum exceeds 200 txs; excess is queued not rejected (when plasma sufficient) |
 
 Run: `python3 check-regressions.py ../results`
 
