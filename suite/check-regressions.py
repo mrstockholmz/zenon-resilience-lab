@@ -16,6 +16,7 @@ Invariants tested:
   R9: Mixed fused/unfused contention: fused accounts have 100% inclusion with 0 PoW; unfused accounts have 100% inclusion when demand is under per-momentum capacity
   R10: Saturation: no momentum exceeds 200 txs; excess is queued not rejected (when plasma sufficient)
   R11: Mixed saturation: no plasma-based prioritization; fused txs are included first due to instant arrival, not priority
+  R12: Plasma regenerates to full fused amount within 1 momentum after depletion
 """
 import json, sys, os, glob
 
@@ -360,6 +361,66 @@ def check_mixsaturate(results_dir):
     
     return failures
 
+def check_regen(results_dir):
+    """R12: Plasma regenerates to full fused amount within 1 momentum after depletion.
+    
+    Checks that:
+    1. Plasma was fully depleted (0 or near 0)
+    2. After 1 momentum, plasma is back to the full fused amount
+    3. All depletion txs were included (100% inclusion)
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-15")
+    if not os.path.isdir(phase_dir):
+        return ["R12 SKIP: phase-15 directory not found"]
+    
+    for f in sorted(glob.glob(os.path.join(phase_dir, "regen-*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        
+        # Check 100% inclusion during depletion
+        if data['included'] != data['attempted']:
+            failures.append(
+                f"R12 FAIL: {os.path.basename(f)} "
+                f"included={data['included']} != attempted={data['attempted']}"
+            )
+        
+        # Check plasma was depleted
+        depleted = data.get('depleted_plasma', 0)
+        if depleted > 21000:
+            failures.append(
+                f"R12 FAIL: {os.path.basename(f)} "
+                f"depleted_plasma={depleted} (expected <= 21000, i.e. nearly exhausted)"
+            )
+        
+        # Check regeneration after 1 momentum
+        regen_curve = data.get('regen_curve', [])
+        if len(regen_curve) < 1:
+            failures.append(
+                f"R12 FAIL: {os.path.basename(f)} no regen_curve data"
+            )
+            continue
+        
+        first_sample = regen_curve[0]
+        fused = data.get('fused_plasma', 0)
+        if first_sample['plasma'] < fused:
+            failures.append(
+                f"R12 FAIL: {os.path.basename(f)} "
+                f"after 1 momentum plasma={first_sample['plasma']} < fused={fused} "
+                f"(expected full regeneration within 1 momentum)"
+            )
+        
+        # Check all subsequent samples also show full plasma
+        for sample in regen_curve[1:]:
+            if sample['plasma'] < fused:
+                failures.append(
+                    f"R12 FAIL: {os.path.basename(f)} "
+                    f"after {sample['momenta_waited']} momenta plasma={sample['plasma']} < fused={fused}"
+                )
+    
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -376,6 +437,7 @@ def main():
         ("R9: mixed contention fused 100% + unfused 100% (phase-11)", check_mixcontend),
         ("R10: saturation 200-tx limit + queue behavior (phase-12)", check_saturation),
         ("R11: mixed saturation no plasma priority (phase-13)", check_mixsaturate),
+        ("R12: plasma regenerates within 1 momentum (phase-15)", check_regen),
     ]
     
     for name, check_fn in checks:

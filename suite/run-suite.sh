@@ -24,7 +24,8 @@ PHASE9_DIR="$RESULTS_DIR/phase-9"
 PHASE11_DIR="$RESULTS_DIR/phase-11"
 PHASE12_DIR="$RESULTS_DIR/phase-12"
 PHASE13_DIR="$RESULTS_DIR/phase-13"
-mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR" "$PHASE13_DIR"
+PHASE15_DIR="$RESULTS_DIR/phase-15"
+mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR" "$PHASE13_DIR" "$PHASE15_DIR"
 
 # Check node is reachable
 if ! curl -s http://127.0.0.1:57997 -X POST -H 'Content-Type: application/json' \
@@ -158,6 +159,17 @@ run_phase13() {
     echo ""
 }
 
+run_phase15() {
+    local seed=$1
+    local idx=$((41 + seed))
+    local qsr=100
+    if [ "$seed" -eq 2 ]; then qsr=50; fi
+    if [ "$seed" -eq 3 ]; then qsr=10; fi
+    echo "--- Phase 15: plasma regeneration (seed=$seed, acct=$idx, ${qsr} QSR) ---"
+    ./labctl regen "$idx" "$qsr" 2>"$PHASE15_DIR/regen-acct${idx}-${qsr}qsr-seed${seed}.stderr" | tee "$PHASE15_DIR/regen-acct${idx}-${qsr}qsr-seed${seed}.json"
+    echo ""
+}
+
 case "${1:-all}" in
     phase2)
         if [ "$REGIME" = "static" ]; then
@@ -224,6 +236,12 @@ case "${1:-all}" in
             run_phase13 "$seed"
         done
         ;;
+    phase15)
+        # Phase 15: plasma regeneration rate (4 seeds: 100/100/50/10 QSR)
+        for seed in 0 1 2 3; do
+            run_phase15 "$seed"
+        done
+        ;;
     check)
         echo "Running regression assertions..."
         python3 check-regressions.py "$RESULTS_DIR"
@@ -251,7 +269,7 @@ case "${1:-all}" in
         python3 json2csv.py "$RESULTS_DIR" "$RESULTS_DIR/summary.csv"
         ;;
     *)
-        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|check|all]" >&2
+        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|check|all]" >&2
         exit 1
         ;;
 esac

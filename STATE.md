@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 15
+next_phase: 16
 cloud_sessions_run: 1
-local_sessions_run: 9
+local_sessions_run: 10
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-23 (phase 14)
+updated: 2026-10-23 (phase 15)
 ```
 
 ## Phase log
@@ -133,6 +133,9 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 - `overpay` — content selector price priority test (phase 14). N groups with
   different overpay multipliers (1x, 2x, 4x, 8x) send txs simultaneously,
   exceeding 200 limit. Measures whether higher-priced txs are included first.
+- `regen` — plasma regeneration rate test (phase 15). Fuses QSR, depletes
+  plasma via self-transfers, samples plasma at 1/3/6/10 momenta. Confirms
+  plasma regenerates to full within 1 momentum.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

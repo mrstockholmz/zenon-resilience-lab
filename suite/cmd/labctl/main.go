@@ -784,6 +784,11 @@ func main() {
 		amt, _ := strconv.ParseInt(os.Args[5], 10, 64)
 		runOverpay(groups, accountsPerGroup, txPerAcct, amt)
 
+	case "regen":
+		idx, _ := strconv.Atoi(os.Args[2])
+		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runRegen(uint32(idx), qsrAmt)
+
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
 		os.Exit(1)
@@ -1001,6 +1006,225 @@ func runDeplete(idx uint32, qsrAmt int64, maxTx int) {
 		PoWFallbackOK:       powFallbackOK,
 		DepletedAtTx:        depletedAtTx,
 	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+// runRegen: plasma regeneration rate measurement (phase 15).
+//
+// Phase 8 found that plasma regenerates after depletion but the rate was TBD.
+// This experiment depletes plasma completely, then samples plasma levels at
+// increasing momentum intervals (1, 3, 6, 10 momenta) to map the regeneration
+// curve. Repeats with 3 seeds for reproducibility.
+//
+// The go-zenon code (vm/plasma.go) suggests regeneration happens on momentum
+// confirmation via the two-counter system (committed/unconfirmed). This
+// experiment measures the empirical rate.
+func runRegen(idx uint32, qsrAmt int64) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+
+	// Step 0: Record initial state
+	initialPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "regen: account[%d]=%s initial_plasma=%d\n", idx, target.addrStr, initialPlasma)
+
+	// Step 1: Fund the target account with ZNN for self-transfers
+	_, targetHeight := frontierAccount(target.addrStr)
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "regen: funding account[%d] with 100 ZNN...\n", idx)
+		b, _, err := buildSend(agent, target.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Step 2: Fuse QSR for plasma on the target account
+	fmt.Fprintf(os.Stderr, "regen: fusing %d QSR on account[%d]...\n", qsrAmt, idx)
+	data := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, target.addr)
+	b, _, err := buildSend(agent, types.PlasmaContract, qsr, dec(qsrAmt), data, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL fuse: %v\n", err)
+		os.Exit(1)
+	}
+	if err := publish(b); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL publish fuse: %v\n", err)
+		os.Exit(1)
+	}
+	waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+
+	// Step 2b: Wait for funding to arrive, then receive all pending blocks
+	fmt.Fprintf(os.Stderr, "regen: waiting for funding to arrive at account[%d]...\n", idx)
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{target.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	time.Sleep(5 * time.Second)
+	fmt.Fprintf(os.Stderr, "regen: receiving pending blocks on account[%d]...\n", idx)
+	received := receiveAll(target)
+	fmt.Fprintf(os.Stderr, "regen: received %d blocks on account[%d]\n", received, idx)
+
+	// Step 2c: Wait for fusion to be confirmed and plasma available
+	fmt.Fprintf(os.Stderr, "regen: waiting for fusion to confirm and plasma to become available...\n")
+	for i := 0; i < 60; i++ {
+		p := plasmaLevel(target.addrStr)
+		if p >= uint64(qsrAmt*2100) {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	postFusionPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "regen: post-fusion plasma=%d (fused %d QSR, expected %d)\n", postFusionPlasma, qsrAmt, qsrAmt*2100)
+
+	if postFusionPlasma < 21000 {
+		fmt.Fprintf(os.Stderr, "FATAL: plasma not available after fusion (plasma=%d)\n", postFusionPlasma)
+		os.Exit(1)
+	}
+
+	// Step 3: Deplete plasma by sending self-transfers
+	fmt.Fprintf(os.Stderr, "regen: depleting plasma...\n")
+	var depleteResults []txResult
+	maxTx := int(qsrAmt * 10) // 10 txs per QSR at 21000 plasma each
+	for i := 0; i < maxTx; i++ {
+		plasmaBefore := plasmaLevel(target.addrStr)
+		if plasmaBefore < 21000 {
+			fmt.Fprintf(os.Stderr, "regen: plasma depleted at tx %d (plasma=%d)\n", i, plasmaBefore)
+			break
+		}
+
+		b, powMs, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "regen: tx %d BUILD FAILED: %v\n", i, err)
+			break
+		}
+		subM := frontierMomentum().Height
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "regen: tx %d PUBLISH FAILED: %v\n", i, err)
+			break
+		}
+		lat, mh, ok := waitIncluded(target.addrStr, b.Height, 60*time.Second)
+		plasmaAfter := plasmaLevel(target.addrStr)
+		depleteResults = append(depleteResults, txResult{
+			Idx: i, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+			Included: ok, LatencyMs: lat.Milliseconds(), InclMomentum: mh,
+			PlasmaAfter: plasmaAfter,
+		})
+		fmt.Fprintf(os.Stderr, "regen: deplete tx %d included=%v plasma=%d\n", i, ok, plasmaAfter)
+		if !ok {
+			break
+		}
+	}
+
+	depletedPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "regen: depleted plasma=%d\n", depletedPlasma)
+
+	// Step 4: Regeneration curve — sample plasma at increasing momentum intervals
+	type regenSample struct {
+		MomentaWaited int    `json:"momenta_waited"`
+		Plasma        uint64 `json:"plasma"`
+		MomentumHeight uint64 `json:"momentum_height"`
+	}
+	var regenCurve []regenSample
+
+	// Wait intervals: 1, 2, 3, 4 more momenta (cumulative: 1, 3, 6, 10)
+	intervals := []int{1, 2, 3, 4}
+	cumulative := 0
+	for _, interval := range intervals {
+		cumulative += interval
+		targetHeight := frontierMomentum().Height + uint64(interval)
+		for {
+			fmCur := frontierMomentum()
+			if fmCur.Height >= targetHeight {
+				break
+			}
+			time.Sleep(2 * time.Second)
+		}
+		p := plasmaLevel(target.addrStr)
+		regenCurve = append(regenCurve, regenSample{
+			MomentaWaited:  cumulative,
+			Plasma:         p,
+			MomentumHeight: frontierMomentum().Height,
+		})
+		fmt.Fprintf(os.Stderr, "regen: after %d momenta, plasma=%d\n", cumulative, p)
+	}
+
+	// Step 5: Also measure time-based regeneration (wait 20 seconds)
+	fmt.Fprintf(os.Stderr, "regen: waiting 20 seconds for time-based sample...\n")
+	time.Sleep(20 * time.Second)
+	timeSample := plasmaLevel(target.addrStr)
+	timeSampleHeight := frontierMomentum().Height
+	fmt.Fprintf(os.Stderr, "regen: after 20s, plasma=%d (momentum=%d)\n", timeSample, timeSampleHeight)
+
+	// Compute regeneration rate
+	fusedPlasma := uint64(qsrAmt * 2100) // 2100 plasma per QSR
+	type regenResult struct {
+		runSummary
+		AccountIndex       uint64        `json:"account_index"`
+		AccountAddress     string        `json:"account_address"`
+		QSRFused           int64         `json:"qsr_fused"`
+		FusedPlasma        uint64        `json:"fused_plasma"`
+		InitialPlasma      uint64        `json:"initial_plasma"`
+		PostFusionPlasma   uint64        `json:"post_fusion_plasma"`
+		DepletedPlasma     uint64        `json:"depleted_plasma"`
+		DepletedAtTx       int           `json:"depleted_at_tx"`
+		RegenCurve         []regenSample `json:"regen_curve"`
+		TimeSamplePlasma   uint64        `json:"time_sample_plasma"`
+		TimeSampleHeight   uint64        `json:"time_sample_height"`
+		RegenPerMomentum   float64       `json:"regen_per_momentum"`
+		RegenPerSecond     float64       `json:"regen_per_second"`
+		FullRegenMomenta   int           `json:"full_regen_momenta"`
+	}
+
+	// Calculate per-momentum regeneration rate from curve
+	var regenPerMomentum float64
+	if len(regenCurve) >= 2 {
+		last := regenCurve[len(regenCurve)-1]
+		first := regenCurve[0]
+		momentumDelta := last.MomentaWaited - first.MomentaWaited
+		plasmaDelta := last.Plasma - first.Plasma
+		if momentumDelta > 0 {
+			regenPerMomentum = float64(plasmaDelta) / float64(momentumDelta)
+		}
+	}
+
+	// Estimate full regeneration momenta
+	fullRegenMomenta := 0
+	if regenPerMomentum > 0 {
+		fullRegenMomenta = int(float64(fusedPlasma) / regenPerMomentum)
+	}
+
+	out := regenResult{
+		runSummary:        summarize("regen", depleteResults, 0, 0, 0, 0),
+		AccountIndex:      uint64(idx),
+		AccountAddress:    target.addrStr,
+		QSRFused:          qsrAmt,
+		FusedPlasma:       fusedPlasma,
+		InitialPlasma:     initialPlasma,
+		PostFusionPlasma:  postFusionPlasma,
+		DepletedPlasma:    depletedPlasma,
+		DepletedAtTx:      len(depleteResults),
+		RegenCurve:        regenCurve,
+		TimeSamplePlasma:  timeSample,
+		TimeSampleHeight:  timeSampleHeight,
+		RegenPerMomentum:  regenPerMomentum,
+		RegenPerSecond:    float64(timeSample) / 20.0,
+		FullRegenMomenta:  fullRegenMomenta,
+	}
+	// Fix summary fields
+	out.runSummary.StartMomentum = depleteResults[0].SubmitMomentum
+	out.runSummary.EndMomentum = frontierMomentum().Height
+	out.runSummary.DurationSec = 0 // not meaningful for this experiment
+
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	enc.Encode(out)
