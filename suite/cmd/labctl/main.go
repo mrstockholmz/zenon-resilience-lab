@@ -16,6 +16,7 @@
 //   contend <numAccounts> <txPerAccount> <amount>  multi-sender contention experiment (phase 7)
 //   powburst <numAccounts> <txPerAcct> <amount>    PoW repricing experiment (phase 9)
 //   mixcontend <fused> <unfused> <txPerAcct> <amt>  mixed fused/unfused contention (phase 10)
+//   mixsaturate <fused> <unfused> <txPerAcct> <amt> mixed fused/unfused saturation (phase 13)
 package main
 
 import (
@@ -644,7 +645,7 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>")
 		os.Exit(1)
 	}
 
@@ -767,6 +768,14 @@ func main() {
 		qsrPerAccount, _ := strconv.ParseInt(os.Args[4], 10, 64)
 		amt, _ := strconv.ParseInt(os.Args[5], 10, 64)
 		runSaturate(numAccounts, txPerAccount, qsrPerAccount, amt)
+
+	case "mixsaturate":
+		numFused, _ := strconv.Atoi(os.Args[2])
+		numUnfused, _ := strconv.Atoi(os.Args[3])
+		fusedTxPer, _ := strconv.Atoi(os.Args[4])
+		unfusedTxPer, _ := strconv.Atoi(os.Args[5])
+		amt, _ := strconv.ParseInt(os.Args[6], 10, 64)
+		runMixSaturate(numFused, numUnfused, fusedTxPer, unfusedTxPer, amt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -2628,6 +2637,433 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 		runSummary:        s,
 		FusedAccounts:     numFused,
 		UnfusedAccounts:   numUnfused,
+		FusedAttempted:    fusedAttempted,
+		FusedIncluded:     fusedIncluded,
+		FusedRejected:     fusedRejected,
+		FusedUnresolved:   fusedUnresolved,
+		UnfusedAttempted:  unfusedAttempted,
+		UnfusedIncluded:   unfusedIncluded,
+		UnfusedRejected:   unfusedRejected,
+		UnfusedUnresolved: unfusedUnresolved,
+		Breakdowns:        breakdowns,
+		MomentumContents:  momentumContents,
+		TotalMomentumTxs:  totalMomentumTxs,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+// ---- Phase 13: mixed fused/unfused saturation ----
+
+type mixSaturateBreakdown struct {
+	AccountIndex    int    `json:"account_index"`
+	Address         string `json:"address"`
+	Group           string `json:"group"` // "fused" or "unfused"
+	FusedQSR        int64  `json:"fused_qsr"`
+	PlasmaAvailable uint64 `json:"plasma_available"`
+	Attempted       int    `json:"attempted"`
+	Submitted       int    `json:"submitted"`
+	Included        int    `json:"included"`
+	Rejected        int    `json:"rejected"`
+	Unresolved      int    `json:"unresolved"`
+	PoWCount        int    `json:"pow_count"`
+	TotalPoWMs      int64  `json:"total_pow_ms"`
+	P50Ms           int64  `json:"p50_ms"`
+	P90Ms           int64  `json:"p90_ms"`
+}
+
+// runMixSaturate: mixed fused/unfused saturation experiment (phase 13).
+//
+// N fused accounts (varying QSR) + N unfused accounts (0 QSR, PoW per tx)
+// all send M self-transfers simultaneously. Total = 2*N*M, designed to
+// exceed the 200 tx/momentum limit.
+//
+// Question: when the mempool is saturated, does plasma availability affect
+// queuing priority? Or is it strictly FIFO regardless of plasma?
+//
+// Fused accounts use indices 100..100+N-1 (like saturate).
+// Unfused accounts use indices 300..300+N-1 (like mixcontend).
+func runMixSaturate(numFused int, numUnfused int, fusedTxPer int, unfusedTxPer int, amt int64) {
+	fusedBase := uint32(100)
+	unfusedBase := uint32(300)
+
+	// ---- Setup: fund all accounts ----
+	fmt.Fprintf(os.Stderr, "mixsaturate setup: funding %d fused + %d unfused accounts...\n", numFused, numUnfused)
+	for i := 0; i < numFused; i++ {
+		idx := fusedBase + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "  funding fused account %d (%s)...\n", idx, w.addrStr)
+			runFund(idx, 100)
+		}
+	}
+	for j := 0; j < numUnfused; j++ {
+		idx := unfusedBase + uint32(j)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "  funding unfused account %d (%s)...\n", idx, w.addrStr)
+			runFund(idx, 100)
+		}
+	}
+
+	// Wait for funding inclusion
+	targetHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "mixsaturate setup: waiting for funding inclusion (height %d)...\n", targetHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Receive funded blocks (skip accounts that already have height > 1, meaning
+	// they already received in a prior run)
+	fmt.Fprintf(os.Stderr, "mixsaturate setup: receiving funded blocks (skipping already-received)...\n")
+	for i := 0; i < numFused; i++ {
+		idx := fusedBase + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h <= 1 {
+			receiveAll(w)
+		}
+	}
+	for j := 0; j < numUnfused; j++ {
+		idx := unfusedBase + uint32(j)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h <= 1 {
+			receiveAll(w)
+		}
+	}
+
+	// ---- Setup: fuse only the fused group (skip if already has plasma) ----
+	fmt.Fprintf(os.Stderr, "mixsaturate setup: fusing QSR for %d fused accounts (skipping already-fused)...\n", numFused)
+	for i := 0; i < numFused; i++ {
+		idx := fusedBase + uint32(i)
+		w := derivedAccount(idx)
+		existingPlasma := plasmaLevel(w.addrStr)
+		if existingPlasma > 0 {
+			fmt.Fprintf(os.Stderr, "  skipping fused account %d (already has plasma=%d)\n", idx, existingPlasma)
+			continue
+		}
+		fuseAmt := int64((i + 1) * 20) // 20, 40, 60, ... QSR
+		fmt.Fprintf(os.Stderr, "  fusing %d QSR for fused account %d...\n", fuseAmt, idx)
+		runFuseFor(idx, fuseAmt)
+	}
+
+	// Wait for fusion inclusion
+	fuseHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "mixsaturate setup: waiting for fusion inclusion (height %d)...\n", fuseHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= fuseHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Record plasma levels
+	fusedPlasma := make(map[uint32]uint64)
+	for i := 0; i < numFused; i++ {
+		idx := fusedBase + uint32(i)
+		w := derivedAccount(idx)
+		fusedPlasma[idx] = plasmaLevel(w.addrStr)
+		fmt.Fprintf(os.Stderr, "  fused account %d: plasma=%d\n", idx, fusedPlasma[idx])
+	}
+	unfusedPlasma := make(map[uint32]uint64)
+	for j := 0; j < numUnfused; j++ {
+		idx := unfusedBase + uint32(j)
+		w := derivedAccount(idx)
+		unfusedPlasma[idx] = plasmaLevel(w.addrStr)
+		fmt.Fprintf(os.Stderr, "  unfused account %d: plasma=%d\n", idx, unfusedPlasma[idx])
+	}
+
+	totalTxs := numFused*fusedTxPer + numUnfused*unfusedTxPer
+	fmt.Fprintf(os.Stderr, "mixsaturate: starting saturation (%d fused x %d + %d unfused x %d = %d total, limit=200/momentum)...\n",
+		numFused, fusedTxPer, numUnfused, unfusedTxPer, totalTxs)
+
+	// ---- Saturation phase ----
+	fmBefore := frontierMomentum()
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+
+	var allResults []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	// Fused accounts send with plasma (no PoW needed)
+	for i := 0; i < numFused; i++ {
+		wg.Add(1)
+		go func(idx uint32) {
+			defer wg.Done()
+			w := derivedAccount(idx)
+			for j := 0; j < fusedTxPer; j++ {
+				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
+				if err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: int(idx)*100000 + j, Error: fmt.Sprintf("fused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				subM := frontierMomentum().Height
+				if err := publish(b); err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: int(idx)*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs, Error: fmt.Sprintf("fused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: int(idx)*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+					Included: true,
+				})
+				mu.Unlock()
+			}
+		}(fusedBase + uint32(i))
+	}
+
+	// Unfused accounts send with PoW
+	for j := 0; j < numUnfused; j++ {
+		wg.Add(1)
+		go func(j int) {
+			defer wg.Done()
+			idx := unfusedBase + uint32(j)
+			w := derivedAccount(idx)
+			for k := 0; k < unfusedTxPer; k++ {
+				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
+				if err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: int(idx)*100000 + k, Error: fmt.Sprintf("unfused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				subM := frontierMomentum().Height
+				if err := publish(b); err != nil {
+					mu.Lock()
+					allResults = append(allResults, txResult{Idx: int(idx)*100000 + k, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs, Error: fmt.Sprintf("unfused%d: %v", idx, err)})
+					mu.Unlock()
+					continue
+				}
+				mu.Lock()
+				allResults = append(allResults, txResult{
+					Idx: int(idx)*100000 + k, BlockHeight: b.Height, SubmitMomentum: subM, PoWMs: powMs,
+					Included: true,
+				})
+				mu.Unlock()
+			}
+		}(j)
+	}
+	wg.Wait()
+
+	// Wait for all transactions to be included (may take multiple momenta)
+	fmt.Fprintf(os.Stderr, "mixsaturate: waiting 90s for all inclusions (backlog drain + PoW delays)...\n")
+	time.Sleep(90 * time.Second)
+
+	// ---- Verify inclusion ----
+	mu.Lock()
+	for i := range allResults {
+		r := &allResults[i]
+		if r.Error != "" {
+			r.Included = false
+			continue
+		}
+		acctIdx := uint32(r.Idx / 100000)
+		w := derivedAccount(acctIdx)
+		_, h := frontierAccount(w.addrStr)
+		if h >= r.BlockHeight {
+			r.LatencyMs = 0
+			r.InclMomentum = 0
+		} else {
+			r.Included = false
+		}
+	}
+	mu.Unlock()
+
+	fmAfter := frontierMomentum()
+	endM := fmAfter.Height
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+
+	// ---- Per-momentum content tracking ----
+	fmt.Fprintf(os.Stderr, "mixsaturate: analyzing momentum contents (%d to %d)...\n", startM, endM)
+	momentumContents := make([]momentumContent, 0)
+	for h := startM; h <= endM; h++ {
+		var ml struct {
+			List []struct {
+				Height  uint64 `json:"height"`
+				Content []struct {
+					Address string `json:"address"`
+				} `json:"content"`
+			} `json:"list"`
+		}
+		if err := rpc("ledger.getMomentumsByHeight", []interface{}{h, 1}, &ml); err != nil {
+			continue
+		}
+		if len(ml.List) == 0 {
+			continue
+		}
+		acctCounts := make(map[int]int)
+		for _, blk := range ml.List[0].Content {
+			// Check fused accounts
+			for i := 0; i < numFused; i++ {
+				idx := int(fusedBase) + i
+				w := derivedAccount(uint32(idx))
+				if blk.Address == w.addrStr {
+					acctCounts[idx]++
+					break
+				}
+			}
+			// Check unfused accounts
+			for j := 0; j < numUnfused; j++ {
+				idx := int(unfusedBase) + j
+				w := derivedAccount(uint32(idx))
+				if blk.Address == w.addrStr {
+					acctCounts[idx]++
+					break
+				}
+			}
+		}
+		if len(acctCounts) > 0 {
+			momentumContents = append(momentumContents, momentumContent{
+				Height:   ml.List[0].Height,
+				Accounts: acctCounts,
+			})
+		}
+	}
+
+	// ---- Per-account breakdown ----
+	var breakdowns []mixSaturateBreakdown
+	for i := 0; i < numFused; i++ {
+		idx := fusedBase + uint32(i)
+		w := derivedAccount(idx)
+		bd := mixSaturateBreakdown{
+			AccountIndex:    int(idx),
+			Address:         w.addrStr,
+			Group:           "fused",
+			FusedQSR:        int64((i + 1) * 20),
+			PlasmaAvailable: fusedPlasma[idx],
+		}
+		var lats []int64
+		for _, r := range allResults {
+			if uint32(r.Idx/100000) != idx {
+				continue
+			}
+			bd.Attempted++
+			if r.Error != "" {
+				bd.Rejected++
+				continue
+			}
+			bd.Submitted++
+			if r.Included {
+				bd.Included++
+				lats = append(lats, r.LatencyMs)
+			} else {
+				bd.Unresolved++
+			}
+			if r.PoWMs > 0 {
+				bd.PoWCount++
+				bd.TotalPoWMs += r.PoWMs
+			}
+		}
+		sort.Slice(lats, func(a, b int) bool { return lats[a] < lats[b] })
+		bd.P50Ms = percentile(lats, 0.50)
+		bd.P90Ms = percentile(lats, 0.90)
+		breakdowns = append(breakdowns, bd)
+	}
+	for j := 0; j < numUnfused; j++ {
+		idx := unfusedBase + uint32(j)
+		w := derivedAccount(idx)
+		bd := mixSaturateBreakdown{
+			AccountIndex:    int(idx),
+			Address:         w.addrStr,
+			Group:           "unfused",
+			FusedQSR:        0,
+			PlasmaAvailable: unfusedPlasma[idx],
+		}
+		var lats []int64
+		for _, r := range allResults {
+			if uint32(r.Idx/100000) != idx {
+				continue
+			}
+			bd.Attempted++
+			if r.Error != "" {
+				bd.Rejected++
+				continue
+			}
+			bd.Submitted++
+			if r.Included {
+				bd.Included++
+				lats = append(lats, r.LatencyMs)
+			} else {
+				bd.Unresolved++
+			}
+			if r.PoWMs > 0 {
+				bd.PoWCount++
+				bd.TotalPoWMs += r.PoWMs
+			}
+		}
+		sort.Slice(lats, func(a, b int) bool { return lats[a] < lats[b] })
+		bd.P50Ms = percentile(lats, 0.50)
+		bd.P90Ms = percentile(lats, 0.90)
+		breakdowns = append(breakdowns, bd)
+	}
+
+	// ---- Summary ----
+	s := summarize("mixsaturate", allResults, startM, endM, duration, cpuSec)
+
+	// Count per-group totals
+	var fusedAttempted, fusedIncluded, fusedRejected, fusedUnresolved int
+	var unfusedAttempted, unfusedIncluded, unfusedRejected, unfusedUnresolved int
+	for _, bd := range breakdowns {
+		if bd.Group == "fused" {
+			fusedAttempted += bd.Attempted
+			fusedIncluded += bd.Included
+			fusedRejected += bd.Rejected
+			fusedUnresolved += bd.Unresolved
+		} else {
+			unfusedAttempted += bd.Attempted
+			unfusedIncluded += bd.Included
+			unfusedRejected += bd.Rejected
+			unfusedUnresolved += bd.Unresolved
+		}
+	}
+
+	totalMomentumTxs := 0
+	for _, mc := range momentumContents {
+		for _, c := range mc.Accounts {
+			totalMomentumTxs += c
+		}
+	}
+
+	type mixSaturateOutput struct {
+		runSummary
+		FusedAccounts     int                    `json:"fused_accounts"`
+		UnfusedAccounts   int                    `json:"unfused_accounts"`
+		FusedTxPer        int                    `json:"fused_tx_per"`
+		UnfusedTxPer      int                    `json:"unfused_tx_per"`
+		FusedAttempted    int                    `json:"fused_attempted"`
+		FusedIncluded     int                    `json:"fused_included"`
+		FusedRejected     int                    `json:"fused_rejected"`
+		FusedUnresolved   int                    `json:"fused_unresolved"`
+		UnfusedAttempted  int                    `json:"unfused_attempted"`
+		UnfusedIncluded   int                    `json:"unfused_included"`
+		UnfusedRejected   int                    `json:"unfused_rejected"`
+		UnfusedUnresolved int                    `json:"unfused_unresolved"`
+		Breakdowns        []mixSaturateBreakdown `json:"breakdowns"`
+		MomentumContents  []momentumContent      `json:"momentum_contents"`
+		TotalMomentumTxs  int                    `json:"total_momentum_txs"`
+	}
+	out := mixSaturateOutput{
+		runSummary:        s,
+		FusedAccounts:     numFused,
+		UnfusedAccounts:   numUnfused,
+		FusedTxPer:        fusedTxPer,
+		UnfusedTxPer:      unfusedTxPer,
 		FusedAttempted:    fusedAttempted,
 		FusedIncluded:     fusedIncluded,
 		FusedRejected:     fusedRejected,

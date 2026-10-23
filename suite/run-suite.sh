@@ -1,6 +1,6 @@
 #!/bin/bash
 # Zenon Resilience Lab — one-command suite runner
-# Usage: ./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|check|all]
+# Usage: ./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|check|all]
 #
 # Prerequisites:
 #   - lab devnet running (znnd on 127.0.0.1:57997)
@@ -23,7 +23,8 @@ PHASE8_DIR="$RESULTS_DIR/phase-8"
 PHASE9_DIR="$RESULTS_DIR/phase-9"
 PHASE11_DIR="$RESULTS_DIR/phase-11"
 PHASE12_DIR="$RESULTS_DIR/phase-12"
-mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR"
+PHASE13_DIR="$RESULTS_DIR/phase-13"
+mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR" "$PHASE13_DIR"
 
 # Check node is reachable
 if ! curl -s http://127.0.0.1:57997 -X POST -H 'Content-Type: application/json' \
@@ -147,6 +148,16 @@ run_phase12() {
     echo ""
 }
 
+run_phase13() {
+    local seed=$1
+    echo "--- Phase 13: mixed saturation (seed=$seed) ---"
+    ./labctl mixsaturate 20 10 10 1 1 2>&1 | tee "$PHASE13_DIR/mixsaturate-20f-10u-10ftx-1utx-seed${seed}.json"
+    echo ""
+    echo "--- Phase 13: waiting 5 momenta for backlog drain ---"
+    ./labctl waitfor $(( $(./labctl info | grep momentum_height | awk '{print $2}') + 5 ))
+    echo ""
+}
+
 case "${1:-all}" in
     phase2)
         if [ "$REGIME" = "static" ]; then
@@ -207,6 +218,12 @@ case "${1:-all}" in
             run_phase12 "$config"
         done
         ;;
+    phase13)
+        # Phase 13: mixed fused/unfused saturation (3 seeds)
+        for seed in 0 1 2; do
+            run_phase13 "$seed"
+        done
+        ;;
     check)
         echo "Running regression assertions..."
         python3 check-regressions.py "$RESULTS_DIR"
@@ -234,7 +251,7 @@ case "${1:-all}" in
         python3 json2csv.py "$RESULTS_DIR" "$RESULTS_DIR/summary.csv"
         ;;
     *)
-        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|check|all]" >&2
+        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|check|all]" >&2
         exit 1
         ;;
 esac

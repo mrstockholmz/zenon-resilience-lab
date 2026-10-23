@@ -1,0 +1,58 @@
+mixsaturate setup: funding 20 fused + 10 unfused accounts...
+mixsaturate setup: waiting for funding inclusion (height 4416)...
+mixsaturate setup: receiving funded blocks (skipping already-received)...
+mixsaturate setup: fusing QSR for 20 fused accounts (skipping already-fused)...
+  skipping fused account 100 (already has plasma=1407000)
+  skipping fused account 101 (already has plasma=1449000)
+  skipping fused account 102 (already has plasma=1491000)
+  skipping fused account 103 (already has plasma=1533000)
+  skipping fused account 104 (already has plasma=1575000)
+  skipping fused account 105 (already has plasma=1617000)
+  skipping fused account 106 (already has plasma=1659000)
+  skipping fused account 107 (already has plasma=1701000)
+  skipping fused account 108 (already has plasma=1743000)
+  skipping fused account 109 (already has plasma=1785000)
+  skipping fused account 110 (already has plasma=1365000)
+  skipping fused account 111 (already has plasma=1365000)
+  skipping fused account 112 (already has plasma=1365000)
+  skipping fused account 113 (already has plasma=1365000)
+  skipping fused account 114 (already has plasma=1365000)
+  skipping fused account 115 (already has plasma=735000)
+  skipping fused account 116 (already has plasma=735000)
+  skipping fused account 117 (already has plasma=735000)
+  skipping fused account 118 (already has plasma=735000)
+  skipping fused account 119 (already has plasma=735000)
+mixsaturate setup: waiting for fusion inclusion (height 4418)...
+  fused account 100: plasma=1407000
+  fused account 101: plasma=1449000
+  fused account 102: plasma=1491000
+  fused account 103: plasma=1533000
+  fused account 104: plasma=1575000
+  fused account 105: plasma=1617000
+  fused account 106: plasma=1659000
+  fused account 107: plasma=1701000
+  fused account 108: plasma=1743000
+  fused account 109: plasma=1785000
+  fused account 110: plasma=1365000
+  fused account 111: plasma=1365000
+  fused account 112: plasma=1365000
+  fused account 113: plasma=1365000
+  fused account 114: plasma=1365000
+  fused account 115: plasma=735000
+  fused account 116: plasma=735000
+  fused account 117: plasma=735000
+  fused account 118: plasma=735000
+  fused account 119: plasma=735000
+  unfused account 300: plasma=0
+  unfused account 301: plasma=0
+  unfused account 302: plasma=0
+  unfused account 303: plasma=0
+  unfused account 304: plasma=0
+  unfused account 305: plasma=0
+  unfused account 306: plasma=0
+  unfused account 307: plasma=0
+  unfused account 308: plasma=0
+  unfused account 309: plasma=0
+mixsaturate: starting saturation (20 fused x 10 + 10 unfused x 1 = 210 total, limit=200/momentum)...
+mixsaturate: waiting 90s for all inclusions (backlog drain + PoW delays)...
+mixsaturate: analyzing momentum contents (4418 to 4422)...

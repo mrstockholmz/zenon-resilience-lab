@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 13
+next_phase: 14
 cloud_sessions_run: 1
-local_sessions_run: 7
+local_sessions_run: 8
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-23 (phase 12)
+updated: 2026-10-23 (phase 13)
 ```
 
 ## Phase log
@@ -26,6 +26,7 @@ updated: 2026-10-23 (phase 12)
 | 10 RPC latency under load | done | results/phase-10/20261023-phase10-rpc-latency-results.md | RPC latency unchanged under burst load (100/200/500 txs). p50: 9-10ms baseline → 10-11ms under load. No endpoint disproportionately affected. Node is I/O-bound for RPC, not CPU-bound. |
 | 11 mixed fused/unfused contention | done | results/phase-11/20261023-phase11-mixed-contention-results.md | Fused txs: 100% first-momentum inclusion (0 PoW). Unfused txs: 100% inclusion but spread across 2-5 momenta (PoW delay). No discrimination against PoW txs — structural disadvantage from PoW computation time, not node policy. 4 reps reproducible. |
 | 12 saturation behavior | done | results/phase-12/20261023-phase12-saturation-results.md | 200 tx/momentum limit strictly enforced (no momentum exceeds 200). Excess txs queued not rejected (100% inclusion with sufficient plasma). Queue drain: ~200 txs per 3 momenta (2 empty momenta between batches). Only rejection cause: plasma exhaustion from rapid-fire sending. 3 configs (300/500/450 txs). |
+| 13 mixed fused/unfused saturation | done | results/phase-13/20261023-phase13-mixed-saturation-results.md | No plasma-based prioritization under saturation. Mempool selection is FIFO by arrival time, not plasma amount. Fused txs are included first because they arrive instantly (0s PoW), not because of priority. Unfused txs with fast PoW (<20s) can get into the first momentum. 100% inclusion in all 3 seeds. R11 regression added. |
 
 ## Genesis defect (found in phase 1, verified locally)
 
@@ -91,6 +92,12 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     batches). Effective throughput under sustained saturation is ~67 txs/momentum,
     not 200/momentum. The only rejection cause under saturation is plasma
     exhaustion (rapid-fire sending beyond per-account plasma capacity).
+14. **No plasma-based prioritization under saturation.** The mempool does NOT
+    prioritize fused (plasma) txs over unfused (PoW) txs. Selection is strictly
+    FIFO by arrival time. Fused txs are included first only because they arrive
+    instantly (0s PoW), not because of any priority mechanism. Unfused txs with
+    fast PoW (<20s) can get into the first momentum alongside fused txs. Plasma
+    is a rate limit, not a fee market — fusing more QSR does not buy priority.
 
 ## Suite tooling
 
@@ -98,9 +105,9 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   fuse, fund, fusefor, receive, waitfor, matrix, hvburst, sustain, contend,
   deplete, powlat, powburst, mixcontend. Disposable devnet keys only.
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
-- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|check|all.
+- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
-- `suite/check-regressions.py` — regression assertions R1-R9.
+- `suite/check-regressions.py` — regression assertions R1-R11.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
 - `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
 - `deplete` — plasma depletion + regeneration test (phase 8). Fuses QSR, sends
@@ -113,6 +120,10 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   get first-momentum inclusion; unfused accounts spread across momenta.
 - `saturate` — saturation test (phase 12). N accounts with equal plasma send
   M txs each, exceeding 200 tx/momentum limit. Measures queue drain behavior.
+- `mixsaturate` — mixed fused/unfused saturation (phase 13). N fused + N unfused
+  accounts send txs simultaneously, exceeding 200 limit. Measures whether plasma
+  affects mempool prioritization under saturation. Supports different tx counts
+  for fused vs unfused groups.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

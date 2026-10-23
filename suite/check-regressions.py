@@ -15,6 +15,7 @@ Invariants tested:
   R8: PoW transactions from unfused accounts have 100% inclusion when sent sequentially (1 tx per account)
   R9: Mixed fused/unfused contention: fused accounts have 100% inclusion with 0 PoW; unfused accounts have 100% inclusion when demand is under per-momentum capacity
   R10: Saturation: no momentum exceeds 200 txs; excess is queued not rejected (when plasma sufficient)
+  R11: Mixed saturation: no plasma-based prioritization; fused txs are included first due to instant arrival, not priority
 """
 import json, sys, os, glob
 
@@ -283,6 +284,82 @@ def check_saturation(results_dir):
                 )
     return failures
 
+def check_mixsaturate(results_dir):
+    """R11: Mixed saturation shows no plasma-based prioritization.
+    
+    Checks that:
+    1. All txs are included (100% inclusion with sufficient resources)
+    2. The first momentum has exactly 200 txs (at the limit)
+    3. Unfused txs in the first momentum have the fastest PoW times
+    4. No fused txs are rejected
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-13")
+    if not os.path.isdir(phase_dir):
+        return ["R11 SKIP: phase-13 directory not found"]
+    
+    for f in sorted(glob.glob(os.path.join(phase_dir, "mixsaturate-*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        
+        # Check 100% inclusion
+        if data['included'] != data['attempted']:
+            failures.append(
+                f"R11 FAIL: {os.path.basename(f)} "
+                f"included={data['included']} != attempted={data['attempted']}"
+            )
+        
+        # Check no rejections
+        if data['rejected'] > 0:
+            failures.append(
+                f"R11 FAIL: {os.path.basename(f)} "
+                f"rejected={data['rejected']} > 0"
+            )
+        
+        # Check first big momentum has exactly 200 txs
+        first_big = None
+        for mc in data.get('momentum_contents', []):
+            total = sum(mc['accounts'].values())
+            if total >= 150:
+                first_big = mc
+                break
+        
+        if first_big is None:
+            failures.append(
+                f"R11 FAIL: {os.path.basename(f)} no momentum with >= 150 txs found"
+            )
+            continue
+        
+        total = sum(first_big['accounts'].values())
+        if total != 200:
+            failures.append(
+                f"R11 FAIL: {os.path.basename(f)} first big momentum has {total} txs (expected 200)"
+            )
+        
+        # Check that unfused txs in first momentum have faster PoW than those not in first momentum
+        unfused_in_first = {int(k) for k in first_big['accounts'] if int(k) >= 300}
+        unfused_pow = {}
+        for r in data.get('results', []):
+            acct = r['idx'] // 100000
+            if acct >= 300:
+                unfused_pow[acct] = r.get('pow_ms', 0)
+        
+        if unfused_in_first and unfused_pow:
+            max_pow_in_first = max(unfused_pow.get(a, 0) for a in unfused_in_first)
+            min_pow_not_in_first = min(
+                (pow_ms for acct, pow_ms in unfused_pow.items() if acct not in unfused_in_first),
+                default=None
+            )
+            if min_pow_not_in_first is not None and max_pow_in_first > min_pow_not_in_first:
+                failures.append(
+                    f"R11 FAIL: {os.path.basename(f)} "
+                    f"unfused tx with slower PoW ({max_pow_in_first}ms) in first momentum "
+                    f"while faster PoW ({min_pow_not_in_first}ms) not in first momentum"
+                )
+    
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -298,6 +375,7 @@ def main():
         ("R8: PoW sequential 100% inclusion (phase-9)", check_powlat_inclusion),
         ("R9: mixed contention fused 100% + unfused 100% (phase-11)", check_mixcontend),
         ("R10: saturation 200-tx limit + queue behavior (phase-12)", check_saturation),
+        ("R11: mixed saturation no plasma priority (phase-13)", check_mixsaturate),
     ]
     
     for name, check_fn in checks:
