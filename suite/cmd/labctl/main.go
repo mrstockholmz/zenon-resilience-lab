@@ -645,7 +645,7 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>")
 		os.Exit(1)
 	}
 
@@ -776,6 +776,13 @@ func main() {
 		unfusedTxPer, _ := strconv.Atoi(os.Args[5])
 		amt, _ := strconv.ParseInt(os.Args[6], 10, 64)
 		runMixSaturate(numFused, numUnfused, fusedTxPer, unfusedTxPer, amt)
+
+	case "overpay":
+		groups, _ := strconv.Atoi(os.Args[2])
+		accountsPerGroup, _ := strconv.Atoi(os.Args[3])
+		txPerAcct, _ := strconv.Atoi(os.Args[4])
+		amt, _ := strconv.ParseInt(os.Args[5], 10, 64)
+		runOverpay(groups, accountsPerGroup, txPerAcct, amt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -3075,6 +3082,377 @@ func runMixSaturate(numFused int, numUnfused int, fusedTxPer int, unfusedTxPer i
 		Breakdowns:        breakdowns,
 		MomentumContents:  momentumContents,
 		TotalMomentumTxs:  totalMomentumTxs,
+	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+
+// ---- Phase 14: Content Selector Price Priority ----
+
+// buildSendOverpay creates a self-transfer with a custom FusedPlasma amount,
+// allowing overpayment above the base plasma requirement. This changes the
+// block's price-per-base-plasma ratio in the content selector.
+func buildSendOverpay(a account, to types.Address, zts types.ZenonTokenStandard, amount *big.Int, data []byte, overpayMultiplier int) (*nom.AccountBlock, error) {
+	prevHash, height := frontierAccount(a.addrStr)
+	fm := frontierMomentum()
+	b := &nom.AccountBlock{
+		Version:              1,
+		ChainIdentifier:      chainID,
+		BlockType:            nom.BlockTypeUserSend,
+		PreviousHash:         prevHash,
+		Height:               height + 1,
+		MomentumAcknowledged: types.HashHeight{Hash: fm.Hash, Height: fm.Height},
+		Address:              a.addr,
+		ToAddress:            to,
+		Amount:               amount,
+		TokenStandard:        zts,
+		Data:                 data,
+	}
+	req := requiredPoW(a.addrStr, b.BlockType, &to, data)
+	// Set FusedPlasma to overpayMultiplier × base plasma
+	b.FusedPlasma = req.BasePlasma * uint64(overpayMultiplier)
+	b.Hash = b.ComputeHash()
+	b.PublicKey = a.kp.Public
+	b.Signature = a.kp.Sign(b.Hash.Bytes())
+	return b, nil
+}
+
+type overpayBreakdown struct {
+	AccountIndex    int    `json:"account_index"`
+	Address         string `json:"address"`
+	Group           string `json:"group"`
+	OverpayMult     int    `json:"overpay_multiplier"`
+	FusedQSR        int64  `json:"fused_qsr"`
+	PlasmaAvailable uint64 `json:"plasma_available"`
+	Attempted       int    `json:"attempted"`
+	Submitted       int    `json:"submitted"`
+	Included        int    `json:"included"`
+	Rejected        int    `json:"rejected"`
+	Unresolved      int    `json:"unresolved"`
+}
+
+type overpayMomentumContent struct {
+	Height   uint64 `json:"height"`
+	Accounts map[int]int `json:"accounts"`
+}
+
+// runOverpay: content selector price priority experiment (phase 14).
+//
+// Creates N groups of accounts with different overpay multipliers (1x, 2x, 4x, 8x, ...).
+// Each account sends M self-transfers with FusedPlasma = multiplier × basePlasma.
+// Total transactions exceed the 200 tx/momentum limit.
+//
+// If the content selector's price-based priority works:
+// - Higher-priced (overpaid) transactions should be included in earlier momenta
+// - Lower-priced (1x) transactions should be deferred to later momenta
+//
+// If selection is random/FIFO (as phase 13 suggested for same-price txs):
+// - Excluded transactions should be randomly distributed across all groups
+//
+// Account indices: group g uses indices 500 + g*100 + i (g=0..groups-1, i=0..accountsPerGroup-1)
+// This avoids overlap with previous phases (100=saturate, 300=mixcontend/mixsaturate).
+func runOverpay(groups int, accountsPerGroup int, txPerAcct int, amt int64) {
+	baseIdx := uint32(900)
+
+	// Calculate fusion amounts per group
+	// Each account needs: txPerAcct × multiplier × 21000 plasma
+	// QSR needed = plasma / 2100
+	type groupConfig struct {
+		multiplier int
+		qsrNeeded  int64
+	}
+	var groupConfigs []groupConfig
+	for g := 0; g < groups; g++ {
+		mult := 1 << uint(g) // 1, 2, 4, 8, ...
+		plasmaNeeded := int64(txPerAcct * mult * 21000)
+		qsrNeeded := plasmaNeeded / 2100
+		// Add 20% buffer
+		qsrNeeded = qsrNeeded * 12 / 10
+		groupConfigs = append(groupConfigs, groupConfig{mult, qsrNeeded})
+	}
+
+	totalAccounts := groups * accountsPerGroup
+	totalTxs := totalAccounts * txPerAcct
+	fmt.Fprintf(os.Stderr, "overpay setup: %d groups x %d accounts x %d txs = %d total txs (limit=200/momentum)\n",
+		groups, accountsPerGroup, txPerAcct, totalTxs)
+	for g, gc := range groupConfigs {
+		fmt.Fprintf(os.Stderr, "  group %d: %dx overpay, %d QSR per account\n", g, gc.multiplier, gc.qsrNeeded)
+	}
+
+	// ---- Setup: fund all accounts (sequential - agent account chain) ----
+	fmt.Fprintf(os.Stderr, "overpay setup: funding %d accounts...\n", totalAccounts)
+	for g := 0; g < groups; g++ {
+		for i := 0; i < accountsPerGroup; i++ {
+			idx := baseIdx + uint32(g*100+i)
+			w := derivedAccount(idx)
+			_, h := frontierAccount(w.addrStr)
+			if h == 0 {
+				fmt.Fprintf(os.Stderr, "  funding account %d...\n", idx)
+				runFund(idx, 100)
+			}
+		}
+	}
+
+	// Wait for funding inclusion
+	targetHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "overpay setup: waiting for funding inclusion (height %d)...\n", targetHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Receive funded blocks in parallel
+	fmt.Fprintf(os.Stderr, "overpay setup: receiving funded blocks (parallel)...\n")
+	var recvWg sync.WaitGroup
+	for g := 0; g < groups; g++ {
+		for i := 0; i < accountsPerGroup; i++ {
+			recvWg.Add(1)
+			go func(g, i int) {
+				defer recvWg.Done()
+				idx := baseIdx + uint32(g*100+i)
+				w := derivedAccount(idx)
+				_, h := frontierAccount(w.addrStr)
+				if h <= 1 {
+					receiveAll(w)
+				}
+			}(g, i)
+		}
+	}
+	recvWg.Wait()
+
+	// ---- Setup: fuse QSR for all accounts (sequential - agent account chain) ----
+	fmt.Fprintf(os.Stderr, "overpay setup: fusing QSR for %d accounts...\n", totalAccounts)
+	for g := 0; g < groups; g++ {
+		for i := 0; i < accountsPerGroup; i++ {
+			idx := baseIdx + uint32(g*100+i)
+			w := derivedAccount(idx)
+			existingPlasma := plasmaLevel(w.addrStr)
+			if existingPlasma > 0 {
+				fmt.Fprintf(os.Stderr, "  skipping account %d (already has plasma=%d)\n", idx, existingPlasma)
+				continue
+			}
+			fmt.Fprintf(os.Stderr, "  fusing %d QSR for account %d...\n", groupConfigs[g].qsrNeeded, idx)
+			runFuseFor(idx, groupConfigs[g].qsrNeeded)
+		}
+	}
+
+	// Wait for fusion inclusion
+	fuseHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "overpay setup: waiting for fusion inclusion (height %d)...\n", fuseHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= fuseHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Record plasma levels
+	plasmaLevels := make(map[uint32]uint64)
+	for g := 0; g < groups; g++ {
+		for i := 0; i < accountsPerGroup; i++ {
+			idx := baseIdx + uint32(g*100+i)
+			w := derivedAccount(idx)
+			plasmaLevels[idx] = plasmaLevel(w.addrStr)
+		}
+	}
+
+	fmt.Fprintf(os.Stderr, "overpay: starting experiment (%d total txs)...\n", totalTxs)
+
+	// ---- Experiment phase ----
+	fmBefore := frontierMomentum()
+	startM := fmBefore.Height
+	cpuStart := getCPUTime()
+	tStart := time.Now()
+
+	var allResults []txResult
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	// All accounts send txs concurrently
+	for g := 0; g < groups; g++ {
+		for i := 0; i < accountsPerGroup; i++ {
+			wg.Add(1)
+			go func(g, i int) {
+				defer wg.Done()
+				idx := baseIdx + uint32(g*100+i)
+				w := derivedAccount(idx)
+				mult := groupConfigs[g].multiplier
+				for j := 0; j < txPerAcct; j++ {
+					b, err := buildSendOverpay(w, w.addr, znn, dec(amt), nil, mult)
+					if err != nil {
+						mu.Lock()
+						allResults = append(allResults, txResult{Idx: int(idx)*100000 + j, Error: fmt.Sprintf("acct%d: %v", idx, err)})
+						mu.Unlock()
+						continue
+					}
+					subM := frontierMomentum().Height
+					if err := publish(b); err != nil {
+						mu.Lock()
+						allResults = append(allResults, txResult{Idx: int(idx)*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM, Error: fmt.Sprintf("acct%d: %v", idx, err)})
+						mu.Unlock()
+						continue
+					}
+					mu.Lock()
+					allResults = append(allResults, txResult{
+						Idx: int(idx)*100000 + j, BlockHeight: b.Height, SubmitMomentum: subM,
+						Included: true,
+					})
+					mu.Unlock()
+				}
+			}(g, i)
+		}
+	}
+	wg.Wait()
+
+	// Wait for all transactions to be included
+	waitSecs := 90
+	if totalTxs > 300 {
+		waitSecs = 120
+	}
+	fmt.Fprintf(os.Stderr, "overpay: waiting %ds for all inclusions (backlog drain)...\n", waitSecs)
+	time.Sleep(time.Duration(waitSecs) * time.Second)
+
+	// ---- Verify inclusion ----
+	mu.Lock()
+	for i := range allResults {
+		r := &allResults[i]
+		if r.Error != "" {
+			r.Included = false
+			continue
+		}
+		acctIdx := uint32(r.Idx / 100000)
+		w := derivedAccount(acctIdx)
+		_, h := frontierAccount(w.addrStr)
+		if h >= r.BlockHeight {
+			r.LatencyMs = 0
+			r.InclMomentum = 0
+		} else {
+			r.Included = false
+		}
+	}
+	mu.Unlock()
+
+	fmAfter := frontierMomentum()
+	endM := fmAfter.Height
+	duration := time.Since(tStart).Seconds()
+	cpuSec := getCPUTime() - cpuStart
+
+	// ---- Per-momentum content tracking ----
+	fmt.Fprintf(os.Stderr, "overpay: analyzing momentum contents (%d to %d)...\n", startM, endM)
+	var momentumContents []overpayMomentumContent
+	for h := startM; h <= endM; h++ {
+		var ml struct {
+			List []struct {
+				Height  uint64 `json:"height"`
+				Content []struct {
+					Address string `json:"address"`
+				} `json:"content"`
+			} `json:"list"`
+		}
+		if err := rpc("ledger.getMomentumsByHeight", []interface{}{h, 1}, &ml); err != nil {
+			continue
+		}
+		if len(ml.List) == 0 {
+			continue
+		}
+		acctCounts := make(map[int]int)
+		for _, blk := range ml.List[0].Content {
+			for g := 0; g < groups; g++ {
+				for i := 0; i < accountsPerGroup; i++ {
+					idx := int(baseIdx) + g*100 + i
+					w := derivedAccount(uint32(idx))
+					if blk.Address == w.addrStr {
+						acctCounts[idx]++
+						break
+					}
+				}
+			}
+		}
+		if len(acctCounts) > 0 {
+			momentumContents = append(momentumContents, overpayMomentumContent{
+				Height:   ml.List[0].Height,
+				Accounts: acctCounts,
+			})
+		}
+	}
+
+	// ---- Per-account breakdown ----
+	var breakdowns []overpayBreakdown
+	for g := 0; g < groups; g++ {
+		for i := 0; i < accountsPerGroup; i++ {
+			idx := baseIdx + uint32(g*100+i)
+			w := derivedAccount(idx)
+			bd := overpayBreakdown{
+				AccountIndex:    int(idx),
+				Address:         w.addrStr,
+				Group:           fmt.Sprintf("%dx", groupConfigs[g].multiplier),
+				OverpayMult:     groupConfigs[g].multiplier,
+				FusedQSR:        groupConfigs[g].qsrNeeded,
+				PlasmaAvailable: plasmaLevels[idx],
+			}
+			for _, r := range allResults {
+				if uint32(r.Idx/100000) != idx {
+					continue
+				}
+				bd.Attempted++
+				if r.Error != "" {
+					bd.Rejected++
+					continue
+				}
+				bd.Submitted++
+				if r.Included {
+					bd.Included++
+				} else {
+					bd.Unresolved++
+				}
+			}
+			breakdowns = append(breakdowns, bd)
+		}
+	}
+
+	// ---- Summary ----
+	s := summarize("overpay", allResults, startM, endM, duration, cpuSec)
+
+	// Count per-group totals
+	groupStats := make(map[string]map[string]int)
+	for _, bd := range breakdowns {
+		if _, ok := groupStats[bd.Group]; !ok {
+			groupStats[bd.Group] = map[string]int{"attempted": 0, "included": 0, "rejected": 0, "unresolved": 0}
+		}
+		groupStats[bd.Group]["attempted"] += bd.Attempted
+		groupStats[bd.Group]["included"] += bd.Included
+		groupStats[bd.Group]["rejected"] += bd.Rejected
+		groupStats[bd.Group]["unresolved"] += bd.Unresolved
+	}
+
+	type overpayOutput struct {
+		runSummary
+		Groups           int                      `json:"groups"`
+		AccountsPerGroup int                      `json:"accounts_per_group"`
+		TxPerAcct        int                      `json:"tx_per_acct"`
+		TotalTxs         int                      `json:"total_txs"`
+		MomentumLimit    int                      `json:"momentum_limit"`
+		GroupStats       map[string]map[string]int `json:"group_stats"`
+		Breakdowns       []overpayBreakdown       `json:"breakdowns"`
+		MomentumContents []overpayMomentumContent `json:"momentum_contents"`
+	}
+
+	out := overpayOutput{
+		runSummary:       s,
+		Groups:           groups,
+		AccountsPerGroup: accountsPerGroup,
+		TxPerAcct:        txPerAcct,
+		TotalTxs:         totalTxs,
+		MomentumLimit:    200,
+		GroupStats:       groupStats,
+		Breakdowns:       breakdowns,
+		MomentumContents: momentumContents,
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
