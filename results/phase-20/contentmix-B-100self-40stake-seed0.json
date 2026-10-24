@@ -1,0 +1,867 @@
+{
+  "num_self_transfer_accounts": 100,
+  "num_stake_accounts": 40,
+  "total_transactions": 140,
+  "self_transfer_plasma": 2100000,
+  "stake_call_plasma": 2100000,
+  "total_user_plasma": 4200000,
+  "theoretical_max_content": 180,
+  "actual_max_content": 158,
+  "actual_max_content_height": 8259,
+  "cap_280_bind": false,
+  "momentum_details": [
+    {
+      "height": 8259,
+      "total_content": 158,
+      "user_blocks": 158,
+      "contract_blocks": 0,
+      "self_transfer_blocks": 29,
+      "stake_send_blocks": 27,
+      "other_blocks": 1
+    }
+  ],
+  "transactions": [
+    {
+      "account_index": 733,
+      "address": "z1qrq6tgn5smclm42zj48a50crxtztlc7vap6wuv",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 618,
+      "address": "z1qrs5way9ayy9the5r9thxgl78em92yl28d7krm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 685,
+      "address": "z1qqvuj654dg43fdvfk05krsmdv9fa2srqdpfcn3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 712,
+      "address": "z1qppwx82puz7aqjzyrxqdpnhsrt6jy6563sndn8",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 622,
+      "address": "z1qrpwtq8zyjwpknepvekz0496l3kxxgtmry7t9a",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 684,
+      "address": "z1qr2r3txwtgschz7y7kk4laesuxlcd8aeqf7xgm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 660,
+      "address": "z1qrtchgxzt6n46chkhr5y8rr30cz58xn8z7zzax",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 652,
+      "address": "z1qz753sa8mruljc9sqgpkg0jmckasf77fx0q30s",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 606,
+      "address": "z1qp498fsh3tmhzxp84rvetn5qk6aect6s9z4fa6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 715,
+      "address": "z1qqfzcj9ufsrz4c435kyqp8zy89ynkykqgp7fg3",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 701,
+      "address": "z1qrg7cx84gp3mhhap2zeeqfxqwws4rxeja2jn6v",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 672,
+      "address": "z1qpg5et202fxhggzsfagl6cfd9kegnlp9q2dm8l",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 648,
+      "address": "z1qzl4ujw20afr8nn27fqpqqzvgvjxqzc7dvwtwp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 690,
+      "address": "z1qp7u9vsj5p2a0dnygw6ppj67nreve40fh62rwv",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 642,
+      "address": "z1qzcyhl0fcglsaxcsncqtz7ya23wpgtdrs2qq80",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 732,
+      "address": "z1qrxtxjdwj4j4sg2p99nk0ydnnywurxa6f7mmsd",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 657,
+      "address": "z1qrlztdd0jw4med89rg8yclt426n05yhaz67e5e",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 696,
+      "address": "z1qzcm9a7hp7g0qvm26v7zjlgaemmwz9ykxfq2ep",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 632,
+      "address": "z1qplwmxwy0mewtas2wz5y3dqa7m6x78xzujaqpv",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 647,
+      "address": "z1qql6v0jhawcu2v9r5zyt4jvm3gys8se8nk77xq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 714,
+      "address": "z1qz6prkhlp3kcsunyykpg3l372h8zu0h4qgngaz",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 627,
+      "address": "z1qpjtw4p9jpc9ah233zq6zusul60vue5ekyrjkp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 727,
+      "address": "z1qplpfmv3k5w90q6q8lsat7t7czludwgfep8qy2",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 656,
+      "address": "z1qpdm02arzv4r3578gaq057vs00q5vjpsu376nf",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 700,
+      "address": "z1qq0rfe2r8zpujhcn3w8lss2x8zxru47k3mh5jr",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 636,
+      "address": "z1qrlfhx8ffj4kszu5pr4tx5zqcs60suadrpv2lf",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 650,
+      "address": "z1qr540rvsla8jptu74ta8ny4uah3c48zpx2cmrd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 675,
+      "address": "z1qq4u28zq3ep3y8chjk6u0kjpmfwztlwlamk852",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 609,
+      "address": "z1qqkzzngpk9t3eyac080vt0j77z8tfge96sx97m",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 710,
+      "address": "z1qzgxlv69ly36wx3fq6anhzh6hvs6g7ec0vc0xs",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 725,
+      "address": "z1qqam7px4spj6pfp3px8hawrjmf77q5puh0caec",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 692,
+      "address": "z1qrkerhnqz5dwswmqnv4rrfhmpul62763wxmtvs",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 731,
+      "address": "z1qzyz80u3nlj2n0zg4258ugl0ka0wpdplevf5g9",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 646,
+      "address": "z1qzan4dg5fq3nfjms0997w3ure0j9x9te09m0mu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 711,
+      "address": "z1qqtgnatuvd4pa7fguyv5qgaj4sp065em55pp0c",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 735,
+      "address": "z1qzxhnfsxd5zzsf3prqvh56rvzry8x3tp5m0enz",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 676,
+      "address": "z1qq7u5lnewlvf72damaahuxchrrdjdd5hs9uq6u",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 612,
+      "address": "z1qpuaqyszuvjgx5asa84ul56a9sf0u894g374u8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 607,
+      "address": "z1qqcfwl0fr59z6tr5sy3cc7wxxwjsszwxz6gj60",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 695,
+      "address": "z1qq0kt5mwa3ldak6c4me0drwk6n34qxrlmgthhc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 682,
+      "address": "z1qqafah3h5ha24l7m3zydvvqtzyept2vsj0syd2",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 678,
+      "address": "z1qzhtnlg26c7ymek96flwverf6250mu3hejfvh0",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 680,
+      "address": "z1qrmxptjc62h4smqykvj88vgwlzz4l24l9v258k",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 667,
+      "address": "z1qpyjtj3956r32e6ypl9uqy6wew79szr0zl0frk",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 645,
+      "address": "z1qpl3kh388nnkpd7vv2g0a8derwquq4dwq7vysu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 659,
+      "address": "z1qr6e4nlg654jvvuvlxrc2ylhnmxy8smxpp308r",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 601,
+      "address": "z1qq6e7lgmzl9nytcl4z88wr7sktyue9z29eavrw",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 635,
+      "address": "z1qpuukxx8pvegnfudn55zwtatpsedvqy4hl6vag",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 737,
+      "address": "z1qr9xxw0ahdnkmsnh43dum57rtq6emks9qc84xn",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 653,
+      "address": "z1qz976xyx2zn3w2w7gxz5zn23qhrtpwju6ak5md",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 689,
+      "address": "z1qqx6jpe3hkr7hhhkgumn5ngs8rpp7nkqar7sfd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 693,
+      "address": "z1qzneagd36pxxkmn6d34fheyrrhwq645uxs0ywd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 730,
+      "address": "z1qrjntpdu2w5ec0qm75f4f9zr7t8e32v3yty7jg",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 651,
+      "address": "z1qp03um32ezt7rn6ze4r0w8ywu7vp5q08pdw5e0",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 722,
+      "address": "z1qp9s0fh3snvtj8s88l8geuhy3w0xkktf9zltyr",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 605,
+      "address": "z1qqmc7zjcn5ywcgtmgufxmkdt6yz9qtgxklawn3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 673,
+      "address": "z1qpmw0804mck9y770hm6fygz5ldt4856qfc8kwq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 630,
+      "address": "z1qp7uzhz4naskz424rvuy2eea93axz293uxtg8x",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 674,
+      "address": "z1qqeufycc66kz93jnnxmxh584npuwt42cchgakk",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 668,
+      "address": "z1qqtgs70wc6tutchqghuestznzgw85cjxzsqmga",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 628,
+      "address": "z1qzty8krxeuwvdwgn0c9pn5pntk5gvlnv6c4zun",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 602,
+      "address": "z1qz7zc2jm437ddz8pph6hm53zv20x2wcc8dd6e3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 739,
+      "address": "z1qr3u9vkht8geekl7dwqreatsmjxk777tlmffw6",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 691,
+      "address": "z1qp8k8yzywr2py3s7s6gv6avx9c4jx0m28xlaz6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 644,
+      "address": "z1qpy6dt2h97wkp8dc6cse3h66xwmcyyue7crhz0",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 643,
+      "address": "z1qr7647jp2pyp8knsqs233q343w884gkuc38t5f",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 634,
+      "address": "z1qpzue6vrhmjl45ucl874np7q5x3u5dtn4w0lae",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 729,
+      "address": "z1qrdrugs2elgjg2wfxj2xw3y25gg0d6dyf6lyvt",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 703,
+      "address": "z1qzedds6wjfg9ezc8zy5ur93a4dg6kamkxk76ph",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 662,
+      "address": "z1qzs00j3uzejppvp6z8churj58xqg4uxn7dcmzg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 638,
+      "address": "z1qrn9xqp6m27tsdpp6cqc57pfge5wg2u9wljdve",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 614,
+      "address": "z1qqwkpf33s7xudgsp6kelmplgy7lgntmcvaxhhp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 670,
+      "address": "z1qq5gvk5f0pzqj4hmaq0z3l9787rm3c7mtpevaw",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 713,
+      "address": "z1qplm6gzt3pqky59rk53s6slstyhnfvxe0ckpsz",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 702,
+      "address": "z1qzvsyyjh8qzm54frqxf5u8m2ahsutdsgddmv6x",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 654,
+      "address": "z1qpdz9fpa24pnk4r7pygfrvmjygg6pdck0ewvza",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 600,
+      "address": "z1qqkh8cvfm9pfdvrjk64gy3kw9z77yw0vdusge6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 664,
+      "address": "z1qrxejvck4u7ej4cn8leaq5hj2enq50ayqfepzl",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 669,
+      "address": "z1qpqay5hf07vyqsplhw6drl0n20u6zavu8julyh",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 641,
+      "address": "z1qp9tynlkqsawc02zz67pn6pl4a29myl6d9ax26",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 624,
+      "address": "z1qrhu960qqsp8neuypt9p658vakrkfqzg40fgjs",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 626,
+      "address": "z1qq5kdsu536fkydclrvmjpghfnlshmqavaasded",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 705,
+      "address": "z1qpxsn652xjawkkvqv289ujnncck59dd6qwddza",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 697,
+      "address": "z1qpezjrupjjhllqxgg875g6c2wtel2w0qc5f4qk",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 649,
+      "address": "z1qz8wsasv7gms5e68gpwvhvvx6ngxxu3dm0jzal",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 603,
+      "address": "z1qqsg908l0pn59708q0rn8nnwpe5yafezx2vaam",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 681,
+      "address": "z1qq3guwp6auykr9xhjsj9l66euf9e4wfvzezx68",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 694,
+      "address": "z1qry8s7rfyc7sz2d9mhmduwpuyw8zxwx49kyy7m",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 719,
+      "address": "z1qzmkt6aamw3capghze2wtyu7qr7rtzsgk7ah76",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 604,
+      "address": "z1qq60m72jxg7w4ddx0cx38k585wugcrze8a80qd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 738,
+      "address": "z1qpf8s0vstxwe5pc83x7wydwvckc67atelax5wd",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 686,
+      "address": "z1qrldev764qh380f4clx27zdwx7qktud6tttjpj",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 724,
+      "address": "z1qptxpr032hs9y5tjyg8hv3z9c96frazc86jsh6",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 707,
+      "address": "z1qrxd2s0z45ukyuy06l7vln2qjuq6jjlc04wgux",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 706,
+      "address": "z1qqv6cffavy026e3hpc2tzu3283j4zmdxngu9xl",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 661,
+      "address": "z1qpxpldnnfm0m6m8acnyxe5fadlry8xmlpj53aw",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 631,
+      "address": "z1qzmdp773dfvkd2frqrwcgvvq5v54u69uczxthv",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 723,
+      "address": "z1qrf79wwrmpxggqvvlver6rt80kw356aef5ldf0",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 637,
+      "address": "z1qr5d2kt4vk6k23rkher3l3xfa4egz509lv0amz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 625,
+      "address": "z1qpfv9cqfp6c3mw2tzvrpmfy85nyj3tgcm6y2rz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 617,
+      "address": "z1qr0msa8h8y2zgur5ymdj05uk9cpl4uzcgg98sk",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 688,
+      "address": "z1qqh5f9zj2w6u9vplj9v48lt0g5e0a3ye56rskd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 708,
+      "address": "z1qzj34hxnmxh34rkkjt7cng57r9zla5es3wav4j",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 671,
+      "address": "z1qrkl2p5mexyaz7uxq9qm94mxy03d6xrq03dtge",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 720,
+      "address": "z1qq9cjdn7e2x79e4pfasggqck3gdrqwjcyypgyp",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 704,
+      "address": "z1qz2l989ghfh6s753ntdekv0qxuuvtgdwmxuva6",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 616,
+      "address": "z1qrq6uf2tz52qmrpft4wctxlsgvs0cxt0ukma78",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 610,
+      "address": "z1qrjhkgeu6x8phss53pvmg7u2jc7j4acesc37cq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 663,
+      "address": "z1qrzp905ujwg4sf80xr026qvp3a0ntleq6lsxja",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 619,
+      "address": "z1qrg9qnjhzacqatrhrh33v2q9xltdxrwjvgqmhg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 666,
+      "address": "z1qp6syu656qkvuv3z89sesx3g7yttj8lnewsgha",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 655,
+      "address": "z1qqdq64exrep33llc5t34rdkrm2wmcus52vldp0",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 698,
+      "address": "z1qpcn57x5ct3xra9fffa4d93djsljzetl7t0gq3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 639,
+      "address": "z1qqhh4pa4de7jsm2dy38aj36w3ldu740yt28zhl",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 633,
+      "address": "z1qra03qsehppsyu20fmhvvzw4s2jvqmwtgszfkj",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 734,
+      "address": "z1qp46j0cgsajz6myvrpf9tktyvwfl303d7sac6y",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 665,
+      "address": "z1qpf0559w5qvg2l3pl673v5jfk6ts2fsw9xsan2",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 658,
+      "address": "z1qq04y6zt3utecxa48gmrarduk869fwcsc4v2av",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 623,
+      "address": "z1qz9g6fksuuwzhntn0eym77ld77ar2vef4tlyzh",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 687,
+      "address": "z1qpcextraflrnu325xdc7z070xln9ft2ccu7hph",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 608,
+      "address": "z1qqp620q75xtj8p50w3g8gpkel5tg06xp0c43jh",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 699,
+      "address": "z1qrxpk679cm3z9fs886cvdnxk9ew6wgdhqguasg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 683,
+      "address": "z1qzjq0u7tdkxpeusy92wfpddujs4j25sqvdrvpj",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 629,
+      "address": "z1qrhsn8kxxpd20lpngvjlqtdnjtztwansqadd38",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 611,
+      "address": "z1qpjj39uggfsg2qw9vryy0t2h4meyt7pweytw6r",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 621,
+      "address": "z1qpf3dkh0ee7r7chl72dkdqydevfzhlg7l7tttm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 728,
+      "address": "z1qzuaxr7aee5mruz45ljljfn40rxxnsca9e4r47",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 717,
+      "address": "z1qzn0ekra8tvufammczsfxt09jvrtqsf57lcly0",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 620,
+      "address": "z1qppdwfqk9ks9fyqjvt736n0wqfy5jawjvtxz2l",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 640,
+      "address": "z1qrzfj4fjyg7ylsy7nf3rcjk57y9m3kge4kdse2",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 718,
+      "address": "z1qqsdz83d42fkgygx5rlgj5mvncx064fej98aa5",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 613,
+      "address": "z1qqgq4v2m4tpj03705xkqdff52a93p7s7gh6vxz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 677,
+      "address": "z1qqs2ty7rp200lzf67048ts89j8nfwl3mnk8fj0",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 709,
+      "address": "z1qzf8hkkrpj34lcvddk2eeru9clh9ju7epz4kt6",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 615,
+      "address": "z1qppygn37fqykljyv6tzu9dx0zwg528lg5fkg2s",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 736,
+      "address": "z1qp6kaphm0gc5tsrftuj3under435xpwglmv9j8",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 679,
+      "address": "z1qreuzzr7fcxphjl8r329654maz9hndxqy06fzt",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 726,
+      "address": "z1qra7qrdywwtya9mvf00h36p2mgaupst5zdww0n",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 716,
+      "address": "z1qqselcwzvp6zc4rhc8zn8nns6c7pfeyjfyzk85",
+      "tx_type": "stake",
+      "published": true
+    },
+    {
+      "account_index": 721,
+      "address": "z1qzseshu5244ke4x3xyjrqkw0wes0p9pdzjqvmp",
+      "tx_type": "stake",
+      "published": true
+    }
+  ],
+  "setup_momentum": 8256,
+  "end_momentum": 8259
+}

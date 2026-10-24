@@ -46,6 +46,9 @@ static-ordinary-r1.json,ordinary,static,3,3,3,0,0,100.0,3,53280,1,1,1,53.302,54.
 static-ordinary-r2.json,ordinary,static,3,3,3,0,0,100.0,3,10168,1,2,2,10.186,10.4,14,15
 static-ordinary-r3.json,ordinary,static,3,3,3,0,0,100.0,3,18360,1,1,1,18.38,18.74,15,17
 static-probe-r1.json,probe,static,2,2,2,0,0,100.0,2,24707,1,1,1,44.769,25.21,12,13
+contentmix-A-200self-0stake-seed0.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,8203
+contentmix-A-200self-0stake-seed1.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,8291
+contentmix-B-100self-40stake-seed0.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,8259
 high-burst-1-seed0.json,burst,dynamic,5,5,5,0,0,100.0,0,0,0,1,1,0.053,0.01,53,53
 high-burst-1-seed1.json,burst,dynamic,5,1,1,4,0,20.0,1,1536,0,0,0,30.077,83.15,70,72
 high-burst-1-seed2.json,burst,dynamic,5,5,5,0,0,100.0,0,0,0,1,1,0.053,0,72,72

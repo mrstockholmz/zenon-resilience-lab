@@ -694,6 +694,80 @@ def check_contractcap(results_dir):
     
     return failures
 
+def check_contentmix(results_dir):
+    """R17: Momentum content capacity — plasma budget binds, not 280 cap.
+    
+    With 200 self-transfers (21,000 plasma each = 4.2M total):
+    - All 200 must be published (enough plasma per account)
+    - Actual max content must be <= 200 (plasma budget limit)
+    - 280 cap must NOT bind (no momentum exceeds 280 content)
+    - At least one run must achieve exactly 200 content (budget limit)
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-20")
+    if not os.path.isdir(phase_dir):
+        return ["R17 SKIP: phase-20 directory not found"]
+    
+    files = sorted(glob.glob(os.path.join(phase_dir, "contentmix-*.json")))
+    if not files:
+        return ["R17 SKIP: no contentmix results found"]
+    
+    max_content_200_seen = False
+    
+    for f in files:
+        data = load_result(f)
+        if not data:
+            continue
+        
+        total_txs = data.get("total_transactions", 0)
+        transactions = data.get("transactions", [])
+        published = sum(1 for t in transactions if t.get("published", False))
+        
+        # All transactions must be published
+        if published < total_txs:
+            failures.append(
+                f"R17 FAIL: {os.path.basename(f)} published={published} "
+                f"expected={total_txs}"
+            )
+        
+        # Actual max content must be <= 200 (plasma budget for user blocks)
+        actual_max = data.get("actual_max_content", 0)
+        if actual_max > 200:
+            failures.append(
+                f"R17 FAIL: {os.path.basename(f)} actual_max_content={actual_max} "
+                f"exceeds 200 (plasma budget limit)"
+            )
+        
+        if actual_max == 200:
+            max_content_200_seen = True
+        
+        # 280 cap must NOT bind
+        cap_bind = data.get("cap_280_bind", True)
+        if cap_bind:
+            failures.append(
+                f"R17 FAIL: {os.path.basename(f)} 280 cap bind detected "
+                f"(should not bind)"
+            )
+        
+        # Contract blocks in any momentum must be <= 80
+        for md in data.get("momentum_details", []):
+            contract = md.get("contract_blocks", 0)
+            if contract > 80:
+                failures.append(
+                    f"R17 FAIL: {os.path.basename(f)} momentum {md['height']} "
+                    f"has {contract} contract blocks (cap=80)"
+                )
+    
+    # At least one run must achieve exactly 200 content (plasma budget limit)
+    if not max_content_200_seen:
+        failures.append(
+            "R17 FAIL: no run achieved exactly 200 content entries "
+            "(plasma budget limit not confirmed)"
+        )
+    
+    return failures
+
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -715,6 +789,7 @@ def main():
         ("R14: mempool cap 500 + frontier conflict price-then-hash (phase-17)", check_mempool_cap),
         ("R15: data payload plasma cost formula + 16KB limit (phase-18)", check_datasize),
         ("R16: contract block cap — plasma budget binds first (phase-19)", check_contractcap),
+        ("R17: momentum content capacity — plasma budget binds, not 280 cap (phase-20)", check_contentmix),
     ]
     
     for name, check_fn in checks:

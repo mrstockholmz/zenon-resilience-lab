@@ -1001,7 +1001,7 @@ func runContractCap(numAccounts int, callsPerAccount int, qsrPerAccount int64, b
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>|datasize <idx> <qsr>|contractcap <n> <callsPerAcct> <qsr> [baseIdx]")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>|datasize <idx> <qsr>|contractcap <n> <callsPerAcct> <qsr> [baseIdx]|contentmix <selfTransfer> <stake> <qsr> [baseIdx]")
 		os.Exit(1)
 	}
 
@@ -1176,6 +1176,17 @@ func main() {
 			baseIdx = uint32(bi)
 		}
 		runContractCap(numAccounts, callsPerAccount, qsrPerAccount, baseIdx)
+
+	case "contentmix":
+		numSelf, _ := strconv.Atoi(os.Args[2])
+		numStake, _ := strconv.Atoi(os.Args[3])
+		qsrPer, _ := strconv.ParseInt(os.Args[4], 10, 64)
+		base := uint32(400)
+		if len(os.Args) > 5 {
+			bi, _ := strconv.Atoi(os.Args[5])
+			base = uint32(bi)
+		}
+		runContentMix(numSelf, numStake, qsrPer, base)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -5204,6 +5215,379 @@ func runDataSize(idx uint32, qsrAmt int64) {
 		BurstMomenta:     burstMomenta,
 		BurstPlasmaCosts: burstPlasmaCosts,
 		BurstWireSizes:   burstWireSizes,
+	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+// ---- Phase 20: Content Mix ----
+
+type contentMixTx struct {
+	AccountIndex  int    `json:"account_index"`
+	Address       string `json:"address"`
+	TxType        string `json:"tx_type"` // "self_transfer" or "stake"
+	Published     bool   `json:"published"`
+	Error         string `json:"error,omitempty"`
+}
+
+type momentumContentDetail struct {
+	Height               uint64 `json:"height"`
+	TotalContent         int    `json:"total_content"`
+	UserBlocks           int    `json:"user_blocks"`
+	ContractBlocks       int    `json:"contract_blocks"`
+	SelfTransferBlocks   int    `json:"self_transfer_blocks"`
+	StakeSendBlocks      int    `json:"stake_send_blocks"`
+	OtherBlocks          int    `json:"other_blocks"`
+}
+
+type contentMixOutput struct {
+	NumSelfTransferAccounts int                       `json:"num_self_transfer_accounts"`
+	NumStakeAccounts        int                       `json:"num_stake_accounts"`
+	TotalTransactions       int                       `json:"total_transactions"`
+	SelfTransferPlasma      uint64                    `json:"self_transfer_plasma"`
+	StakeCallPlasma         uint64                    `json:"stake_call_plasma"`
+	TotalUserPlasma         uint64                    `json:"total_user_plasma"`
+	TheoreticalMaxContent   int                       `json:"theoretical_max_content"`
+	ActualMaxContent        int                       `json:"actual_max_content"`
+	ActualMaxContentHeight  uint64                    `json:"actual_max_content_height"`
+	Cap280Bind              bool                      `json:"cap_280_bind"`
+	MomentumDetails         []momentumContentDetail   `json:"momentum_details"`
+	Transactions            []contentMixTx            `json:"transactions"`
+	SetupMomentum           uint64                    `json:"setup_momentum"`
+	EndMomentum             uint64                    `json:"end_momentum"`
+}
+
+// runContentMix: momentum content capacity experiment (phase 20).
+//
+// Tests whether the 280 content cap (200 user blocks + 80 contract blocks)
+// is ever reachable, and what the actual maximum content per momentum is
+// when mixing user self-transfers with Stake contract calls.
+//
+// Key insight from source analysis:
+// - User blocks consume plasma from MaxBasePlasmaInMomentum (4.2M)
+// - Contract blocks are capped at MaxContractBlocksInMomentum (80)
+// - Contract blocks do NOT consume plasma budget (verifier only counts
+//   non-embedded blocks against basePlasma)
+// - Total content cap = 200 + 80 = 280 (pre-allocation bound)
+//
+// Pure self-transfers maximize content: 200 × 21000 = 4.2M plasma.
+// Adding Stake calls reduces content because each Stake call costs 52500
+// plasma (2.5×) for the user send block, and the contract receive adds
+// 1 more content entry but no extra plasma cost.
+func runContentMix(numSelfTransfer int, numStake int, qsrPerAccount int64, baseIdx uint32) {
+	// Redirect stdout to stderr during setup so fund/fuse output doesn't pollute JSON
+	oldStdout := os.Stdout
+	os.Stdout = os.Stderr
+	defer func() { os.Stdout = oldStdout }()
+
+	totalTxs := numSelfTransfer + numStake
+
+	// Calculate expected plasma
+	selfTransferPlasma := uint64(numSelfTransfer) * 21000
+	stakeCallPlasma := uint64(numStake) * 52500
+	totalUserPlasma := selfTransferPlasma + stakeCallPlasma
+	theoreticalMaxContent := 0
+	if totalUserPlasma <= 4200000 {
+		// Each Stake call generates 2 content entries (user send + contract receive)
+		theoreticalMaxContent = numSelfTransfer + numStake*2
+		if theoreticalMaxContent > 280 {
+			theoreticalMaxContent = 280
+		}
+	}
+
+	fmt.Fprintf(os.Stderr, "contentmix: %d self-transfers (%d plasma) + %d stake calls (%d plasma) = %d total user plasma\n",
+		numSelfTransfer, selfTransferPlasma, numStake, stakeCallPlasma, totalUserPlasma)
+	fmt.Fprintf(os.Stderr, "contentmix: theoretical max content=%d (if all included in one momentum)\n", theoreticalMaxContent)
+
+	// ---- Setup: fund all accounts ----
+	fundAmount := int64(10 + qsrPerAccount/100)
+	fmt.Fprintf(os.Stderr, "contentmix setup: funding %d accounts (index %d-%d) with %d ZNN each...\n",
+		totalTxs, baseIdx, baseIdx+uint32(totalTxs)-1, fundAmount)
+	for i := 0; i < totalTxs; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "  funding account %d (%s)...\n", idx, w.addrStr)
+			runFund(idx, fundAmount)
+		}
+	}
+
+	// Wait for funding inclusion
+	targetHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "contentmix setup: waiting for funding inclusion (height %d)...\n", targetHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// ---- Setup: fuse QSR for all accounts ----
+	fmt.Fprintf(os.Stderr, "contentmix setup: fusing %d QSR for %d accounts...\n", qsrPerAccount, totalTxs)
+	for i := 0; i < totalTxs; i++ {
+		idx := baseIdx + uint32(i)
+		fmt.Fprintf(os.Stderr, "  fusing %d QSR for account %d...\n", qsrPerAccount, idx)
+		runFuseFor(idx, qsrPerAccount)
+	}
+
+	// Wait for fusion inclusion
+	fuseHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "contentmix setup: waiting for fusion inclusion (height %d)...\n", fuseHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= fuseHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Receive funded blocks
+	fmt.Fprintf(os.Stderr, "contentmix setup: receiving funded blocks...\n")
+	for i := 0; i < totalTxs; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		receiveAll(w)
+	}
+
+	// Record plasma levels
+	plasmaLevels := make(map[uint32]uint64)
+	minPlasma := uint64(52500) // minimum for 1 Stake call
+	for i := 0; i < totalTxs; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		plasmaLevels[idx] = plasmaLevel(w.addrStr)
+		fmt.Fprintf(os.Stderr, "  account %d: plasma=%d\n", idx, plasmaLevels[idx])
+		if plasmaLevels[idx] < minPlasma {
+			minPlasma = plasmaLevels[idx]
+		}
+	}
+	fmt.Fprintf(os.Stderr, "contentmix setup: min plasma=%d\n", minPlasma)
+
+	// Record pre-send frontier heights
+	preSendHeights := make(map[uint32]uint64)
+	for i := 0; i < totalTxs; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		preSendHeights[idx] = h
+	}
+
+	// ---- Execution phase ----
+	fmSetup := frontierMomentum()
+	setupMomentum := fmSetup.Height
+	tStart := time.Now()
+
+	var transactions []contentMixTx
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	stakeData := definition.ABIStake.PackMethodPanic(definition.StakeMethodName, int64(2592000))
+
+	// Self-transfer accounts (indices 0 to numSelfTransfer-1)
+	for i := 0; i < numSelfTransfer; i++ {
+		wg.Add(1)
+		go func(idx uint32) {
+			defer wg.Done()
+			w := derivedAccount(idx)
+			b, _, err := buildSend(w, w.addr, znn, dec(1), nil, true)
+			if err != nil {
+				mu.Lock()
+				transactions = append(transactions, contentMixTx{
+					AccountIndex: int(idx),
+					Address:      w.addrStr,
+					TxType:       "self_transfer",
+					Published:    false,
+					Error:        fmt.Sprintf("build: %v", err),
+				})
+				mu.Unlock()
+				return
+			}
+			if err := publish(b); err != nil {
+				mu.Lock()
+				transactions = append(transactions, contentMixTx{
+					AccountIndex: int(idx),
+					Address:      w.addrStr,
+					TxType:       "self_transfer",
+					Published:    false,
+					Error:        fmt.Sprintf("publish: %v", err),
+				})
+				mu.Unlock()
+				return
+			}
+			mu.Lock()
+			transactions = append(transactions, contentMixTx{
+				AccountIndex: int(idx),
+				Address:      w.addrStr,
+				TxType:       "self_transfer",
+				Published:    true,
+			})
+			mu.Unlock()
+		}(baseIdx + uint32(i))
+	}
+
+	// Stake accounts (indices numSelfTransfer to totalTxs-1)
+	for i := 0; i < numStake; i++ {
+		wg.Add(1)
+		go func(idx uint32) {
+			defer wg.Done()
+			w := derivedAccount(idx)
+			b, _, err := buildSend(w, types.StakeContract, znn, dec(1), stakeData, true)
+			if err != nil {
+				mu.Lock()
+				transactions = append(transactions, contentMixTx{
+					AccountIndex: int(idx),
+					Address:      w.addrStr,
+					TxType:       "stake",
+					Published:    false,
+					Error:        fmt.Sprintf("build: %v", err),
+				})
+				mu.Unlock()
+				return
+			}
+			if err := publish(b); err != nil {
+				mu.Lock()
+				transactions = append(transactions, contentMixTx{
+					AccountIndex: int(idx),
+					Address:      w.addrStr,
+					TxType:       "stake",
+					Published:    false,
+					Error:        fmt.Sprintf("publish: %v", err),
+				})
+				mu.Unlock()
+				return
+			}
+			mu.Lock()
+			transactions = append(transactions, contentMixTx{
+				AccountIndex: int(idx),
+				Address:      w.addrStr,
+				TxType:       "stake",
+				Published:    true,
+			})
+			mu.Unlock()
+		}(baseIdx + uint32(numSelfTransfer+i))
+	}
+	wg.Wait()
+
+	publishDuration := time.Since(tStart)
+	fmt.Fprintf(os.Stderr, "contentmix: all %d transactions published in %v, waiting for inclusion...\n", totalTxs, publishDuration)
+
+	// Wait for at least 5 momenta to be produced after setup
+	// (need extra momenta for contract blocks from Stake calls to appear)
+	targetEnd := setupMomentum + 5
+	fmt.Fprintf(os.Stderr, "contentmix: waiting for momentum %d...\n", targetEnd)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetEnd {
+			break
+		}
+		time.Sleep(5 * time.Second)
+	}
+
+	fmEnd := frontierMomentum()
+	endMomentum := fmEnd.Height
+
+	// ---- Analyze momentum contents ----
+	fmt.Fprintf(os.Stderr, "contentmix: analyzing momentum contents (%d to %d)...\n", setupMomentum, endMomentum)
+
+	// Build account address lookup
+	acctAddrs := make(map[string]uint32)
+	acctTypes := make(map[string]string)
+	for i := 0; i < totalTxs; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		acctAddrs[w.addrStr] = idx
+		if i < numSelfTransfer {
+			acctTypes[w.addrStr] = "self_transfer"
+		} else {
+			acctTypes[w.addrStr] = "stake"
+		}
+	}
+
+	var momentumDetails []momentumContentDetail
+	actualMaxContent := 0
+	var actualMaxContentHeight uint64
+	cap280Bind := false
+
+	for h := setupMomentum; h <= endMomentum; h++ {
+		var ml struct {
+			List []struct {
+				Height  uint64 `json:"height"`
+				Content []struct {
+					Address string `json:"address"`
+					Height  uint64 `json:"height"`
+				} `json:"content"`
+			} `json:"list"`
+		}
+		if err := rpc("ledger.getMomentumsByHeight", []interface{}{h, 1}, &ml); err != nil {
+			continue
+		}
+		if len(ml.List) == 0 {
+			continue
+		}
+
+		detail := momentumContentDetail{
+			Height:       h,
+			TotalContent: len(ml.List[0].Content),
+		}
+
+		for _, blk := range ml.List[0].Content {
+			addr, _ := types.ParseAddress(blk.Address)
+			if types.IsEmbeddedAddress(addr) {
+				detail.ContractBlocks++
+			} else {
+				detail.UserBlocks++
+				if txType, ok := acctTypes[blk.Address]; ok {
+					if blk.Height > preSendHeights[acctAddrs[blk.Address]] {
+						if txType == "self_transfer" {
+							detail.SelfTransferBlocks++
+						} else {
+							detail.StakeSendBlocks++
+						}
+					}
+				} else {
+					detail.OtherBlocks++
+				}
+			}
+		}
+
+		// Only record momenta that contain our transactions
+		if detail.SelfTransferBlocks > 0 || detail.StakeSendBlocks > 0 {
+			momentumDetails = append(momentumDetails, detail)
+			if detail.TotalContent > actualMaxContent {
+				actualMaxContent = detail.TotalContent
+				actualMaxContentHeight = h
+			}
+			if detail.TotalContent > 280 {
+				cap280Bind = true
+			}
+		}
+	}
+
+	fmt.Fprintf(os.Stderr, "contentmix: actual max content=%d at height %d\n", actualMaxContent, actualMaxContentHeight)
+	fmt.Fprintf(os.Stderr, "contentmix: 280 cap bind: %v\n", cap280Bind)
+
+	// Restore stdout for JSON output
+	os.Stdout = oldStdout
+
+	out := contentMixOutput{
+		NumSelfTransferAccounts: numSelfTransfer,
+		NumStakeAccounts:        numStake,
+		TotalTransactions:       totalTxs,
+		SelfTransferPlasma:      selfTransferPlasma,
+		StakeCallPlasma:         stakeCallPlasma,
+		TotalUserPlasma:         totalUserPlasma,
+		TheoreticalMaxContent:   theoreticalMaxContent,
+		ActualMaxContent:        actualMaxContent,
+		ActualMaxContentHeight:  actualMaxContentHeight,
+		Cap280Bind:              cap280Bind,
+		MomentumDetails:         momentumDetails,
+		Transactions:            transactions,
+		SetupMomentum:           setupMomentum,
+		EndMomentum:             endMomentum,
 	}
 
 	enc := json.NewEncoder(os.Stdout)

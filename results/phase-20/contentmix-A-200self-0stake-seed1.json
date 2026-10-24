@@ -1,0 +1,1227 @@
+{
+  "num_self_transfer_accounts": 200,
+  "num_stake_accounts": 0,
+  "total_transactions": 200,
+  "self_transfer_plasma": 4200000,
+  "stake_call_plasma": 0,
+  "total_user_plasma": 4200000,
+  "theoretical_max_content": 200,
+  "actual_max_content": 200,
+  "actual_max_content_height": 8289,
+  "cap_280_bind": false,
+  "momentum_details": [
+    {
+      "height": 8289,
+      "total_content": 200,
+      "user_blocks": 200,
+      "contract_blocks": 0,
+      "self_transfer_blocks": 67,
+      "stake_send_blocks": 0,
+      "other_blocks": 0
+    }
+  ],
+  "transactions": [
+    {
+      "account_index": 532,
+      "address": "z1qqt3e6yfvyznfhsra62t3j7lnttdd5kmkmk4gu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 543,
+      "address": "z1qpl8sd7p7ln47qw8dyvyge5llqwjdneuspxra9",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 407,
+      "address": "z1qprsypfwv56l47d26yjy4f2kf5jdjvnuch77jm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 534,
+      "address": "z1qz2qzkcpeeyt4vfq5ggulp4s9r78e54para8d6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 542,
+      "address": "z1qq5ehuvpm232q45cesfdwu47x8tnfuazljk6x6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 487,
+      "address": "z1qrctsxy4k3dzxc80p3j0gmh7ygav9t8y7rl3h4",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 485,
+      "address": "z1qqd3vf7974mgrawgejn9l7esvptpf65mm0hptk",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 490,
+      "address": "z1qzgvnhd9l82hpvlnstwg7hrp9lvd8n72qaypw8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 416,
+      "address": "z1qqmplhvvmyu3dx4gumtsuf4swf4x9mjyh8l9zm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 575,
+      "address": "z1qz2jjmzec5nrd0r5t597fq5cf22a44tqx2eyaq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 595,
+      "address": "z1qpmccs7z3fp3g4mu5kwpwgm74yu0l360hpn39k",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 599,
+      "address": "z1qpamxj8k5t98j85ajvc85fgcnv2jkuj4fukhmu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 585,
+      "address": "z1qr9w00qmejyfh6dy6jdzsvpmaz8f0fpxrjv34e",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 400,
+      "address": "z1qz4c3qwjf6y02ej7jcflvf50jtzrzfpdwvtjp4",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 445,
+      "address": "z1qz4ac9xz5tvlrnffd9t3srhvdva6ld4x3zfwpt",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 566,
+      "address": "z1qz8jzp03x49wlj9vfjvsejmcpm2wqyhqfwa2zc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 545,
+      "address": "z1qqpxyv52hujatt7q46esurthtmnh6ftsdlw4na",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 441,
+      "address": "z1qptjk939s6cu0ht8qjs3rsz65lcwsymleqv8nv",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 576,
+      "address": "z1qq8kljty0yccfm3fyf8jkhr7acjfyqq680zes3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 548,
+      "address": "z1qz2jzc7vjft23qsffjmrg75saah9kp0a6e8tl2",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 428,
+      "address": "z1qqn6yaf4cjfsdvgxe747nlce6rjhfe50uka5y9",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 442,
+      "address": "z1qrvrgh075knftzf5j0rucwt97jax9svfg2kze6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 496,
+      "address": "z1qpxw7mmtcfctuh7m67l3v7ryzl0r0duxadkkzg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 477,
+      "address": "z1qp85xdldphppstpmezqkzqhzr9c5rl5sl4xylx",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 462,
+      "address": "z1qr3l4ctgjeqv4aert90s5qt4xcuzkgp33vunzd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 587,
+      "address": "z1qrw46k3gplrrayx9tvcl60w8wt2dvkuxc8fw70",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 584,
+      "address": "z1qrk37egp5me0242es4r2kzs7fk2nkayncyrl6x",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 498,
+      "address": "z1qpm9svkrd2xhhmxsgcrtq0z9e8y5p62rc0appd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 529,
+      "address": "z1qru3w3pkwrfnwv2uzf6s8nqn2433n25rhucs0u",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 486,
+      "address": "z1qr4c6evnznnnz57lg4hux4xfnjlysww6dkdflm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 471,
+      "address": "z1qplsk5t2jwaww2awexm2gwk40245uxsuq52lmp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 495,
+      "address": "z1qqr06q0lmvlr0x86w86fxsvc83r3gm6244mvtr",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 546,
+      "address": "z1qq60kake5g7t3rg5c7pvnvjs5tnfj6qud3lvn9",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 412,
+      "address": "z1qzjl5v4ls0qtj9nnfeas8mtlqylxlcumccg8k9",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 451,
+      "address": "z1qqc05c3jg8prh0w5r57znmsjsae30ze28qqkzp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 497,
+      "address": "z1qz345ycrryw7up6cwjffxe3hcm33jjphgdvcfw",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 501,
+      "address": "z1qr29fs2qqjp2pqkg8pcfg6whqerdk0e0wa2xpj",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 482,
+      "address": "z1qpt73wtv254qhqnlf8fj5aztf5agjafrzz2lsa",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 449,
+      "address": "z1qqyjz9mq3y472t4v0vs7uxpnw3ugmx75hmuccu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 598,
+      "address": "z1qznylha3r6kpec0yugj5yn2hw7wzja95k96m52",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 419,
+      "address": "z1qr0992fyhzhh6d0688snutgtdahczhpx3s2tc8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 425,
+      "address": "z1qz727knskltgk7v5xq43g4p30546leugm3dfh8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 512,
+      "address": "z1qruedngm7m2ftup7z7qx9d2dfd99lt4kwv7saw",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 519,
+      "address": "z1qr8luudaz6fn60dl5npr75nzrp25r9r0mcl5yf",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 596,
+      "address": "z1qzq43d2f50sm98nlsclk0wrz9s2d3hcf8n5mz0",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 456,
+      "address": "z1qq7usdrss3agtss34g8ye44gw4qxxff0h7gl9g",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 429,
+      "address": "z1qz6q20qgl5u0v9m3zf0crgqqpcfzz4v7etcg94",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 541,
+      "address": "z1qrxsc6x874tcyyz0gxcx85qwxp3k7f0qufyu5t",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 474,
+      "address": "z1qzka8va96wwepmm493zv9fk0yq709syddgqh6q",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 468,
+      "address": "z1qqmhgmmqr684324s996r59gjjxnq4z3tpupe9u",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 488,
+      "address": "z1qz75t90da5k523axefrhxzmvkedxq8nv52n8w8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 504,
+      "address": "z1qqlrut3mcl5w6450h34d33jkzyyzvv2qmjt5h8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 479,
+      "address": "z1qzyuletrafznsk0ktmdujtp5hs25rpck9s4seh",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 489,
+      "address": "z1qrwdc38lnsu6zv5cnzlsm75msr3yjc5uqfdakv",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 444,
+      "address": "z1qpa63afe7xczf8rf38hctwcvued382l097lpg4",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 592,
+      "address": "z1qr22pyd4hesucexh5gjxpjujuda8jwjr6rjk04",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 506,
+      "address": "z1qqp54r8syvks2tpnz9yt3n5r6uld8rty5ycrfa",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 556,
+      "address": "z1qr3877u0x7dqkz6am5w8p3v5x30ht03cu3tw87",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 420,
+      "address": "z1qqpq5pzfyjy3k49kv4d0c37r34e2xc9x4aeh6a",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 438,
+      "address": "z1qr708wgkxtlpjh8jrjkmx5z8nzhcfycfngjln2",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 536,
+      "address": "z1qpx2856mkv85pj7qlpj6w26n6myh8fry2nzgmz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 408,
+      "address": "z1qrgnn0y60l3qhd4tclz8avrza23v22c3zwz97a",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 533,
+      "address": "z1qzgqq3qwhrw9qcjhg7v2y6dpkz3dl85mweqwdp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 593,
+      "address": "z1qp2639tztyauspedeua6puqaw9d0pd75ts7vdm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 439,
+      "address": "z1qrunppp3dhz49tm4382pcxwaqy8vpwzzaqqnk8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 421,
+      "address": "z1qrf3jz2nzk7lekt8z4rjsqmj3a5ysxflg6yuhq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 484,
+      "address": "z1qqfqxyg0u8ftep2atq7ndz0tw5nql92qdrx06g",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 455,
+      "address": "z1qqwwaqfaf7yfx7pt2nx2vjh3gzvzxxtrepmlzn",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 555,
+      "address": "z1qrh2dp7pscrty9nl5l2g3tl23d63v7npx04h7l",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 418,
+      "address": "z1qpjq7n6g4k8et63jpzdu4swm57cyj9tg6vzeza",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 458,
+      "address": "z1qqz38hh0waay640z4qhl37sehk0jjsjudsqcjq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 409,
+      "address": "z1qrdr28dhpyxaw0aq3d6npr4jw0ydpxy0zq9ndm",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 582,
+      "address": "z1qzrydc268wxydy8702qfdfvm8p298ylrr38qq5",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 401,
+      "address": "z1qqmsycchu7lnxhpqjkkc3y2mr724yn22hn8ch8",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 507,
+      "address": "z1qqytdaax8lt3ypqu9qc44v5luav6zgdk59hu2x",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 437,
+      "address": "z1qzgu9v0v8mjumsx4rkjwh4l4uz38yg2jvewav3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 443,
+      "address": "z1qzqq0y0vhzauqkylv7xljflqj6vdxttqnx45d6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 432,
+      "address": "z1qprmg3l8snj5q9w3t4azeg9dsdeksr7kvey83w",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 578,
+      "address": "z1qpatv8rvv2u5yj04m2m07983sdy49q3rlnuvuh",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 430,
+      "address": "z1qquqmx6cgtlucjzlc2utqtz5aak3jhp6mv2wxl",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 410,
+      "address": "z1qpgfr24e763rjcpcdlceur3unks7mc5y8py2up",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 591,
+      "address": "z1qp2fffnlc6jytd4de5ft624rhwagvsp5mcj64g",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 452,
+      "address": "z1qz5cg82rsq4vl68fmqhd7pe9mhauxvvwe50xzg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 553,
+      "address": "z1qzkxr40xlvpvtewtujhzpkznn080wxxq6prv64",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 510,
+      "address": "z1qpxlry08pler68m2ngy2njx22dptlcq4uqh55h",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 571,
+      "address": "z1qztvcdkfk954a9gk5hxe95y68stxlt35rmxsg7",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 446,
+      "address": "z1qr2usxfhzgv78dvqvjfgld3glsj8hnj9veurqc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 524,
+      "address": "z1qpd270mzw8tev93llv837jlw2zgd8gnxdecr5a",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 475,
+      "address": "z1qz735w0et7f6rku2xsyym4yun076rfmul2t5yn",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 583,
+      "address": "z1qq5qfgnram4vxms2zy0en4x6erd66zzusxw38l",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 572,
+      "address": "z1qrst25hmlpx5glfmqn893dzjq50a2te9q3tj3s",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 581,
+      "address": "z1qzyyc98lx0thdldaa3lvkka87pyta5gp2ykl4k",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 550,
+      "address": "z1qr0wwlr5hqjy723kv0pumlx3jflvpvgs8d64qx",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 494,
+      "address": "z1qzqj79p4zv2vxcjyk3lzfjkht0xwq4jfr5w9dh",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 460,
+      "address": "z1qqnephxzfrdcrlcmsv646jjwp0z92ue9jjkgua",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 554,
+      "address": "z1qq56mh0glm7guneg4exls4te2rqqyn5mjxtvkv",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 492,
+      "address": "z1qpyw5l6sneztx3jzsxn47m3utf70fukxme6ran",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 586,
+      "address": "z1qrar3rjzdcrmxxnsw8hjwe5822fc3jf9h875vq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 568,
+      "address": "z1qpxqurfjzlpu8j52kxghwxp8nv2y2wdzm5wf0u",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 521,
+      "address": "z1qrv267yjpsgk79c4e4twsrs4fyltqegc4lncrc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 436,
+      "address": "z1qrvk2l4snx6344w5255fynf0xv2t540v25h9la",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 422,
+      "address": "z1qzscuy6hzrtwal4k83j994snpd668pgv7f7fzg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 426,
+      "address": "z1qpndj80k36p24m7sp4yvgjs3z905hqekke5phc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 560,
+      "address": "z1qzk5xxpugxttd48n8pph8h359476z6pdqq90yz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 423,
+      "address": "z1qq6s4387ntzyeyrntrem0p8v0cvs34laczlwgc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 523,
+      "address": "z1qqkj044xjpq8mmfzqtj5cnf8gdm9hmjfvzwyh6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 415,
+      "address": "z1qztztz0qd3k7scgqqmru6fjxlkm2tuwdp04ka9",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 414,
+      "address": "z1qpvt0lqgcstsudw3sw5qee7x6y9tx48rvyyglp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 406,
+      "address": "z1qzdw89cr4vcgu52j30su3llqjlqn3lk327rh63",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 402,
+      "address": "z1qrancl09mv2z3p9nfgruyk3dz0z7s53k03m6jr",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 503,
+      "address": "z1qzymqwwzjrdwquglff09jh9u78gjn2l8q9k9hn",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 594,
+      "address": "z1qrv9xfyl3ahckhrnmul82tpxrhuz5cuthe7kfw",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 518,
+      "address": "z1qqnkpgqeexyq4rsfm37jzl4436zvhvmmfv5zqq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 531,
+      "address": "z1qrrer5hsqtr9tz28c5j77k5wtfaem4rv64w7de",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 473,
+      "address": "z1qzg54gd2s0s9hdd5pxvuyfn0yxje48fa23207n",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 405,
+      "address": "z1qz0tvu65dqy9qq4zv6qn946gm5v2exza4teh9w",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 450,
+      "address": "z1qrh788muk2d7820hq6cahfk3ut05a758r5e53p",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 461,
+      "address": "z1qz8lcxu2apmsagasqueph7jkyr8wjj5uh3zedl",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 547,
+      "address": "z1qqyh25x0xnvd5sjynq50p2lhhqmnh2u4qw4l7p",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 526,
+      "address": "z1qp4r3auajdnqg44jprpxaekw52l7wjpvw9j8eq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 515,
+      "address": "z1qq8d5tx944l5yl9ju9cwrjw9we3hxl6z0ngz46",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 570,
+      "address": "z1qpzav5ppfrm63wjvru2egq7jxtmkljget70h8y",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 539,
+      "address": "z1qqecly73gh2kwa3l8a2ks2rnym9wcldqmpvlur",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 579,
+      "address": "z1qqkkh07cewng47mk34yx43e0m05udsq0hrfk5c",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 509,
+      "address": "z1qqr6e0x22z0t4xw7qp4e4kr5jv6keh98qh63km",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 470,
+      "address": "z1qqey2zfc0xwl9m2xljhnthzvcedy7lz3s6xtl5",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 502,
+      "address": "z1qzzswrmcggsv34clj4sz0352wf9s35cme46th3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 448,
+      "address": "z1qpmydfv88z2wnmnys6jytz4tf4406yylcmthfg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 459,
+      "address": "z1qrfnkuzfpmgal0ufsn7t2tg22hvv6vtenz7xrl",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 472,
+      "address": "z1qqhkuqgra9nr5fsqkpy8d7l6gz2uqr03lcdyqa",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 558,
+      "address": "z1qr2gqfm2fp5qrfn5xjrzu6g4v4nezlfr2t8j9z",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 563,
+      "address": "z1qzra4c5slfv7gv69v3ynxc39e4zz004zgfegrs",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 588,
+      "address": "z1qrpz4tnlhtv5spmkxa5v0l3nkqu6psdz3jhsqc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 424,
+      "address": "z1qr3l7cgqd7zu6d3h0xyujc3drcc2c69udtwdfp",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 469,
+      "address": "z1qzlelnsvfnyq7gltep6r26qwap2u6meug25mkj",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 466,
+      "address": "z1qpvd4ls4hr7f79zuaxmzf3uj4vvz8dfa3dqgv9",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 580,
+      "address": "z1qpten4s88zeuya559ayjrmd8w5pnm5fudk4ppg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 561,
+      "address": "z1qzt2c3frlxmsnl0lr8zsfzx8tg3hmalcrx8hgd",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 453,
+      "address": "z1qreqdqep9972fp9e8qmhl7hq5sve28rzxcrgzt",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 538,
+      "address": "z1qp8athnylllthnemnzgtrluu4zgcdnw6lf0xd3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 527,
+      "address": "z1qpf992f8e2mma552q2z5mqvutsaw85em9t45mc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 549,
+      "address": "z1qz7lkh7smujrjech8nrqs80vqh6jklpctlexqc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 404,
+      "address": "z1qqkqnrqspft72qnftunpyt02yr0p7p9h9f0www",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 544,
+      "address": "z1qqc5pcn6elqhgq5zlfgu76ajevs603gl8a46ye",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 483,
+      "address": "z1qrp3etts3gkenda97ncp8fzljr66u740e0tgj5",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 413,
+      "address": "z1qqw9mw790cczen4hlsm4hvuxrqh7v08840uvhz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 440,
+      "address": "z1qptnmxuq8d4yw25l8pep70zcjn9p80rsv6xpdn",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 530,
+      "address": "z1qrsf6r56vughef96h4ev9s9uhjet006pdee4ud",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 573,
+      "address": "z1qrz4srqjjnfvat5jr2k2uzxfvsk5a77ylzqz99",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 559,
+      "address": "z1qrzt3k5gx29z96v2ag03jlf6lvpdgsk8ayfrxz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 514,
+      "address": "z1qp0jjg7mry5j9cymn88dwkrs0083a8nh2k0ala",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 511,
+      "address": "z1qzurnkrd6twuwmj0ucucpzfh349r53370ddjac",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 505,
+      "address": "z1qpdm56gdxec3whhxp34my0p6qgpj3dmjlww43u",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 525,
+      "address": "z1qrr8yj5zx2hsm2tyjscmeft8cfntcxg4562exu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 500,
+      "address": "z1qpafqlr7t5ngw4y0mjklpn2xhjvxaegc5sgukr",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 411,
+      "address": "z1qrrkp2yehdsdurgydt0gy3eyd34fn2hjxdj7ge",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 480,
+      "address": "z1qpdaahw0nhg55sc9gma09m742ysxz8q5c6f43s",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 551,
+      "address": "z1qq80q6hjzaf9uwl08mfyn34hus3vgz0vmh2qsz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 403,
+      "address": "z1qz4k4p6kj3hgjfjg7595evq54lajf0p7frzut5",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 427,
+      "address": "z1qp38wnhysth5wwcqwv80yvq5jq94vn4r508gmu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 447,
+      "address": "z1qrhwtn6qq885qwjrmf7cg68lw0aqamyxvzlspg",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 562,
+      "address": "z1qzdqcpqnz6qh463q4p7qflwjd43fnv4kjlum83",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 417,
+      "address": "z1qzx64e2cezx0sz6fgavg0mprwts0rpwwu60w7m",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 567,
+      "address": "z1qq478hvaxhw2ca4gsx32027hqyl5d0dp2hs2mk",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 552,
+      "address": "z1qzkw0fvw6048r9hamduxe0ec2zav940nak6s3u",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 513,
+      "address": "z1qry7z7eg54a4rffe626u0pep4c34lraugrlpta",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 435,
+      "address": "z1qplvqkv7slkfqnestv2kggp290x24m8n9gy5cc",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 481,
+      "address": "z1qrquh53tclqgyxxkllevh5pcj4f9tlvtjuy6wt",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 499,
+      "address": "z1qq3ay75pss5mwp2p6fky4p77wxfmu2hsht68e0",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 557,
+      "address": "z1qr604t24vfrrnwkrysytgsrd9qvnawfxhmlz94",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 522,
+      "address": "z1qpkvvy790zkk86h3xlcasg2fm3m3jx3hxv72xw",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 574,
+      "address": "z1qzys9ek6psplshu5lfgzynrlh5z9px8e9rdvfr",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 463,
+      "address": "z1qqdfmlpnrn2dkl2n5wgyfnz2xwv7hkm0u6q6t9",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 540,
+      "address": "z1qqy9txk06wrzddlzee960ww8rcme3nacv94hjz",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 516,
+      "address": "z1qra29xptr8wrxm9s0u9da5sdya8hxqy69pzpas",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 433,
+      "address": "z1qp6v04p9pq654k9tjh8uumwyur79gxxlv43v5a",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 528,
+      "address": "z1qpc3kzmmpl47unfty342ntlyussxr48e34che7",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 476,
+      "address": "z1qzuvwr6wq2kyc5l9f0ss3pasp3cxsuhhzky6v3",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 535,
+      "address": "z1qr3uq7k0d0fa04ahm60e5j4ywk6ppestu7xhme",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 454,
+      "address": "z1qpt4j58n4zvzayntfm4g998qvx5e9v3y8cry7j",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 517,
+      "address": "z1qr83twkh4xmvj3uxqqr3q6u58gjwpeyfhq9u4d",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 537,
+      "address": "z1qp8md8ta7dnt7qcle2kak2jn8zshre04hp3lat",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 493,
+      "address": "z1qp0ceu49uwxha3z88d6rcdfqrehpt74lge7z00",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 431,
+      "address": "z1qpqt4c7gr8tkhdtf73ueqnr2vheyupg2rq3tg7",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 565,
+      "address": "z1qpexhk20q9yarxpsxl9zzdg8pgp6letul592k7",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 465,
+      "address": "z1qzcp50v02qvxdhlwexfu76ymzmhlnlw23uk4l6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 491,
+      "address": "z1qp5n7n4yne3przs70vt3n93ge4nxd0ltgqq704",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 564,
+      "address": "z1qraau2jpft02eeul0200cn3q823fhc7cvdhrjl",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 520,
+      "address": "z1qr4e4n3rhkfwe5ynhsm4h25p4rv85n8xefvf9k",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 577,
+      "address": "z1qqnuquvkcrhkhqf27huv4sp5gr2ln674ckpenu",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 590,
+      "address": "z1qqpmdsvv8nx7xvdj9msp5cvjn2gluxy83khv3f",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 569,
+      "address": "z1qpuw8zva9ed656g77mtr9v38wdr9ana0vfywf7",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 457,
+      "address": "z1qzy23srq8mfqqmuxgvnjrfex2qgxt6z3ulylet",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 467,
+      "address": "z1qpwjsgveshlnl830xuczfuq9jn6h38w79xe8q6",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 597,
+      "address": "z1qpsu35r7srwd86gxk9am62cpmyl207mjmaf9eq",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 478,
+      "address": "z1qz7s25te3y855lsvkjr5uce8q7clxnt7flhl0j",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 589,
+      "address": "z1qqx5sxgcxsr9l622w2aawk2w79nav2vxavck8a",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 508,
+      "address": "z1qzw4a25puccstjq08m3t6wvf84t46kzz4mke4u",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 464,
+      "address": "z1qquhxnd7dapm3aunl4v4qh0924ue4rc3426yuh",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 434,
+      "address": "z1qrx4wfnxpvd5pltfwwqxq0t2k9rqm37h97l6ke",
+      "tx_type": "self_transfer",
+      "published": true
+    }
+  ],
+  "setup_momentum": 8286,
+  "end_momentum": 8291
+}

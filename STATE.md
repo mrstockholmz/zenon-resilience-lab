@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 20
+next_phase: 21
 cloud_sessions_run: 1
 local_sessions_run: 13
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-24 (phase 19: contract block throughput cap)
+updated: 2026-10-24 (phase 20: momentum content capacity)
 ```
 
 ## Phase log
@@ -33,6 +33,7 @@ updated: 2026-10-24 (phase 19: contract block throughput cap)
 | 17 mempool cap + frontier conflict | done | results/phase-17/20261024-phase17-mempool-cap-results.md | Per-account mempool cap of 500 unconfirmed blocks confirmed. Drain/refill cycle observed. Frontier conflict: price-then-hash rule 15/15 correct across 3 seeds. R14 added. |
 | 18 data payload size limits | done | results/phase-18/20261024-phase18-datasize-results.md | Plasma cost formula exact: 21000+68*N bytes for 0-16KB. 16KB limit strictly enforced. Max-size tx costs 1,135,112 plasma (~541 QSR). Plasma budget (4.2M) limits large-data txs to 3 per momentum. R15 added. |
 | 19 contract block throughput cap | done | results/phase-19/20261024-phase19-contractcap-results.md | Contract block cap of 80/momentum exists but is NOT binding. Plasma budget limits Stake calls to ~73-75/momentum. Cap and plasma budget aligned (4.2M/52.5K=80). Stake generates 1 contract block (receive only). 2-momentum pipeline. R16 added. |
+| 20 momentum content capacity | done | results/phase-20/20261024-phase20-contentmix-results.md | 280 content cap is NOT binding. Plasma budget limits user blocks to exactly 200. Max observed content: 200 (Config A seed 1, exactly at plasma budget). Mixing contract calls reduces content (Stake less plasma-efficient). Contract blocks in next momentum (2-pipeline). R17 added. |
 
 ## Local verification session 2026-10-24
 
@@ -149,6 +150,15 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     follow a 2-momentum pipeline: user sends in N, contract blocks in N+1.
     Effective sustained contract throughput is ~37-40 calls per 10s
     momentum-period, not 80.
+21. **The 280 content cap is a correctness bound, not a throughput limit.**
+    The actual maximum content per momentum is ~200 (plasma budget limit).
+    Config A seed 1 achieved exactly 200 content entries (200 × 21,000 =
+    4,200,000 = MaxBasePlasmaInMomentum). The 280 cap (200 user + 80
+    contract) was never approached. Mixing contract calls reduces total
+    content because Stake calls cost 52,500 plasma (2.5×) for 2 content
+    entries vs. 21,000 for 1 (self-transfer). Self-transfers are 25% more
+    plasma-efficient per content entry. The theoretical 280 maximum requires
+    precise two-momentum orchestration (80 Stake in N-1, 200 self in N).
 
 ## Suite tooling
 
@@ -199,6 +209,11 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   send Stake contract calls simultaneously to test the per-momentum contract
   block cap (80). Verifies that plasma budget, not contract cap, is the
   binding constraint. Optional base index parameter for multiple seeds.
+- `contentmix` — momentum content capacity test (phase 20). N self-transfer
+  accounts + M Stake accounts send transactions simultaneously. Measures
+  actual max content entries per momentum. Verifies that plasma budget,
+  not the 280 content cap, is the binding constraint. Optional base index
+  parameter for multiple seeds.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under
