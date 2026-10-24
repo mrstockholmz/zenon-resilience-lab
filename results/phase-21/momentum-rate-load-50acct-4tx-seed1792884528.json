@@ -1,0 +1,85 @@
+{
+  "config": {
+    "duration_requested": 300,
+    "duration_actual": 300.8,
+    "start_height": 8661,
+    "end_height": 8668,
+    "total_momentums": 7
+  },
+  "inter_momentum_deltas": [
+    50,
+    30,
+    40,
+    30,
+    30,
+    60
+  ],
+  "wall_clock_deltas": [
+    49.147,
+    30.079,
+    40.096,
+    30.079,
+    30.074,
+    60.155
+  ],
+  "statistics": {
+    "mean": 40.0,
+    "median": 35.0,
+    "min": 30,
+    "max": 60,
+    "stddev": 11.55,
+    "effective_seconds_per_momentum": 40.0,
+    "theoretical_seconds_per_momentum": 10,
+    "slowdown_factor": 4.0
+  },
+  "distribution": {
+    "30": 3,
+    "40": 1,
+    "50": 1,
+    "60": 1
+  },
+  "samples": [
+    {
+      "height": 8662,
+      "momentum_ts": 1792884560,
+      "observed_wall": 1792884560.9601774,
+      "num_txs": 25
+    },
+    {
+      "height": 8663,
+      "momentum_ts": 1792884610,
+      "observed_wall": 1792884610.107237,
+      "num_txs": 0
+    },
+    {
+      "height": 8664,
+      "momentum_ts": 1792884640,
+      "observed_wall": 1792884640.1861408,
+      "num_txs": 0
+    },
+    {
+      "height": 8665,
+      "momentum_ts": 1792884680,
+      "observed_wall": 1792884680.2817054,
+      "num_txs": 0
+    },
+    {
+      "height": 8666,
+      "momentum_ts": 1792884710,
+      "observed_wall": 1792884710.3604403,
+      "num_txs": 0
+    },
+    {
+      "height": 8667,
+      "momentum_ts": 1792884740,
+      "observed_wall": 1792884740.4340742,
+      "num_txs": 0
+    },
+    {
+      "height": 8668,
+      "momentum_ts": 1792884800,
+      "observed_wall": 1792884800.5886543,
+      "num_txs": 0
+    }
+  ]
+}

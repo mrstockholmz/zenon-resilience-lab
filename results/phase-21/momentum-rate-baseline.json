@@ -1,0 +1,133 @@
+{
+  "config": {
+    "duration_requested": 300,
+    "duration_actual": 300.8,
+    "start_height": 8648,
+    "end_height": 8661,
+    "total_momentums": 13
+  },
+  "inter_momentum_deltas": [
+    10,
+    10,
+    10,
+    10,
+    10,
+    50,
+    40,
+    10,
+    30,
+    30,
+    30,
+    10
+  ],
+  "wall_clock_deltas": [
+    10.025,
+    10.027,
+    10.026,
+    10.026,
+    10.024,
+    50.127,
+    40.1,
+    10.027,
+    30.078,
+    30.076,
+    30.071,
+    10.029
+  ],
+  "statistics": {
+    "mean": 20.83,
+    "median": 10.0,
+    "min": 10,
+    "max": 50,
+    "stddev": 13.82,
+    "effective_seconds_per_momentum": 20.83,
+    "theoretical_seconds_per_momentum": 10,
+    "slowdown_factor": 2.08
+  },
+  "distribution": {
+    "10": 7,
+    "30": 3,
+    "40": 1,
+    "50": 1
+  },
+  "samples": [
+    {
+      "height": 8649,
+      "momentum_ts": 1792884260,
+      "observed_wall": 1792884260.3193758,
+      "num_txs": 0
+    },
+    {
+      "height": 8650,
+      "momentum_ts": 1792884270,
+      "observed_wall": 1792884270.3439126,
+      "num_txs": 0
+    },
+    {
+      "height": 8651,
+      "momentum_ts": 1792884280,
+      "observed_wall": 1792884280.3705952,
+      "num_txs": 0
+    },
+    {
+      "height": 8652,
+      "momentum_ts": 1792884290,
+      "observed_wall": 1792884290.3968394,
+      "num_txs": 0
+    },
+    {
+      "height": 8653,
+      "momentum_ts": 1792884300,
+      "observed_wall": 1792884300.4228175,
+      "num_txs": 0
+    },
+    {
+      "height": 8654,
+      "momentum_ts": 1792884310,
+      "observed_wall": 1792884310.4470606,
+      "num_txs": 0
+    },
+    {
+      "height": 8655,
+      "momentum_ts": 1792884360,
+      "observed_wall": 1792884360.5737422,
+      "num_txs": 0
+    },
+    {
+      "height": 8656,
+      "momentum_ts": 1792884400,
+      "observed_wall": 1792884400.6734014,
+      "num_txs": 0
+    },
+    {
+      "height": 8657,
+      "momentum_ts": 1792884410,
+      "observed_wall": 1792884410.7008479,
+      "num_txs": 0
+    },
+    {
+      "height": 8658,
+      "momentum_ts": 1792884440,
+      "observed_wall": 1792884440.7785213,
+      "num_txs": 0
+    },
+    {
+      "height": 8659,
+      "momentum_ts": 1792884470,
+      "observed_wall": 1792884470.8542793,
+      "num_txs": 0
+    },
+    {
+      "height": 8660,
+      "momentum_ts": 1792884500,
+      "observed_wall": 1792884500.9254432,
+      "num_txs": 0
+    },
+    {
+      "height": 8661,
+      "momentum_ts": 1792884510,
+      "observed_wall": 1792884510.954338,
+      "num_txs": 0
+    }
+  ]
+}

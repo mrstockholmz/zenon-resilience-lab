@@ -30,7 +30,8 @@ PHASE17_DIR="$RESULTS_DIR/phase-17"
 PHASE18_DIR="$RESULTS_DIR/phase-18"
 PHASE19_DIR="$RESULTS_DIR/phase-19"
 PHASE20_DIR="$RESULTS_DIR/phase-20"
-mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR" "$PHASE13_DIR" "$PHASE15_DIR" "$PHASE16_DIR" "$PHASE17_DIR" "$PHASE18_DIR" "$PHASE19_DIR" "$PHASE20_DIR"
+PHASE21_DIR="$RESULTS_DIR/phase-21"
+mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR" "$PHASE13_DIR" "$PHASE15_DIR" "$PHASE16_DIR" "$PHASE17_DIR" "$PHASE18_DIR" "$PHASE19_DIR" "$PHASE20_DIR" "$PHASE21_DIR"
 
 # Check node is reachable
 if ! curl -s http://127.0.0.1:57997 -X POST -H 'Content-Type: application/json' \
@@ -326,6 +327,19 @@ case "${1:-all}" in
             run_phase20 "$seed"
         done
         ;;
+    phase21)
+        # Phase 21: momentum production rate analysis
+        echo "Phase 21: Momentum production rate analysis"
+        echo "  Collecting 5-minute baseline..."
+        python3 momentum-rate.py --duration 300 --out "$PHASE21_DIR/momentum-rate-baseline.json"
+        echo "  Running burst load test..."
+        python3 momentum-rate.py --duration 180 --out "$PHASE21_DIR/momentum-rate-burst.json" &
+        COLLECTOR=$!
+        sleep 2
+        ./labctl burst 100 0 2>&1 | tail -5
+        wait $COLLECTOR
+        echo "  Phase 21 complete."
+        ;;
     check)
         echo "Running regression assertions..."
         python3 check-regressions.py "$RESULTS_DIR"
@@ -353,7 +367,7 @@ case "${1:-all}" in
         python3 json2csv.py "$RESULTS_DIR" "$RESULTS_DIR/summary.csv"
         ;;
     *)
-        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|check|all]" >&2
+        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|phase21|check|all]" >&2
         exit 1
         ;;
 esac

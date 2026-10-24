@@ -1,0 +1,31 @@
+{
+  "sample_size": 8646,
+  "mean": 30.0,
+  "median": 20,
+  "min": 10,
+  "max": 180,
+  "stddev": 22.4,
+  "effective_seconds_per_momentum": 30.0,
+  "theoretical_seconds_per_momentum": 10,
+  "slowdown_factor": 3.0,
+  "distribution": {
+    "10": 2675,
+    "20": 1923,
+    "30": 1363,
+    "40": 960,
+    "50": 631,
+    "60": 382,
+    "70": 262,
+    "80": 184,
+    "90": 106,
+    "100": 76,
+    "110": 27,
+    "120": 26,
+    "130": 19,
+    "140": 9,
+    "150": 1,
+    "180": 2
+  },
+  "source": "lab-devnet znnd.log heights 2-8648",
+  "analysis_date": "2026-10-25"
+}

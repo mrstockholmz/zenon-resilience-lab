@@ -1,0 +1,101 @@
+{
+  "config": {
+    "duration_requested": 180,
+    "duration_actual": 180.5,
+    "start_height": 8670,
+    "end_height": 8679,
+    "total_momentums": 9
+  },
+  "inter_momentum_deltas": [
+    10,
+    20,
+    30,
+    10,
+    10,
+    40,
+    20,
+    10
+  ],
+  "wall_clock_deltas": [
+    10.021,
+    20.088,
+    30.08,
+    10.027,
+    10.03,
+    40.1,
+    19.052,
+    10.026
+  ],
+  "statistics": {
+    "mean": 18.75,
+    "median": 15.0,
+    "min": 10,
+    "max": 40,
+    "stddev": 10.53,
+    "effective_seconds_per_momentum": 18.75,
+    "theoretical_seconds_per_momentum": 10,
+    "slowdown_factor": 1.88
+  },
+  "distribution": {
+    "10": 4,
+    "20": 2,
+    "30": 1,
+    "40": 1
+  },
+  "samples": [
+    {
+      "height": 8671,
+      "momentum_ts": 1792884870,
+      "observed_wall": 1792884870.6388736,
+      "num_txs": 0
+    },
+    {
+      "height": 8672,
+      "momentum_ts": 1792884880,
+      "observed_wall": 1792884880.6595438,
+      "num_txs": 90
+    },
+    {
+      "height": 8673,
+      "momentum_ts": 1792884900,
+      "observed_wall": 1792884900.747565,
+      "num_txs": 0
+    },
+    {
+      "height": 8674,
+      "momentum_ts": 1792884930,
+      "observed_wall": 1792884930.8270795,
+      "num_txs": 0
+    },
+    {
+      "height": 8675,
+      "momentum_ts": 1792884940,
+      "observed_wall": 1792884940.8542342,
+      "num_txs": 0
+    },
+    {
+      "height": 8676,
+      "momentum_ts": 1792884950,
+      "observed_wall": 1792884950.8844492,
+      "num_txs": 0
+    },
+    {
+      "height": 8677,
+      "momentum_ts": 1792884990,
+      "observed_wall": 1792884990.9847186,
+      "num_txs": 0
+    },
+    {
+      "height": 8678,
+      "momentum_ts": 1792885010,
+      "observed_wall": 1792885010.0369067,
+      "num_txs": 0
+    },
+    {
+      "height": 8679,
+      "momentum_ts": 1792885020,
+      "observed_wall": 1792885020.0625715,
+      "num_txs": 0
+    }
+  ]
+}

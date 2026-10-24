@@ -19,6 +19,7 @@ Invariants tested:
   R12: Plasma regenerates to full fused amount within 1 momentum after depletion
   R13: Transaction type plasma costs match go-zenon source constants
   R14: Mempool cap is 500 uncommitted blocks per account; frontier conflict resolution follows price-then-hash rule
+  R18: Momentum production rate with N pillars and K active equals BlockTime * N/K (lab devnet: 30s mean)
 """
 import json, sys, os, glob
 
@@ -768,6 +769,55 @@ def check_contentmix(results_dir):
     return failures
 
 
+def check_momentum_rate(results_dir):
+    """R18: Momentum production rate with N=3, K=1 shall be ~30s.
+    
+    Uses large-sample analysis (historical log) for the assertion.
+    Small live samples (< 50 momentums) are informational only due to
+    high variance in the distribution (stddev ~22s).
+    """
+    failures = []
+    large_sample_found = False
+    for f in glob.glob(os.path.join(results_dir, "phase-21", "momentum-rate-*.json")):
+        data = load_result(f)
+        if not data:
+            continue
+        stats = data.get("statistics", {})
+        mean_dt = stats.get("mean", 0)
+        total = data.get("config", {}).get("total_momentums", 0)
+        
+        if total >= 50:
+            large_sample_found = True
+            # With 3 pillars, 1 active: expected = 30s, acceptable range 24-36s
+            if mean_dt < 24 or mean_dt > 36:
+                failures.append(
+                    f"R18 FAIL: {os.path.basename(f)} mean={mean_dt}s "
+                    f"outside expected range 24-36s (3 pillars, 1 active, n={total})"
+                )
+        # Small samples: just log info, don't fail
+    
+    if not large_sample_found:
+        # No large-sample data yet; check if we have the historical analysis
+        hist = os.path.join(results_dir, "phase-21", "historical-analysis.json")
+        if os.path.exists(hist):
+            data = load_result(hist)
+            if data:
+                mean_dt = data.get("mean", 0)
+                n = data.get("sample_size", 0)
+                if n >= 1000:
+                    large_sample_found = True
+                    if mean_dt < 24 or mean_dt > 36:
+                        failures.append(
+                            f"R18 FAIL: historical mean={mean_dt}s "
+                            f"outside expected range 24-36s (n={n})"
+                        )
+    
+    if not large_sample_found:
+        failures.append("R18 INFO: no large-sample (n>=50) momentum rate data found")
+    
+    return failures
+
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -790,6 +840,7 @@ def main():
         ("R15: data payload plasma cost formula + 16KB limit (phase-18)", check_datasize),
         ("R16: contract block cap — plasma budget binds first (phase-19)", check_contractcap),
         ("R17: momentum content capacity — plasma budget binds, not 280 cap (phase-20)", check_contentmix),
+        ("R18: momentum production rate = BlockTime * N/K (phase-21)", check_momentum_rate),
     ]
     
     for name, check_fn in checks:
