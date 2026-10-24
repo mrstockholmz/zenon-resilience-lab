@@ -1,0 +1,14 @@
+frontconf: funding account[61] with 100 ZNN...
+frontconf: fusing 200 QSR on account[61]...
+frontconf: initial plasma=420000, testing frontier conflicts...
+frontconf: round 0 — txA(hash=f69d385facb7d2a5... data=1B plasma=21068 overpay=1x) vs txB(hash=452b2efde0c9e547... data=100B plasma=27800 overpay=1x) expect=B
+frontconf: round 0 — B won (equal plasma, hash tie-break) expected=B correct=true
+frontconf: round 1 — txA(hash=b092c8c0b70465f3... data=1B plasma=21068 overpay=1x) vs txB(hash=2e1bffb2899558cc... data=100B plasma=27800 overpay=1x) expect=B
+frontconf: round 1 — B won (equal plasma, hash tie-break) expected=B correct=true
+frontconf: round 2 — txA(hash=1873f71159f5c06f... data=1B plasma=21068 overpay=1x) vs txB(hash=178d64128c6646ef... data=100B plasma=55600 overpay=2x) expect=B
+frontconf: round 2 — B won (price priority) expected=B correct=true
+frontconf: round 3 — txA(hash=0e29adfa83f0e28e... data=1B plasma=21068 overpay=1x) vs txB(hash=b6c64ccadd9e88ac... data=100B plasma=55600 overpay=2x) expect=B
+frontconf: round 3 — B won (price priority) expected=B correct=true
+frontconf: round 4 — txA(hash=d0b596f11284b490... data=1B plasma=42136 overpay=2x) vs txB(hash=e1c40bd2e1ee2fe5... data=100B plasma=27800 overpay=1x) expect=A
+frontconf: round 4 — A won (price priority) expected=A correct=true
+frontconf: round 4 — publish errors: A="" B="rpc ledger.publishRawTransaction error: block price is smaller for current block"

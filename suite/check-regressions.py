@@ -18,6 +18,7 @@ Invariants tested:
   R11: Mixed saturation: no plasma-based prioritization; fused txs are included first due to instant arrival, not priority
   R12: Plasma regenerates to full fused amount within 1 momentum after depletion
   R13: Transaction type plasma costs match go-zenon source constants
+  R14: Mempool cap is 500 uncommitted blocks per account; frontier conflict resolution follows price-then-hash rule
 """
 import json, sys, os, glob
 
@@ -473,6 +474,80 @@ def check_txtype(results_dir):
     
     return failures
 
+def check_mempool_cap(results_dir):
+    """R14: Mempool cap + frontier conflict resolution.
+    
+    Part A: Mempool cap is 500 uncommitted blocks per account.
+    When an account submits >500 rapid-fire txs, the first 500 succeed and
+    tx 500+ are rejected with 'max uncommitted blocks per account reached'.
+    
+    Part B: Frontier conflict resolution follows price-then-hash rule.
+    Equal plasma → smallest hash wins. Higher price ratio → higher price wins.
+    All predictions should be correct.
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-17")
+    if not os.path.isdir(phase_dir):
+        return ["R14 SKIP: phase-17 directory not found"]
+    
+    # Part A: Mempool cap
+    for f in sorted(glob.glob(os.path.join(phase_dir, "poolcap-*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        attempted = data.get("attempted", 0)
+        first_reject = data.get("first_reject_idx", -1)
+        
+        # Only check runs that actually hit the cap (first_reject >= 0)
+        # Runs that didn't hit the cap (e.g. plasma-limited) are skipped
+        if first_reject < 0:
+            continue
+        
+        if first_reject != 500:
+            failures.append(
+                f"R14 FAIL: {os.path.basename(f)} "
+                f"first_reject={first_reject} (expected 500 = MaxUncommittedBlocksPerAccount)"
+            )
+        
+        # Verify all submitted txs were included
+        if data.get("unresolved", 0) > 0:
+            failures.append(
+                f"R14 FAIL: {os.path.basename(f)} "
+                f"unresolved={data['unresolved']} (expected 0 — all submitted should be included)"
+            )
+        
+        # Verify the error message mentions the cap
+        err = data.get("first_reject_error", "")
+        if "max uncommitted blocks" not in err:
+            failures.append(
+                f"R14 FAIL: {os.path.basename(f)} "
+                f"error does not mention 'max uncommitted blocks': {err[:80]}"
+            )
+    
+    # Part B: Frontier conflict resolution
+    for f in sorted(glob.glob(os.path.join(phase_dir, "frontconf-*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        conflicts = data.get("conflicts_tested", 0)
+        correct = data.get("correct_predictions", 0)
+        
+        if conflicts == 0:
+            continue
+        
+        # Skip runs where no rounds produced a winner (e.g. setup failure)
+        total_wins = data.get("equal_hash_wins", 0) + data.get("price_wins", 0)
+        if total_wins == 0:
+            continue
+        
+        if correct != conflicts:
+            failures.append(
+                f"R14 FAIL: {os.path.basename(f)} "
+                f"correct_predictions={correct}/{conflicts} (expected {conflicts}/{conflicts})"
+            )
+    
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -491,6 +566,7 @@ def main():
         ("R11: mixed saturation no plasma priority (phase-13)", check_mixsaturate),
         ("R12: plasma regenerates within 1 momentum (phase-15)", check_regen),
         ("R13: tx type plasma costs match source (phase-16)", check_txtype),
+        ("R14: mempool cap 500 + frontier conflict price-then-hash (phase-17)", check_mempool_cap),
     ]
     
     for name, check_fn in checks:

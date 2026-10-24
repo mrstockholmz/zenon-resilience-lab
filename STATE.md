@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 17
+next_phase: 18
 cloud_sessions_run: 1
 local_sessions_run: 12
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-24 (phase 16: transaction type diversity)
+updated: 2026-10-24 (phase 17: mempool cap + frontier conflict resolution)
 ```
 
 ## Phase log
@@ -30,6 +30,7 @@ updated: 2026-10-24 (phase 16: transaction type diversity)
 | 14 content selector price priority | done | results/phase-14/20261023-phase14-price-priority-results.md | Price-based prioritization CONFIRMED. Content selector sorts by price-per-base-plasma; higher-priced txs included first under saturation. Corrects phase 13: priority exists when prices DIFFER, not when all txs pay floor price. Overpaying (FusedPlasma > BasePlasma) buys priority. Fee market is dormant at floor prices. |
 | 15 plasma regeneration rate | done | results/phase-15/20261023-phase15-plasma-regeneration-results.md | Plasma regenerates from 0 to full within 1 momentum. Two-counter model confirmed. An account with 100 QSR can send 10 txs per momentum indefinitely. Corrects phase 8: regeneration is on confirmation, not over time. |
 | 16 transaction type diversity | done | results/phase-16/20261024-phase16-txtype-results.md | Plasma cost ladder confirmed: self-transfer=21000, +data=21000+68/B, contract=52500. All match go-zenon source exactly. 3-seed reproducible. R13 added. |
+| 17 mempool cap + frontier conflict | done | results/phase-17/20261024-phase17-mempool-cap-results.md | Per-account mempool cap of 500 unconfirmed blocks confirmed. Drain/refill cycle observed. Frontier conflict: price-then-hash rule 15/15 correct across 3 seeds. R14 added. |
 
 ## Local verification session 2026-10-24
 
@@ -119,6 +120,17 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     (EmbeddedSimple). All 3 seeds identical. The go-zenon plasma cost model
     is empirically confirmed for all tested types. Data payload costs 68
     plasma/byte linearly. Contract calls cost 2.5× a simple transfer.
+17. **The per-account mempool cap of 500 uncommitted blocks is real and
+    strictly enforced.** When an account has 500 pending transactions, new
+    submissions are rejected with "max uncommitted blocks per account
+    reached". A drain/refill cycle was observed: after momenta include
+    blocks, new txs are accepted again.
+18. **Frontier conflict resolution follows the documented price-then-hash
+    rule exactly.** Higher price-per-base-plasma wins; on tie, smallest hash
+    wins. 15/15 correct predictions across 3 seeds. Overpaying guarantees
+    winning a frontier conflict. Two distinct error messages reveal the
+    mechanism: "block price is smaller" (price-based) and "hash tie-break
+    is worse" (hash-based).
 
 ## Suite tooling
 
@@ -154,6 +166,13 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 - `txtype` — transaction type diversity test (phase 16). Fuses QSR, then tests
   self-transfer, send+data, cross-account send+receive, and contract call
   (stake). Records plasma cost per type and verifies against go-zenon source.
+- `poolcap` — mempool cap test (phase 17). Fuses large QSR, sends rapid-fire
+  self-transfers to hit the 500 uncommitted blocks per account cap. Records
+  first reject index and error message.
+- `frontconf` — frontier conflict resolution test (phase 17). Creates
+  conflicting transactions at the same height with different plasma amounts.
+  Tests both hash tie-break (equal plasma) and price priority (overpay).
+  Verifies the price-then-hash replacement rule from go-zenon source.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

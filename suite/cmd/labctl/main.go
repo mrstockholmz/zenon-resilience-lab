@@ -645,7 +645,7 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>")
 		os.Exit(1)
 	}
 
@@ -793,6 +793,17 @@ func main() {
 		idx, _ := strconv.Atoi(os.Args[2])
 		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		runTxType(uint32(idx), qsrAmt)
+
+	case "poolcap":
+		idx, _ := strconv.Atoi(os.Args[2])
+		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		maxTx, _ := strconv.Atoi(os.Args[4])
+		runPoolCap(uint32(idx), qsrAmt, maxTx)
+
+	case "frontconf":
+		idx, _ := strconv.Atoi(os.Args[2])
+		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runFrontConf(uint32(idx), qsrAmt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -4023,6 +4034,471 @@ func runTxType(idx uint32, qsrAmt int64) {
 		InitialPlasma:  initialPlasma,
 		FinalPlasma:    finalPlasma,
 		TypeResults:    typeResults,
+	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+// ---- Phase 17: mempool cap + frontier conflict ----
+
+type poolCapResult struct {
+	TxIndex          int    `json:"tx_index"`
+	BlockHeight      uint64 `json:"block_height"`
+	SubmitMomentum   uint64 `json:"submit_momentum"`
+	PlasmaBefore     uint64 `json:"plasma_before"`
+	PublishError     string `json:"publish_error,omitempty"`
+	Included         bool   `json:"included"`
+	InclusionLatencyMs int64 `json:"inclusion_latency_ms,omitempty"`
+}
+
+type poolCapSummary struct {
+	AccountIndex     uint64           `json:"account_index"`
+	AccountAddress   string           `json:"account_address"`
+	QSRFused         int64            `json:"qsr_fused"`
+	FusedPlasma      uint64           `json:"fused_plasma"`
+	Attempted        int              `json:"attempted"`
+	Submitted        int              `json:"submitted"`
+	Rejected         int              `json:"rejected"`
+	Included         int              `json:"included"`
+	Unresolved       int              `json:"unresolved"`
+	FirstRejectIdx   int              `json:"first_reject_idx"`
+	FirstRejectError string           `json:"first_reject_error"`
+	MomentaUsed      int              `json:"momenta_used"`
+	StartMomentum    uint64           `json:"start_momentum"`
+	EndMomentum      uint64           `json:"end_momentum"`
+	Results          []poolCapResult  `json:"results"`
+}
+
+// runPoolCap tests the per-account mempool cap (MaxUncommittedBlocksPerAccount=500).
+// Sends maxTx self-transfers as fast as possible from a single account without
+// waiting for inclusion. Measures when rejects start and whether the account recovers.
+func runPoolCap(idx uint32, qsrAmt int64, maxTx int) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+
+	// Setup: fund + fuse
+	_, targetHeight := frontierAccount(target.addrStr)
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "poolcap: funding account[%d] with 100 ZNN...\n", idx)
+		b, _, err := buildSend(agent, target.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Wait for funding to arrive
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{target.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	receiveAll(target)
+
+	// Fuse QSR for plasma
+	fmt.Fprintf(os.Stderr, "poolcap: fusing %d QSR on account[%d]...\n", qsrAmt, idx)
+	fuseData := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, target.addr)
+	fb, _, err := buildSend(agent, types.PlasmaContract, qsr, dec(qsrAmt), fuseData, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL fuse: %v\n", err)
+		os.Exit(1)
+	}
+	if err := publish(fb); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL publish fuse: %v\n", err)
+		os.Exit(1)
+	}
+	waitIncluded(agent.addrStr, fb.Height, 120*time.Second)
+
+	// Wait for plasma
+	for i := 0; i < 60; i++ {
+		p := plasmaLevel(target.addrStr)
+		if p >= uint64(qsrAmt*2100) {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	initialPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "poolcap: initial plasma=%d, sending %d txs...\n", initialPlasma, maxTx)
+
+	fmStart := frontierMomentum()
+	startM := fmStart.Height
+
+	var results []poolCapResult
+	firstRejectIdx := -1
+	var firstRejectError string
+
+	// Use tiny amount (1 raw unit) so balance doesn't limit tx count.
+	// Need enough plasma for maxTx txs in rapid succession:
+	// each tx costs 21000 plasma, so maxTx=600 needs 12.6M plasma = 6000 QSR.
+	tinyAmt := big.NewInt(1)
+	for i := 0; i < maxTx; i++ {
+		plasmaBefore := plasmaLevel(target.addrStr)
+		b, _, err := buildSend(target, target.addr, znn, tinyAmt, nil, true)
+		if err != nil {
+			results = append(results, poolCapResult{
+				TxIndex: i, PublishError: fmt.Sprintf("build: %v", err),
+				PlasmaBefore: plasmaBefore,
+			})
+			if firstRejectIdx < 0 {
+				firstRejectIdx = i
+				firstRejectError = fmt.Sprintf("build: %v", err)
+			}
+			continue
+		}
+		subM := frontierMomentum().Height
+		if err := publish(b); err != nil {
+			errStr := fmt.Sprintf("%v", err)
+			results = append(results, poolCapResult{
+				TxIndex: i, BlockHeight: b.Height, SubmitMomentum: subM,
+				PlasmaBefore: plasmaBefore, PublishError: errStr,
+			})
+			if firstRejectIdx < 0 {
+				firstRejectIdx = i
+				firstRejectError = errStr
+			}
+			continue
+		}
+		results = append(results, poolCapResult{
+			TxIndex: i, BlockHeight: b.Height, SubmitMomentum: subM,
+			PlasmaBefore: plasmaBefore,
+		})
+	}
+
+	// Wait for inclusion — with 500+ txs this may take a while
+	fmt.Fprintf(os.Stderr, "poolcap: waiting for inclusion (120s)...\n")
+	time.Sleep(120 * time.Second)
+
+	// Verify inclusion
+	submitted := 0
+	included := 0
+	rejected := 0
+	for i := range results {
+		r := &results[i]
+		if r.PublishError != "" {
+			rejected++
+			continue
+		}
+		submitted++
+		_, h := frontierAccount(target.addrStr)
+		if h >= r.BlockHeight {
+			r.Included = true
+			included++
+		}
+	}
+
+	fmEnd := frontierMomentum()
+	endM := fmEnd.Height
+
+	out := poolCapSummary{
+		AccountIndex:     uint64(idx),
+		AccountAddress:   target.addrStr,
+		QSRFused:         qsrAmt,
+		FusedPlasma:      uint64(qsrAmt * 2100),
+		Attempted:        maxTx,
+		Submitted:        submitted,
+		Rejected:         rejected,
+		Included:         included,
+		Unresolved:       submitted - included,
+		FirstRejectIdx:   firstRejectIdx,
+		FirstRejectError: firstRejectError,
+		MomentaUsed:      int(endM - startM + 1),
+		StartMomentum:    startM,
+		EndMomentum:      endM,
+		Results:          results,
+	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+type frontConfResult struct {
+	TxIndex      int    `json:"tx_index"`
+	BlockHeight  uint64 `json:"block_height"`
+	Hash         string `json:"hash"`
+	DataLen      int    `json:"data_len"`
+	FusedPlasma  uint64 `json:"fused_plasma"`
+	BasePlasma   uint64 `json:"base_plasma"`
+	OverpayMult  int    `json:"overpay_mult"`
+	PublishError string `json:"publish_error,omitempty"`
+	Included     bool   `json:"included"`
+}
+
+type frontConfSummary struct {
+	AccountIndex     uint64            `json:"account_index"`
+	AccountAddress   string            `json:"account_address"`
+	QSRFused         int64             `json:"qsr_fused"`
+	ConflictsTested  int               `json:"conflicts_tested"`
+	EqualPlasmaRounds int              `json:"equal_plasma_rounds"`
+	OverpayRounds    int               `json:"overpay_rounds"`
+	EqualHashWins    int               `json:"equal_hash_wins"`
+	PriceWins        int               `json:"price_wins"`
+	CorrectPredictions int             `json:"correct_predictions"`
+	Results          []frontConfResult `json:"results"`
+}
+
+// runFrontConf tests frontier conflict resolution in the account pool.
+// For each conflict round, it builds two transactions at the same height
+// with different content (different data payloads → different hashes).
+// Both are published rapidly. The pool's price-based replacement rule
+// should keep exactly one; the other is rejected or replaced.
+//
+// With equal plasma, the tie-break is smallest hash wins (pool replacement).
+// With different data lengths, the one with higher price-per-base-plasma wins.
+func runFrontConf(idx uint32, qsrAmt int64) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+
+	// Setup: fund + fuse
+	_, targetHeight := frontierAccount(target.addrStr)
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "frontconf: funding account[%d] with 100 ZNN...\n", idx)
+		b, _, err := buildSend(agent, target.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{target.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	receiveAll(target)
+
+	fmt.Fprintf(os.Stderr, "frontconf: fusing %d QSR on account[%d]...\n", qsrAmt, idx)
+	fuseData := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, target.addr)
+	fb, _, err := buildSend(agent, types.PlasmaContract, qsr, dec(qsrAmt), fuseData, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL fuse: %v\n", err)
+		os.Exit(1)
+	}
+	if err := publish(fb); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL publish fuse: %v\n", err)
+		os.Exit(1)
+	}
+	waitIncluded(agent.addrStr, fb.Height, 120*time.Second)
+
+	for i := 0; i < 60; i++ {
+		p := plasmaLevel(target.addrStr)
+		if p >= uint64(qsrAmt*2100) {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	initialPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "frontconf: initial plasma=%d, testing frontier conflicts...\n", initialPlasma)
+
+	// Test both equal-plasma (hash tie-break) and overpay (price priority) scenarios.
+	// Rounds 0-1: equal plasma (both base) — smallest hash should win
+	// Rounds 2-3: txB overpays 2x — txB should win regardless of hash
+	// Round 4: txA overpays 2x — txA should win regardless of hash
+	type conflictRound struct {
+		round      int
+		overpayA   int // 1 = base, 2 = 2x overpay
+		overpayB   int
+		expectWinA bool // true if txA should win
+	}
+	rounds := []conflictRound{
+		{0, 1, 1, false}, // equal plasma, smallest hash wins (determined at runtime)
+		{1, 1, 1, false}, // equal plasma, smallest hash wins
+		{2, 1, 2, false}, // txB overpays — txB should win
+		{3, 1, 2, false}, // txB overpays — txB should win
+		{4, 2, 1, true},  // txA overpays — txA should win
+	}
+
+	var allResults []frontConfResult
+	equalHashWins := 0
+	priceWins := 0
+	correctPredictions := 0
+	equalRounds := 0
+	overpayRounds := 0
+
+	for _, cr := range rounds {
+		round := cr.round
+		prevHash, height := frontierAccount(target.addrStr)
+		fm := frontierMomentum()
+
+		// Build txA
+		dataA := []byte{byte(round)}
+		bA := &nom.AccountBlock{
+			Version:              1,
+			ChainIdentifier:      chainID,
+			BlockType:            nom.BlockTypeUserSend,
+			PreviousHash:         prevHash,
+			Height:               height + 1,
+			MomentumAcknowledged: types.HashHeight{Hash: fm.Hash, Height: fm.Height},
+			Address:              target.addr,
+			ToAddress:            target.addr,
+			Amount:               big.NewInt(1),
+			TokenStandard:        znn,
+			Data:                 dataA,
+		}
+		reqA := requiredPoW(target.addrStr, bA.BlockType, &target.addr, dataA)
+		bA.FusedPlasma = reqA.BasePlasma * uint64(cr.overpayA)
+		bA.Hash = bA.ComputeHash()
+		bA.PublicKey = target.kp.Public
+		bA.Signature = target.kp.Sign(bA.Hash.Bytes())
+
+		// Build txB (different data → different hash)
+		dataB := make([]byte, 100)
+		for i := range dataB {
+			dataB[i] = byte((i + round) % 256)
+		}
+		bB := &nom.AccountBlock{
+			Version:              1,
+			ChainIdentifier:      chainID,
+			BlockType:            nom.BlockTypeUserSend,
+			PreviousHash:         prevHash,
+			Height:               height + 1,
+			MomentumAcknowledged: types.HashHeight{Hash: fm.Hash, Height: fm.Height},
+			Address:              target.addr,
+			ToAddress:            target.addr,
+			Amount:               big.NewInt(1),
+			TokenStandard:        znn,
+			Data:                 dataB,
+		}
+		reqB := requiredPoW(target.addrStr, bB.BlockType, &target.addr, dataB)
+		bB.FusedPlasma = reqB.BasePlasma * uint64(cr.overpayB)
+		bB.Hash = bB.ComputeHash()
+		bB.PublicKey = target.kp.Public
+		bB.Signature = target.kp.Sign(bB.Hash.Bytes())
+
+		// Determine expected winner
+		var expectedWinner string
+		if cr.overpayA == cr.overpayB {
+			// Equal price ratio — smallest hash wins
+			equalRounds++
+			if bA.Hash.String() < bB.Hash.String() {
+				expectedWinner = "A"
+			} else {
+				expectedWinner = "B"
+			}
+		} else {
+			overpayRounds++
+			if cr.overpayA > cr.overpayB {
+				expectedWinner = "A"
+			} else {
+				expectedWinner = "B"
+			}
+		}
+
+		fmt.Fprintf(os.Stderr, "frontconf: round %d — txA(hash=%s... data=%dB plasma=%d overpay=%dx) vs txB(hash=%s... data=%dB plasma=%d overpay=%dx) expect=%s\n",
+			round, bA.Hash.String()[:16], len(dataA), bA.FusedPlasma, cr.overpayA,
+			bB.Hash.String()[:16], len(dataB), bB.FusedPlasma, cr.overpayB, expectedWinner)
+
+		// Publish A first, then B rapidly
+		errA := publish(bA)
+		errB := publish(bB)
+
+		resA := frontConfResult{
+			TxIndex: round*2, BlockHeight: bA.Height,
+			Hash: bA.Hash.String(), DataLen: len(dataA),
+			FusedPlasma: bA.FusedPlasma, BasePlasma: reqA.BasePlasma, OverpayMult: cr.overpayA,
+		}
+		resB := frontConfResult{
+			TxIndex: round*2 + 1, BlockHeight: bB.Height,
+			Hash: bB.Hash.String(), DataLen: len(dataB),
+			FusedPlasma: bB.FusedPlasma, BasePlasma: reqB.BasePlasma, OverpayMult: cr.overpayB,
+		}
+		if errA != nil {
+			resA.PublishError = fmt.Sprintf("%v", errA)
+		}
+		if errB != nil {
+			resB.PublishError = fmt.Sprintf("%v", errB)
+		}
+
+		// Wait for inclusion of whichever won
+		time.Sleep(15 * time.Second)
+		frontierHash, h := frontierAccount(target.addrStr)
+		actualWinner := "?"
+		if h >= bA.Height {
+			if frontierHash == bA.Hash {
+				resA.Included = true
+				actualWinner = "A"
+			} else if frontierHash == bB.Hash {
+				resB.Included = true
+				actualWinner = "B"
+			} else {
+				// Frontier advanced past this height — check the block at contested height
+				var blk struct {
+					Hash string `json:"hash"`
+				}
+				if err := rpc("ledger.getAccountBlockByHeight", []interface{}{target.addrStr, bA.Height}, &blk); err == nil && blk.Hash != "" {
+					if blk.Hash == bA.Hash.String() {
+						resA.Included = true
+						actualWinner = "A"
+					} else if blk.Hash == bB.Hash.String() {
+						resB.Included = true
+						actualWinner = "B"
+					}
+				}
+			}
+		}
+
+		// Classify the win
+		if actualWinner == expectedWinner {
+			correctPredictions++
+		}
+		if cr.overpayA == cr.overpayB {
+			// Equal plasma rounds — hash tie-break
+			if actualWinner != "?" {
+				equalHashWins++
+				fmt.Fprintf(os.Stderr, "frontconf: round %d — %s won (equal plasma, hash tie-break) expected=%s correct=%v\n",
+					round, actualWinner, expectedWinner, actualWinner == expectedWinner)
+			}
+		} else {
+			// Overpay rounds — price priority
+			if actualWinner != "?" {
+				priceWins++
+				fmt.Fprintf(os.Stderr, "frontconf: round %d — %s won (price priority) expected=%s correct=%v\n",
+					round, actualWinner, expectedWinner, actualWinner == expectedWinner)
+			}
+		}
+
+		if resA.PublishError != "" || resB.PublishError != "" {
+			fmt.Fprintf(os.Stderr, "frontconf: round %d — publish errors: A=%q B=%q\n",
+				round, resA.PublishError, resB.PublishError)
+		}
+
+		allResults = append(allResults, resA, resB)
+
+		// Wait a moment between rounds
+		time.Sleep(3 * time.Second)
+	}
+
+	out := frontConfSummary{
+		AccountIndex:       uint64(idx),
+		AccountAddress:     target.addrStr,
+		QSRFused:           qsrAmt,
+		ConflictsTested:    len(rounds),
+		EqualPlasmaRounds:  equalRounds,
+		OverpayRounds:      overpayRounds,
+		EqualHashWins:      equalHashWins,
+		PriceWins:          priceWins,
+		CorrectPredictions: correctPredictions,
+		Results:            allResults,
 	}
 
 	enc := json.NewEncoder(os.Stdout)
