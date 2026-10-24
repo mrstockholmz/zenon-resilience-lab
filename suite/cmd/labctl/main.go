@@ -646,11 +646,362 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 	enc.Encode(out)
 }
 
+// ---- Contract Cap ----
+
+type contractCapCall struct {
+	AccountIndex      int    `json:"account_index"`
+	CallIndex         int    `json:"call_index"`
+	Published         bool   `json:"published"`
+	Error             string `json:"error,omitempty"`
+	Included          bool   `json:"included"`
+	InclusionHeight   uint64 `json:"inclusion_height"`
+	InclusionLatencyMs int64 `json:"inclusion_latency_ms"`
+}
+
+// runContractCap: per-momentum contract block cap experiment.
+//
+// go-zenon caps contract blocks per momentum at MaxContractBlocksInMomentum = 80.
+// Each Stake call generates 2 contract blocks (ContractReceive + ContractSend).
+// The content selector batches per contract address and drops the batch [sendN, recvN+1]
+// when the cap would be exceeded, so the effective cap is ~40 Stake calls per momentum.
+//
+// N accounts each send M Stake calls in parallel. We then verify how many were
+// included in the first momentum that included any, and whether the cap held.
+func runContractCap(numAccounts int, callsPerAccount int, qsrPerAccount int64, baseIdx uint32) {
+
+	// ---- Setup: fund all accounts ----
+	fundAmount := int64(10 + callsPerAccount)
+	fmt.Fprintf(os.Stderr, "contractcap setup: funding %d accounts (index %d-%d) with %d ZNN each...\n",
+		numAccounts, baseIdx, baseIdx+uint32(numAccounts)-1, fundAmount)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		if h == 0 {
+			fmt.Fprintf(os.Stderr, "  funding account %d (%s)...\n", idx, w.addrStr)
+			runFund(idx, fundAmount)
+		}
+	}
+
+	// Wait for funding inclusion
+	targetHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "contractcap setup: waiting for funding inclusion (height %d)...\n", targetHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= targetHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// ---- Setup: fuse QSR for all accounts ----
+	fmt.Fprintf(os.Stderr, "contractcap setup: fusing %d QSR for %d accounts...\n", qsrPerAccount, numAccounts)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		fmt.Fprintf(os.Stderr, "  fusing %d QSR for account %d...\n", qsrPerAccount, idx)
+		runFuseFor(idx, qsrPerAccount)
+	}
+
+	// Wait for fusion inclusion
+	fuseHeight := frontierMomentum().Height + 2
+	fmt.Fprintf(os.Stderr, "contractcap setup: waiting for fusion inclusion (height %d)...\n", fuseHeight)
+	for {
+		fm := frontierMomentum()
+		if fm.Height >= fuseHeight {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	// Receive funded blocks (so accounts have plasma)
+	fmt.Fprintf(os.Stderr, "contractcap setup: receiving funded blocks...\n")
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		receiveAll(w)
+	}
+
+	// Record plasma levels and wait until all accounts have enough plasma
+	minPlasma := uint64(52500 * callsPerAccount)
+	plasmaLevels := make(map[uint32]uint64)
+	for wait := 0; wait < 10; wait++ {
+		allReady := true
+		for i := 0; i < numAccounts; i++ {
+			idx := baseIdx + uint32(i)
+			w := derivedAccount(idx)
+			plasmaLevels[idx] = plasmaLevel(w.addrStr)
+			if plasmaLevels[idx] < minPlasma {
+				allReady = false
+			}
+		}
+		if allReady {
+			break
+		}
+		fmt.Fprintf(os.Stderr, "contractcap setup: waiting for plasma (round %d, need %d)...\n", wait, minPlasma)
+		time.Sleep(10 * time.Second)
+		// Try receiving again
+		for i := 0; i < numAccounts; i++ {
+			idx := baseIdx + uint32(i)
+			w := derivedAccount(idx)
+			receiveAll(w)
+		}
+	}
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		fmt.Fprintf(os.Stderr, "  account %d: plasma=%d\n", idx, plasmaLevels[idx])
+	}
+
+	totalCalls := numAccounts * callsPerAccount
+	fmt.Fprintf(os.Stderr, "contractcap: starting execution (%d accounts x %d calls = %d total Stake calls)...\n",
+		numAccounts, callsPerAccount, totalCalls)
+
+	// ---- Execution phase: all accounts send Stake calls in parallel ----
+	fmSetup := frontierMomentum()
+	setupMomentum := fmSetup.Height
+	tStart := time.Now()
+
+	// Record pre-Stake frontier heights for each account
+	preStakeHeights := make(map[uint32]uint64)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		_, h := frontierAccount(w.addrStr)
+		preStakeHeights[idx] = h
+	}
+
+	var calls []contractCapCall
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
+	stakeData := definition.ABIStake.PackMethodPanic(definition.StakeMethodName, int64(2592000))
+
+	for i := 0; i < numAccounts; i++ {
+		wg.Add(1)
+		go func(idx uint32) {
+			defer wg.Done()
+			w := derivedAccount(idx)
+			for j := 0; j < callsPerAccount; j++ {
+				b, _, err := buildSend(w, types.StakeContract, znn, dec(1), stakeData, true)
+				if err != nil {
+					mu.Lock()
+					calls = append(calls, contractCapCall{
+						AccountIndex: int(idx),
+						CallIndex:    j,
+						Published:    false,
+						Error:        fmt.Sprintf("build: %v", err),
+					})
+					mu.Unlock()
+					continue
+				}
+				if err := publish(b); err != nil {
+					mu.Lock()
+					calls = append(calls, contractCapCall{
+						AccountIndex: int(idx),
+						CallIndex:    j,
+						Published:    false,
+						Error:        fmt.Sprintf("publish: %v", err),
+					})
+					mu.Unlock()
+					continue
+				}
+				mu.Lock()
+				calls = append(calls, contractCapCall{
+					AccountIndex: int(idx),
+					CallIndex:    j,
+					Published:    true,
+				})
+				mu.Unlock()
+			}
+		}(baseIdx + uint32(i))
+	}
+	wg.Wait()
+
+	publishDuration := time.Since(tStart)
+	fmt.Fprintf(os.Stderr, "contractcap: all %d calls published in %v, waiting for inclusion...\n", totalCalls, publishDuration)
+
+	// ---- Verification phase ----
+	// Wait for inclusion: check each account's confirmationDetail to find
+	// the momentum height where each Stake send was included.
+	// The node produces momenta every ~10s; with 50 calls and contract
+	// block pipeline, we may need 15+ momenta for full inclusion.
+	maxWait := time.After(180 * time.Second)
+	tick := time.Tick(3 * time.Second)
+	verifyDone := false
+
+	for !verifyDone {
+		select {
+		case <-maxWait:
+			fmt.Fprintf(os.Stderr, "contractcap: verification timeout (180s)\n")
+			verifyDone = true
+		case <-tick:
+			allIncluded := true
+			mu.Lock()
+			for ci := range calls {
+				if !calls[ci].Published || calls[ci].Included {
+					continue
+				}
+				// Check confirmationDetail for this account's frontier
+				acctIdx := uint32(calls[ci].AccountIndex)
+				w := derivedAccount(acctIdx)
+				var fb struct {
+					ConfirmationDetail *struct {
+						MomentumHeight uint64 `json:"momentumHeight"`
+					} `json:"confirmationDetail"`
+				}
+				if err := rpc("ledger.getFrontierAccountBlock", []interface{}{w.addrStr}, &fb); err == nil && fb.ConfirmationDetail != nil {
+					calls[ci].Included = true
+					calls[ci].InclusionHeight = fb.ConfirmationDetail.MomentumHeight
+					calls[ci].InclusionLatencyMs = time.Since(tStart).Milliseconds()
+				} else {
+					allIncluded = false
+				}
+			}
+			mu.Unlock()
+
+			if allIncluded {
+				fmt.Fprintf(os.Stderr, "contractcap: all calls included\n")
+				verifyDone = true
+			}
+
+			fmNow := frontierMomentum()
+			if fmNow.Height >= setupMomentum+20 {
+				fmt.Fprintf(os.Stderr, "contractcap: reached max wait height %d\n", fmNow.Height)
+				verifyDone = true
+			}
+		}
+	}
+
+	fmEnd := frontierMomentum()
+	endMomentum := fmEnd.Height
+
+	// Now scan momenta to find which Stake calls were included where.
+	// For each account, check its blocks in each momentum to find Stake sends.
+	// We look at momentum contents for blocks from our derived accounts.
+	fmt.Fprintf(os.Stderr, "contractcap: scanning momenta %d to %d for Stake inclusions...\n", setupMomentum, endMomentum)
+
+	// Build account address lookup
+	acctAddrs := make(map[string]uint32)
+	for i := 0; i < numAccounts; i++ {
+		idx := baseIdx + uint32(i)
+		w := derivedAccount(idx)
+		acctAddrs[w.addrStr] = idx
+	}
+
+	// perMomentumInclusion tracks how many Stake calls were included per momentum
+	perMomentumInclusion := make(map[uint64]int)
+	// perMomentumContracts tracks total contract blocks per momentum
+	perMomentumContracts := make(map[uint64]int)
+
+	for h := setupMomentum; h <= endMomentum; h++ {
+		var ml struct {
+			List []struct {
+				Height  uint64 `json:"height"`
+				Content []struct {
+					Address string `json:"address"`
+					Height  uint64 `json:"height"`
+				} `json:"content"`
+			} `json:"list"`
+		}
+		if err := rpc("ledger.getMomentumsByHeight", []interface{}{h, 1}, &ml); err != nil {
+			continue
+		}
+		if len(ml.List) == 0 {
+			continue
+		}
+
+		stakeCount := 0
+		stakeContractBlocks := 0
+		for _, blk := range ml.List[0].Content {
+			// Count only blocks from our derived accounts at heights > pre-Stake frontier
+			// (these are the Stake sends, not setup blocks)
+			if idx, ok := acctAddrs[blk.Address]; ok {
+				if blk.Height > preStakeHeights[idx] {
+					stakeCount++
+				}
+			}
+			// Count Stake contract blocks by address
+			if blk.Address == types.StakeContract.String() {
+				stakeContractBlocks++
+			}
+		}
+		if stakeCount > 0 {
+			perMomentumInclusion[h] = stakeCount
+		}
+		if stakeContractBlocks > 0 {
+			perMomentumContracts[h] = stakeContractBlocks
+		}
+	}
+
+	// Call results already have inclusion info from confirmationDetail checks above
+
+	// Find the first momentum that included any Stake calls
+	var firstMomentum uint64
+	firstMomentumCalls := 0
+	for h, count := range perMomentumInclusion {
+		if firstMomentum == 0 || h < firstMomentum {
+			firstMomentum = h
+			firstMomentumCalls = count
+		}
+	}
+
+	// Count contract blocks in the first momentum
+	firstMomentumContractBlocks := perMomentumContracts[firstMomentum]
+
+	theoreticalCap := 40 // MaxContractBlocksInMomentum (80) / 2 blocks per Stake call
+	capEnforced := firstMomentumCalls <= theoreticalCap
+
+	fmt.Fprintf(os.Stderr, "contractcap: first momentum with Stake calls: %d (calls=%d, contract_blocks=%d)\n",
+		firstMomentum, firstMomentumCalls, firstMomentumContractBlocks)
+	fmt.Fprintf(os.Stderr, "contractcap: cap enforced: %v (theoretical cap=%d, actual=%d)\n",
+		capEnforced, theoreticalCap, firstMomentumCalls)
+
+	// ---- Output ----
+	type contractCapOutput struct {
+		NumAccounts               int               `json:"num_accounts"`
+		CallsPerAccount           int               `json:"calls_per_account"`
+		TotalCalls                int               `json:"total_calls"`
+		QSRPerAccount             int64             `json:"qsr_per_account"`
+		PlasmaPerAccount          uint64            `json:"plasma_per_account"`
+		SetupMomentum             uint64            `json:"setup_momentum"`
+		EndMomentum               uint64            `json:"end_momentum"`
+		Calls                     []contractCapCall `json:"calls"`
+		PerMomentumInclusion      map[uint64]int    `json:"per_momentum_inclusion"`
+		PerMomentumContractBlocks map[uint64]int    `json:"per_momentum_contract_blocks"`
+		FirstMomentum             uint64            `json:"first_momentum"`
+		FirstMomentumCalls        int               `json:"first_momentum_calls"`
+		FirstMomentumContractBlocks int             `json:"first_momentum_contract_blocks"`
+		TheoreticalCap            int               `json:"theoretical_cap"`
+		CapEnforced               bool              `json:"cap_enforced"`
+	}
+
+	out := contractCapOutput{
+		NumAccounts:               numAccounts,
+		CallsPerAccount:           callsPerAccount,
+		TotalCalls:                totalCalls,
+		QSRPerAccount:             qsrPerAccount,
+		PlasmaPerAccount:          uint64(qsrPerAccount) * 2100,
+		SetupMomentum:             setupMomentum,
+		EndMomentum:               endMomentum,
+		Calls:                     calls,
+		PerMomentumInclusion:      perMomentumInclusion,
+		PerMomentumContractBlocks: perMomentumContracts,
+		FirstMomentum:             firstMomentum,
+		FirstMomentumCalls:        firstMomentumCalls,
+		FirstMomentumContractBlocks: firstMomentumContractBlocks,
+		TheoreticalCap:            theoreticalCap,
+		CapEnforced:               capEnforced,
+	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
 // ---- Main ----
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>|datasize <idx> <qsr>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>|datasize <idx> <qsr>|contractcap <n> <callsPerAcct> <qsr> [baseIdx]")
 		os.Exit(1)
 	}
 
@@ -814,6 +1165,17 @@ func main() {
 		idx, _ := strconv.Atoi(os.Args[2])
 		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		runDataSize(uint32(idx), qsrAmt)
+
+	case "contractcap":
+		numAccounts, _ := strconv.Atoi(os.Args[2])
+		callsPerAccount, _ := strconv.Atoi(os.Args[3])
+		qsrPerAccount, _ := strconv.ParseInt(os.Args[4], 10, 64)
+		baseIdx := uint32(200)
+		if len(os.Args) > 5 {
+			bi, _ := strconv.Atoi(os.Args[5])
+			baseIdx = uint32(bi)
+		}
+		runContractCap(numAccounts, callsPerAccount, qsrPerAccount, baseIdx)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)

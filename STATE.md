@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 19
+next_phase: 20
 cloud_sessions_run: 1
-local_sessions_run: 12
+local_sessions_run: 13
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-24 (phase 18: data payload size limits + plasma cost formula)
+updated: 2026-10-24 (phase 19: contract block throughput cap)
 ```
 
 ## Phase log
@@ -31,6 +31,8 @@ updated: 2026-10-24 (phase 18: data payload size limits + plasma cost formula)
 | 15 plasma regeneration rate | done | results/phase-15/20261023-phase15-plasma-regeneration-results.md | Plasma regenerates from 0 to full within 1 momentum. Two-counter model confirmed. An account with 100 QSR can send 10 txs per momentum indefinitely. Corrects phase 8: regeneration is on confirmation, not over time. |
 | 16 transaction type diversity | done | results/phase-16/20261024-phase16-txtype-results.md | Plasma cost ladder confirmed: self-transfer=21000, +data=21000+68/B, contract=52500. All match go-zenon source exactly. 3-seed reproducible. R13 added. |
 | 17 mempool cap + frontier conflict | done | results/phase-17/20261024-phase17-mempool-cap-results.md | Per-account mempool cap of 500 unconfirmed blocks confirmed. Drain/refill cycle observed. Frontier conflict: price-then-hash rule 15/15 correct across 3 seeds. R14 added. |
+| 18 data payload size limits | done | results/phase-18/20261024-phase18-datasize-results.md | Plasma cost formula exact: 21000+68*N bytes for 0-16KB. 16KB limit strictly enforced. Max-size tx costs 1,135,112 plasma (~541 QSR). Plasma budget (4.2M) limits large-data txs to 3 per momentum. R15 added. |
+| 19 contract block throughput cap | done | results/phase-19/20261024-phase19-contractcap-results.md | Contract block cap of 80/momentum exists but is NOT binding. Plasma budget limits Stake calls to ~73-75/momentum. Cap and plasma budget aligned (4.2M/52.5K=80). Stake generates 1 contract block (receive only). 2-momentum pipeline. R16 added. |
 
 ## Local verification session 2026-10-24
 
@@ -138,6 +140,15 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     plasma (~541 QSR). The per-momentum plasma budget (4.2M) limits large-data
     txs to 3 per momentum; the 8MB wire size budget is not binding at 16KB.
     Inclusion latency is independent of data size (0-6ms).
+20. **Contract block cap of 80/momentum is NOT the binding constraint for
+    contract throughput.** The plasma budget (4.2M) limits user-initiated
+    contract calls to ~73-75 per momentum (52,500 plasma each for
+    EmbeddedSimple). The cap and plasma budget are mathematically aligned
+    (4,200,000 / 52,500 = 80), making them redundant. Stake generates only
+    1 contract block (ContractReceive, no ContractSend). Contract calls
+    follow a 2-momentum pipeline: user sends in N, contract blocks in N+1.
+    Effective sustained contract throughput is ~37-40 calls per 10s
+    momentum-period, not 80.
 
 ## Suite tooling
 
@@ -147,7 +158,7 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
 - `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
-- `suite/check-regressions.py` — regression assertions R1-R15.
+- `suite/check-regressions.py` — regression assertions R1-R16.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
 - `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
 - `deplete` — plasma depletion + regeneration test (phase 8). Fuses QSR, sends
@@ -184,6 +195,10 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   at increasing data sizes (0 through 16KB+1), verifies the plasma cost
   formula 21000+68*N, tests the 16KB limit enforcement, and bursts max-size
   txs to observe per-momentum plasma budget limits.
+- `contractcap` — contract block throughput cap test (phase 19). N accounts
+  send Stake contract calls simultaneously to test the per-momentum contract
+  block cap (80). Verifies that plasma budget, not contract cap, is the
+  binding constraint. Optional base index parameter for multiple seeds.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

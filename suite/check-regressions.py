@@ -623,6 +623,77 @@ def check_datasize(results_dir):
     
     return failures
 
+def check_contractcap(results_dir):
+    """R16: Contract block cap — plasma budget binds before contract cap.
+    
+    With 100 Stake calls (52,500 plasma each, 1 contract block per call):
+    - All 100 calls must be published and included (100% inclusion)
+    - First momentum batch: 70-80 calls (plasma budget limited, NOT contract cap)
+    - Contract blocks per momentum: ≤ 80 (cap exists but should not be exceeded)
+    - Stake generates only 1 contract block (ContractReceive, no ContractSend)
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-19")
+    if not os.path.isdir(phase_dir):
+        return ["R16 SKIP: phase-19 directory not found"]
+    
+    files = sorted(glob.glob(os.path.join(phase_dir, "contractcap-100acct-*.json")))
+    if not files:
+        return ["R16 SKIP: no contractcap-100acct results found"]
+    
+    for f in files:
+        data = load_result(f)
+        if not data:
+            continue
+        
+        calls = data.get("calls", [])
+        total = data.get("total_calls", 0)
+        published = sum(1 for c in calls if c.get("published", False))
+        included = sum(1 for c in calls if c.get("included", False))
+        
+        # All calls must be published (enough plasma)
+        if published < total:
+            failures.append(
+                f"R16 FAIL: {os.path.basename(f)} published={published} "
+                f"expected={total}"
+            )
+        
+        # All calls must be included (100% inclusion)
+        if included < total:
+            failures.append(
+                f"R16 FAIL: {os.path.basename(f)} included={included} "
+                f"expected={total}"
+            )
+        
+        # First momentum batch: 70-80 (plasma budget limited)
+        first_calls = data.get("first_momentum_calls", 0)
+        if first_calls < 70 or first_calls > 80:
+            failures.append(
+                f"R16 FAIL: {os.path.basename(f)} first_momentum_calls={first_calls} "
+                f"expected 70-80 (plasma budget limited)"
+            )
+        
+        # Contract blocks per momentum must not exceed 80
+        per_momentum_contracts = data.get("per_momentum_contract_blocks", {})
+        for h, count in per_momentum_contracts.items():
+            if count > 80:
+                failures.append(
+                    f"R16 FAIL: {os.path.basename(f)} momentum {h} has "
+                    f"{count} contract blocks (cap=80)"
+                )
+        
+        # Contract blocks should equal first batch calls (1 per Stake call)
+        first_momentum = data.get("first_momentum", 0)
+        if first_momentum and str(first_momentum + 1) in per_momentum_contracts:
+            contract_blocks = per_momentum_contracts[str(first_momentum + 1)]
+            if contract_blocks != first_calls:
+                failures.append(
+                    f"R16 FAIL: {os.path.basename(f)} contract_blocks={contract_blocks} "
+                    f"!= first_calls={first_calls} (Stake should generate 1 block per call)"
+                )
+    
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -643,6 +714,7 @@ def main():
         ("R13: tx type plasma costs match source (phase-16)", check_txtype),
         ("R14: mempool cap 500 + frontier conflict price-then-hash (phase-17)", check_mempool_cap),
         ("R15: data payload plasma cost formula + 16KB limit (phase-18)", check_datasize),
+        ("R16: contract block cap — plasma budget binds first (phase-19)", check_contractcap),
     ]
     
     for name, check_fn in checks:
