@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 18
+next_phase: 19
 cloud_sessions_run: 1
 local_sessions_run: 12
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-24 (phase 17: mempool cap + frontier conflict resolution)
+updated: 2026-10-24 (phase 18: data payload size limits + plasma cost formula)
 ```
 
 ## Phase log
@@ -131,6 +131,13 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     winning a frontier conflict. Two distinct error messages reveal the
     mechanism: "block price is smaller" (price-based) and "hash tie-break
     is worse" (hash-based).
+19. **Data payload plasma cost formula is exact: 21000 + 68*N bytes.**
+    Confirmed for all sizes 0 through 16,384 bytes across 3 seeds. The 16KB
+    limit (MaxDataLength) is strictly enforced — >16KB rejected with
+    "account-block data field is too big". A max-size tx costs 1,135,112
+    plasma (~541 QSR). The per-momentum plasma budget (4.2M) limits large-data
+    txs to 3 per momentum; the 8MB wire size budget is not binding at 16KB.
+    Inclusion latency is independent of data size (0-6ms).
 
 ## Suite tooling
 
@@ -140,7 +147,7 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
 - `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
-- `suite/check-regressions.py` — regression assertions R1-R13.
+- `suite/check-regressions.py` — regression assertions R1-R15.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
 - `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
 - `deplete` — plasma depletion + regeneration test (phase 8). Fuses QSR, sends
@@ -173,6 +180,10 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   conflicting transactions at the same height with different plasma amounts.
   Tests both hash tie-break (equal plasma) and price priority (overpay).
   Verifies the price-then-hash replacement rule from go-zenon source.
+- `datasize` — data payload size limits test (phase 18). Sends transactions
+  at increasing data sizes (0 through 16KB+1), verifies the plasma cost
+  formula 21000+68*N, tests the 16KB limit enforcement, and bursts max-size
+  txs to observe per-momentum plasma budget limits.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

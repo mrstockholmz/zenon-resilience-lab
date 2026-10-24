@@ -1,0 +1,152 @@
+datasize: fusing 2000 QSR on account[80]...
+datasize: waiting for fusion to confirm...
+datasize: initial plasma=2075672 (fused 2000 QSR)
+datasize: testing data size 0 (planned plasma=21000)...
+datasize:   requiredPoW BasePlasma=21000 RequiredDifficulty=0
+datasize:   included=true cost=21000 (planned 21000) latency=4ms plasma=2075672->2054672
+datasize: testing data size 256 (planned plasma=38408)...
+datasize:   requiredPoW BasePlasma=38408 RequiredDifficulty=0
+datasize:   included=true cost=38408 (planned 38408) latency=3ms plasma=2054672->2016264
+datasize: testing data size 1024 (planned plasma=90632)...
+datasize:   requiredPoW BasePlasma=90632 RequiredDifficulty=0
+datasize:   included=true cost=90632 (planned 90632) latency=3ms plasma=2016264->1925632
+datasize: testing data size 4096 (planned plasma=299528)...
+datasize:   requiredPoW BasePlasma=299528 RequiredDifficulty=0
+datasize:   included=true cost=299528 (planned 299528) latency=4ms plasma=1925632->1626104
+datasize: testing data size 8192 (planned plasma=578056)...
+datasize:   requiredPoW BasePlasma=578056 RequiredDifficulty=0
+datasize:   included=true cost=578056 (planned 578056) latency=5ms plasma=1626104->1048048
+datasize: testing data size 16384 (planned plasma=1135112)...
+datasize:   requiredPoW BasePlasma=1135112 RequiredDifficulty=130596000
+datasize:   PUBLISH FAILED: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)
+datasize: testing data size 16385 (over 16KB limit)...
+datasize:   requiredPoW failed (non-fatal): rpc embedded.plasma.getRequiredPoWForAccountBlock error: account-block data field is too big
+datasize: testing burst of 5 max-size (16KB) txs...
+datasize: burst 0 submitted at height 15
+datasize: burst 1 submitted at height 16
+datasize: burst 2 submitted at height 17
+datasize: burst 3 submitted at height 18
+datasize: burst 4 submitted at height 19
+datasize: waiting for burst inclusion...
+{
+  "account_index": 80,
+  "account_address": "z1qzuafm92fuls8cns4r6052a88d6j2aphp899ls",
+  "qsr_fused": 2000,
+  "fused_plasma": 4200000,
+  "initial_plasma": 2075672,
+  "final_plasma": 2724440,
+  "size_results": [
+    {
+      "data_size_bytes": 0,
+      "planned_plasma": 21000,
+      "plasma_before": 2075672,
+      "plasma_after": 2054672,
+      "actual_cost": 21000,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": true,
+      "inclusion_latency_ms": 4,
+      "included_momentum": 7242,
+      "block_height": 10
+    },
+    {
+      "data_size_bytes": 256,
+      "planned_plasma": 38408,
+      "plasma_before": 2054672,
+      "plasma_after": 2016264,
+      "actual_cost": 38408,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": true,
+      "inclusion_latency_ms": 3,
+      "included_momentum": 7242,
+      "block_height": 11
+    },
+    {
+      "data_size_bytes": 1024,
+      "planned_plasma": 90632,
+      "plasma_before": 2016264,
+      "plasma_after": 1925632,
+      "actual_cost": 90632,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": true,
+      "inclusion_latency_ms": 3,
+      "included_momentum": 7242,
+      "block_height": 12
+    },
+    {
+      "data_size_bytes": 4096,
+      "planned_plasma": 299528,
+      "plasma_before": 1925632,
+      "plasma_after": 1626104,
+      "actual_cost": 299528,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": true,
+      "inclusion_latency_ms": 4,
+      "included_momentum": 7242,
+      "block_height": 13
+    },
+    {
+      "data_size_bytes": 8192,
+      "planned_plasma": 578056,
+      "plasma_before": 1626104,
+      "plasma_after": 1048048,
+      "actual_cost": 578056,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": true,
+      "inclusion_latency_ms": 5,
+      "included_momentum": 7242,
+      "block_height": 14
+    },
+    {
+      "data_size_bytes": 16384,
+      "planned_plasma": 1135112,
+      "plasma_before": 1048048,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 15,
+      "publish_error": "publish: rpc ledger.publishRawTransaction error: not enough TotalPlasma provided for account-block (PoW + Fused)"
+    },
+    {
+      "data_size_bytes": 16385,
+      "planned_plasma": 1135180,
+      "plasma_before": 8400000,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 0,
+      "publish_error": "account-block data field is too big"
+    }
+  ],
+  "burst_attempted": 5,
+  "burst_submitted": 5,
+  "burst_included": 5,
+  "burst_rejected": 0,
+  "burst_momenta": null,
+  "burst_plasma_costs": [
+    1135112,
+    1135112,
+    1135112,
+    1135112,
+    1135112
+  ],
+  "burst_wire_sizes": [
+    16584,
+    16584,
+    16584,
+    16584,
+    16584
+  ]
+}

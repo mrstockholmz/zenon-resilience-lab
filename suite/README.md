@@ -100,11 +100,18 @@ go build -o labctl ./cmd/labctl
 | `powburst <n> <secs> <amt>` | PoW repricing attempt via sustained burst (phase 9) |
 | `mixcontend <fused> <unfused> <txPerAcct> <amt>` | Mixed fused/unfused contention (phase 11) |
 | `saturate <n> <txPerAcct> <qsr> <amt>` | Saturation test: N accounts with equal plasma exceed 200 tx/momentum limit (phase 12) |
+| `mixsaturate <fused> <unfused> <fTx> <uTx> <amt>` | Mixed fused/unfused saturation (phase 13) |
+| `overpay <groups> <accts> <txs> <amt>` | Content selector price priority test (phase 14) |
+| `regen <idx> <qsr>` | Plasma regeneration rate test (phase 15) |
+| `txtype <idx> <qsr>` | Transaction type diversity test (phase 16) |
+| `poolcap <idx> <qsr> <maxTx>` | Mempool cap test (phase 17) |
+| `frontconf <idx> <qsr>` | Frontier conflict resolution test (phase 17) |
+| `datasize <idx> <qsr>` | Data payload size limits + plasma cost formula (phase 18) |
 
 ## run-suite.sh
 
 ```bash
-./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|check|all]
+./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|check|all]
 ```
 
 | Target | What it runs |
@@ -118,7 +125,12 @@ go build -o labctl ./cmd/labctl
 | `phase9` | powlat 14 accounts x 3 seeds (PoW latency measurement) |
 | `phase11` | mixcontend 5 fused + 5 unfused x 3 reps (mixed contention) |
 | `phase12` | saturate configs A/B/C (200-tx limit saturation behavior) |
-| `check` | Regression assertions (R1-R10) + CSV export |
+| `phase13` | mixsaturate 20 fused + 10 unfused x 3 seeds (mixed saturation) |
+| `phase15` | regen 100/50/10 QSR x 4 seeds (plasma regeneration rate) |
+| `phase16` | txtype 200 QSR x 3 seeds (transaction type plasma costs) |
+| `phase17` | poolcap + frontconf x 3 seeds (mempool cap + frontier conflict) |
+| `phase18` | datasize 3000 QSR x 3 seeds (data payload size limits) |
+| `check` | Regression assertions (R1-R15) + CSV export |
 | `all` | phase2 + phase3 + phase4 + check |
 
 Results are written to `../results/phase-N/*.json`.
@@ -140,8 +152,15 @@ CSV summary: `../results/summary.csv`.
 | R8 | PoW transactions from unfused accounts have 100% inclusion when sent sequentially (1 tx per account) |
 | R9 | Mixed fused/unfused contention: fused 100% inclusion with 0 PoW, unfused 100% inclusion under capacity |
 | R10 | Saturation: no momentum exceeds 200 txs; excess is queued not rejected (when plasma sufficient) |
+| R11 | Mixed saturation: no plasma-based prioritization at floor prices; 100% inclusion |
+| R12 | Plasma regenerates to full fused amount within 1 momentum after depletion |
+| R13 | Transaction type plasma costs match go-zenon source constants (self=21000, data=21000+68/B, contract=52500) |
+| R14 | Mempool cap is 500 uncommitted blocks per account; frontier conflict follows price-then-hash rule |
+| R15 | Data payload plasma cost = 21000+68*N for N ≤ 16384; >16KB rejected with "account-block data field is too big" |
 
 Run: `python3 check-regressions.py ../results`
+
+All R1-R15 assertions passing as of 2026-10-24 (phase 18).
 
 ## Safety
 

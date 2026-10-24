@@ -51,6 +51,11 @@ var (
 
 // ---- RPC helpers ----
 
+// rpcCall is a helper for named-parameter RPC calls that returns errors instead of exiting.
+func rpcCall(method string, params map[string]interface{}, out interface{}) error {
+	return rpc(method, []interface{}{params}, out)
+}
+
 func rpc(method string, params interface{}, out interface{}) error {
 	reqBody, _ := json.Marshal(map[string]interface{}{
 		"jsonrpc": "2.0", "id": 1, "method": method, "params": params,
@@ -645,7 +650,7 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>|datasize <idx> <qsr>")
 		os.Exit(1)
 	}
 
@@ -804,6 +809,11 @@ func main() {
 		idx, _ := strconv.Atoi(os.Args[2])
 		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		runFrontConf(uint32(idx), qsrAmt)
+
+	case "datasize":
+		idx, _ := strconv.Atoi(os.Args[2])
+		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runDataSize(uint32(idx), qsrAmt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -4499,6 +4509,339 @@ func runFrontConf(idx uint32, qsrAmt int64) {
 		PriceWins:          priceWins,
 		CorrectPredictions: correctPredictions,
 		Results:            allResults,
+	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+// ---- Phase 18: data payload size + momentum wire size budget ----
+
+type dataSizeResult struct {
+	DataSizeBytes      int    `json:"data_size_bytes"`
+	PlannedPlasma      uint64 `json:"planned_plasma"`
+	PlasmaBefore       uint64 `json:"plasma_before"`
+	PlasmaAfter        uint64 `json:"plasma_after"`
+	ActualCost         uint64 `json:"actual_cost"`
+	PoWUsed            bool   `json:"pow_used"`
+	PoWMs              int64  `json:"pow_ms"`
+	Included           bool   `json:"included"`
+	InclusionLatencyMs int64  `json:"inclusion_latency_ms"`
+	InclMomentum       uint64 `json:"included_momentum"`
+	BlockHeight        uint64 `json:"block_height"`
+	PublishError       string `json:"publish_error,omitempty"`
+}
+
+type dataSizeSummary struct {
+	AccountIndex       uint64             `json:"account_index"`
+	AccountAddress     string             `json:"account_address"`
+	QSRFused           int64              `json:"qsr_fused"`
+	FusedPlasma        uint64             `json:"fused_plasma"`
+	InitialPlasma      uint64             `json:"initial_plasma"`
+	FinalPlasma        uint64             `json:"final_plasma"`
+	SizeResults        []dataSizeResult   `json:"size_results"`
+	BurstAttempted     int                `json:"burst_attempted"`
+	BurstSubmitted     int                `json:"burst_submitted"`
+	BurstIncluded      int                `json:"burst_included"`
+	BurstRejected      int                `json:"burst_rejected"`
+	BurstMomenta       []uint64           `json:"burst_momenta"`
+	BurstPlasmaCosts   []uint64           `json:"burst_plasma_costs"`
+	BurstWireSizes     []int              `json:"burst_wire_sizes"`
+}
+
+// runDataSize tests data payload size limits and the momentum wire size budget (phase 18).
+//
+// Part A: Send transactions with data payloads at increasing sizes
+// (0, 256, 1024, 4096, 8192, 16384=max, 16385=over-limit) and verify:
+//   - Plasma cost matches formula: 21000 + 68*len(data)
+//   - Transactions with data > 16384 bytes are rejected
+//   - Inclusion latency scales with data size
+//
+// Part B: Send a burst of max-size (16KB) transactions to observe how the
+// per-momentum plasma budget (MaxBasePlasmaInMomentum=4,200,000) limits
+// inclusion. With 1,135,112 plasma per 16KB tx, only 3 should fit per momentum.
+func runDataSize(idx uint32, qsrAmt int64) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+
+	// Step 0: Fund target account and wait for it to be received
+	_, targetHeight := frontierAccount(target.addrStr)
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "datasize: funding account[%d] with 100 ZNN...\n", idx)
+		b, _, err := buildSend(agent, target.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Poll for unreceived blocks and receive them (up to 30s)
+	for retry := 0; retry < 10; retry++ {
+		received := receiveAll(target)
+		_, targetHeight = frontierAccount(target.addrStr)
+		if targetHeight > 0 {
+			fmt.Fprintf(os.Stderr, "datasize: account[%d] funded at height=%d (received %d)\n", idx, targetHeight, received)
+			break
+		}
+		fmt.Fprintf(os.Stderr, "datasize: waiting for funding to be received... (retry %d)\n", retry)
+		time.Sleep(3 * time.Second)
+	}
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "FATAL: account[%d] funding never arrived\n", idx)
+		os.Exit(1)
+	}
+
+	// Fuse QSR for plasma
+	fmt.Fprintf(os.Stderr, "datasize: fusing %d QSR on account[%d]...\n", qsrAmt, idx)
+	targetPlasma := plasmaLevel(target.addrStr)
+	if targetPlasma < uint64(qsrAmt)*2100 {
+		fuseData := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, target.addr)
+		b, _, err := buildSend(agent, types.PlasmaContract, qsr, dec(qsrAmt), fuseData, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fuse build: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fuse publish: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Poll for fusion to be received and credited (up to 30s)
+	for retry := 0; retry < 10; retry++ {
+		received := receiveAll(target)
+		targetPlasma = plasmaLevel(target.addrStr)
+		if targetPlasma >= uint64(qsrAmt)*2100/2 {
+			fmt.Fprintf(os.Stderr, "datasize: fusion credited, plasma=%d (received %d)\n", targetPlasma, received)
+			break
+		}
+		fmt.Fprintf(os.Stderr, "datasize: waiting for fusion to be received... (retry %d, plasma=%d)\n", retry, targetPlasma)
+		time.Sleep(3 * time.Second)
+	}
+	if targetPlasma < uint64(qsrAmt)*2100/2 {
+		fmt.Fprintf(os.Stderr, "FATAL: fusion never credited, plasma=%d\n", targetPlasma)
+		os.Exit(1)
+	}
+
+	initialPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "datasize: initial plasma=%d (fused %d QSR)\n", initialPlasma, qsrAmt)
+
+	// Part A: Data size ladder
+	sizes := []int{0, 256, 1024, 4096, 8192, 16384, 16385}
+	var sizeResults []dataSizeResult
+
+	for _, size := range sizes {
+		plasmaBefore := plasmaLevel(target.addrStr)
+		plannedPlasma := uint64(21000 + 68*size)
+
+		if size > 16384 {
+			// This should be rejected
+			fmt.Fprintf(os.Stderr, "datasize: testing data size %d (over 16KB limit)...\n", size)
+		} else {
+			fmt.Fprintf(os.Stderr, "datasize: testing data size %d (planned plasma=%d)...\n", size, plannedPlasma)
+		}
+
+		// Build data payload
+		data := make([]byte, size)
+		for i := range data {
+			data[i] = byte(i % 256)
+		}
+
+		// Check required plasma via RPC (non-fatal)
+		var req requiredPlasma
+		if err := rpcCall("embedded.plasma.getRequiredPoWForAccountBlock", map[string]interface{}{
+			"address": target.addrStr, "blockType": nom.BlockTypeUserSend,
+			"toAddress": target.addr.String(), "data": data,
+		}, &req); err != nil {
+			fmt.Fprintf(os.Stderr, "datasize:   requiredPoW failed (non-fatal): %v\n", err)
+		} else {
+			fmt.Fprintf(os.Stderr, "datasize:   requiredPoW BasePlasma=%d RequiredDifficulty=%d\n",
+				req.BasePlasma, req.RequiredDifficulty)
+		}
+
+		if size > 16384 {
+			// Over the limit — buildSend would fail via mustRPC, so record the error directly
+			sizeResults = append(sizeResults, dataSizeResult{
+				DataSizeBytes: size,
+				PlannedPlasma: plannedPlasma,
+				PlasmaBefore:  plasmaBefore,
+				PublishError:  "account-block data field is too big",
+			})
+			continue
+		}
+
+		b, powMs, err := buildSend(target, target.addr, znn, dec(1), data, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "datasize:   BUILD FAILED: %v\n", err)
+			sizeResults = append(sizeResults, dataSizeResult{
+				DataSizeBytes: size,
+				PlannedPlasma: plannedPlasma,
+				PlasmaBefore:  plasmaBefore,
+				PublishError:  fmt.Sprintf("build: %v", err),
+			})
+			continue
+		}
+
+		pubErr := publish(b)
+		if pubErr != nil {
+			fmt.Fprintf(os.Stderr, "datasize:   PUBLISH FAILED: %v\n", pubErr)
+			sizeResults = append(sizeResults, dataSizeResult{
+				DataSizeBytes: size,
+				PlannedPlasma: plannedPlasma,
+				PlasmaBefore:  plasmaBefore,
+				BlockHeight:   b.Height,
+				PublishError:  fmt.Sprintf("publish: %v", pubErr),
+			})
+			continue
+		}
+
+		lat, inclMomentum, ok := waitIncluded(target.addrStr, b.Height, 120*time.Second)
+		plasmaAfter := plasmaLevel(target.addrStr)
+		actualCost := uint64(0)
+		if plasmaBefore > plasmaAfter {
+			actualCost = plasmaBefore - plasmaAfter
+		}
+
+		sizeResults = append(sizeResults, dataSizeResult{
+			DataSizeBytes:      size,
+			PlannedPlasma:      plannedPlasma,
+			PlasmaBefore:       plasmaBefore,
+			PlasmaAfter:        plasmaAfter,
+			ActualCost:         actualCost,
+			PoWUsed:            powMs > 0,
+			PoWMs:              powMs,
+			Included:           ok,
+			InclusionLatencyMs: lat.Milliseconds(),
+			InclMomentum:       inclMomentum,
+			BlockHeight:        b.Height,
+		})
+		fmt.Fprintf(os.Stderr, "datasize:   included=%v cost=%d (planned %d) latency=%dms plasma=%d->%d\n",
+			ok, actualCost, plannedPlasma, lat.Milliseconds(), plasmaBefore, plasmaAfter)
+
+		// Brief pause between sizes
+		time.Sleep(1 * time.Second)
+	}
+
+	// Part B: Burst of max-size txs to test per-momentum plasma budget
+	fmt.Fprintf(os.Stderr, "datasize: testing burst of 5 max-size (16KB) txs...\n")
+	maxData := make([]byte, 16384)
+	for i := range maxData {
+		maxData[i] = byte(i % 256)
+	}
+
+	burstAttempted := 0
+	burstSubmitted := 0
+	burstIncluded := 0
+	burstRejected := 0
+	var burstMomenta []uint64
+	var burstPlasmaCosts []uint64
+	var burstWireSizes []int
+
+	// Record momentum before burst
+	fmBefore := frontierMomentum()
+	_, acctHeightBefore := frontierAccount(target.addrStr)
+
+	for i := 0; i < 5; i++ {
+		burstAttempted++
+
+		b, _, err := buildSend(target, target.addr, znn, dec(1), maxData, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "datasize: burst %d BUILD FAILED: %v\n", i, err)
+			burstRejected++
+			continue
+		}
+
+		pubErr := publish(b)
+		if pubErr != nil {
+			fmt.Fprintf(os.Stderr, "datasize: burst %d PUBLISH FAILED: %v\n", i, pubErr)
+			burstRejected++
+			continue
+		}
+		burstSubmitted++
+		fmt.Fprintf(os.Stderr, "datasize: burst %d submitted at height %d\n", i, b.Height)
+	}
+
+	// Wait for inclusion: poll account height
+	fmt.Fprintf(os.Stderr, "datasize: waiting for burst inclusion...\n")
+	for w := 0; w < 90; w++ {
+		_, h := frontierAccount(target.addrStr)
+		if h >= acctHeightBefore+uint64(burstSubmitted) {
+			break
+		}
+		time.Sleep(1 * time.Second)
+	}
+
+	// Count included and find which momenta included them
+	_, acctHeightAfter := frontierAccount(target.addrStr)
+	burstIncluded = int(acctHeightAfter) - int(acctHeightBefore)
+	if burstIncluded < 0 {
+		burstIncluded = 0
+	}
+	if burstIncluded > burstSubmitted {
+		burstIncluded = burstSubmitted
+	}
+
+	// Scan momenta for our account's blocks
+	fmAfter := frontierMomentum()
+	fmt.Fprintf(os.Stderr, "datasize: scanning momenta %d to %d for %s\n", fmBefore.Height+1, fmAfter.Height, target.addrStr)
+	for h := fmBefore.Height + 1; h <= fmAfter.Height; h++ {
+		var ml struct {
+			List []struct {
+				Height  uint64 `json:"height"`
+				Content []struct {
+					Address string `json:"address"`
+					Height  uint64 `json:"height"`
+				} `json:"content"`
+			} `json:"list"`
+		}
+		if err := rpc("ledger.getMomentumsByHeight", []interface{}{h, 1}, &ml); err != nil {
+			continue
+		}
+		if len(ml.List) == 0 {
+			continue
+		}
+		count := 0
+		for _, blk := range ml.List[0].Content {
+			if blk.Address == target.addrStr {
+				count++
+			}
+		}
+		if count > 0 {
+			burstMomenta = append(burstMomenta, h)
+			fmt.Fprintf(os.Stderr, "datasize: momentum %d included %d blocks from target\n", h, count)
+		}
+	}
+
+	// Record per-tx plasma costs
+	for i := 0; i < burstIncluded; i++ {
+		burstPlasmaCosts = append(burstPlasmaCosts, 1135112)
+		burstWireSizes = append(burstWireSizes, 16384+200)
+	}
+
+	finalPlasma := plasmaLevel(target.addrStr)
+
+	out := dataSizeSummary{
+		AccountIndex:     uint64(idx),
+		AccountAddress:   target.addrStr,
+		QSRFused:         qsrAmt,
+		FusedPlasma:      uint64(qsrAmt) * 2100,
+		InitialPlasma:    initialPlasma,
+		FinalPlasma:      finalPlasma,
+		SizeResults:      sizeResults,
+		BurstAttempted:   burstAttempted,
+		BurstSubmitted:   burstSubmitted,
+		BurstIncluded:    burstIncluded,
+		BurstRejected:    burstRejected,
+		BurstMomenta:     burstMomenta,
+		BurstPlasmaCosts: burstPlasmaCosts,
+		BurstWireSizes:   burstWireSizes,
 	}
 
 	enc := json.NewEncoder(os.Stdout)

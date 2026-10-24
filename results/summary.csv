@@ -18,6 +18,16 @@ regen-acct44-10qsr-seed3.json,regen,static,1,1,1,0,0,100.0,0,0,0,0,0,0,0,5329,53
 txtype-acct52-200qsr-seed0.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
 txtype-acct53-200qsr-seed1.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
 txtype-acct55-200qsr-seed2.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+frontconf-acct61-200qsr-seed1.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+frontconf-acct62-200qsr-seed2.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+frontconf-acct63-200qsr-seed3.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+poolcap-acct71-5000qsr-600tx-seed1.json,,unknown,600,600,600,0,0,100.0,0,0,0,0,0,0,0,6735,6741
+poolcap-acct72-8000qsr-1200tx-seed2.json,,unknown,1200,500,500,700,0,41.7,0,0,0,0,0,0,0,6754,6757
+poolcap-acct73-8000qsr-1200tx-seed3.json,,unknown,1200,700,700,500,0,58.3,0,0,0,0,0,0,0,6770,6777
+datasize-acct80-2000qsr-seed1.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+datasize-acct81-3000qsr-seed2.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+datasize-acct82-3000qsr-seed2.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+datasize-acct83-3000qsr-seed3.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
 dynamic-burst-r1.json,burst,dynamic,5,2,2,3,0,40.0,2,5616,0,0,0,44.171,87.39,32,34
 dynamic-burst-r2.json,burst,dynamic,5,2,2,3,0,40.0,2,9300,1,1,1,43.056,79.65,36,38
 dynamic-burst-r3.json,burst,dynamic,5,2,2,3,0,40.0,2,22846,1,1,1,26.908,82.52,38,39

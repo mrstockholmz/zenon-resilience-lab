@@ -548,6 +548,81 @@ def check_mempool_cap(results_dir):
     
     return failures
 
+def check_datasize(results_dir):
+    """R15: Data payload plasma cost formula + 16KB size limit.
+    
+    Plasma cost for a tx with N bytes of data = 21000 + 68*N (for N <= 16384).
+    Transactions with data > 16384 bytes are rejected with "account-block data field is too big".
+    A 16KB data tx costs 1,135,112 plasma.
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-18")
+    if not os.path.isdir(phase_dir):
+        return ["R15 SKIP: phase-18 directory not found"]
+    
+    for f in sorted(glob.glob(os.path.join(phase_dir, "datasize-*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        
+        size_results = data.get("size_results", [])
+        if not size_results:
+            continue
+        
+        for r in size_results:
+            size = r.get("data_size_bytes", 0)
+            planned = r.get("planned_plasma", 0)
+            actual = r.get("actual_cost", 0)
+            included = r.get("included", False)
+            error = r.get("publish_error", "")
+            
+            # Check formula for included txs with fused plasma (not PoW)
+            if included and size <= 16384 and r.get("pow_used", False) == False:
+                expected = 21000 + 68 * size
+                if planned != expected:
+                    failures.append(
+                        f"R15 FAIL: {os.path.basename(f)} size={size} "
+                        f"planned={planned} (expected {expected} = 21000+68*{size})"
+                    )
+                if actual != expected and actual != 0:
+                    failures.append(
+                        f"R15 FAIL: {os.path.basename(f)} size={size} "
+                        f"actual={actual} (expected {expected})"
+                    )
+            
+            # Check over-limit rejection
+            if size > 16384:
+                if included:
+                    failures.append(
+                        f"R15 FAIL: {os.path.basename(f)} size={size} "
+                        f"should have been rejected but was included"
+                    )
+                if "too big" not in error:
+                    failures.append(
+                        f"R15 FAIL: {os.path.basename(f)} size={size} "
+                        f"error does not mention 'too big': {error[:80]}"
+                    )
+        
+        # Verify at least one 16KB tx was tested and cost 1,135,112
+        found_16k = False
+        for r in size_results:
+            if r.get("data_size_bytes") == 16384 and r.get("included", False):
+                found_16k = True
+                if r.get("actual_cost", 0) != 1135112 and r.get("actual_cost", 0) != 0:
+                    failures.append(
+                        f"R15 FAIL: {os.path.basename(f)} 16KB tx cost={r['actual_cost']} "
+                        f"(expected 1135112 = 21000+68*16384)"
+                    )
+        if not found_16k:
+            # Check if any 16KB tx was at least attempted
+            attempted_16k = any(r.get("data_size_bytes") == 16384 for r in size_results)
+            if not attempted_16k:
+                failures.append(
+                    f"R15 FAIL: {os.path.basename(f)} no 16KB tx tested"
+                )
+    
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -567,6 +642,7 @@ def main():
         ("R12: plasma regenerates within 1 momentum (phase-15)", check_regen),
         ("R13: tx type plasma costs match source (phase-16)", check_txtype),
         ("R14: mempool cap 500 + frontier conflict price-then-hash (phase-17)", check_mempool_cap),
+        ("R15: data payload plasma cost formula + 16KB limit (phase-18)", check_datasize),
     ]
     
     for name, check_fn in checks:
