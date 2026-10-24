@@ -28,6 +28,10 @@ datasize-acct80-2000qsr-seed1.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
 datasize-acct81-3000qsr-seed2.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
 datasize-acct82-3000qsr-seed2.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
 datasize-acct83-3000qsr-seed3.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,0
+contractcap-100acct-s1.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,7766
+contractcap-100acct-s2.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,7783
+contractcap-100acct-s3.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,7801
+contractcap-50acct-s1.json,,unknown,0,0,0,0,0,0.0,0,0,0,0,0,0,0,0,7749
 dynamic-burst-r1.json,burst,dynamic,5,2,2,3,0,40.0,2,5616,0,0,0,44.171,87.39,32,34
 dynamic-burst-r2.json,burst,dynamic,5,2,2,3,0,40.0,2,9300,1,1,1,43.056,79.65,36,38
 dynamic-burst-r3.json,burst,dynamic,5,2,2,3,0,40.0,2,22846,1,1,1,26.908,82.52,38,39
