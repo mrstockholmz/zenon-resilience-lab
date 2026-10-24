@@ -1,0 +1,187 @@
+txtype: funding account[52] with 100 ZNN...
+txtype: funding partner account[152] with 10 ZNN...
+txtype: waiting for funding to arrive at account[52]...
+txtype: receiving pending blocks on account[52]...
+txtype: waiting for funding to arrive at partner[152]...
+txtype: fusing 200 QSR on account[52]...
+txtype: waiting for fusion to confirm...
+txtype: initial plasma=420000 (fused 200 QSR)
+txtype: testing self-transfer baseline...
+txtype: self-transfer 0 included=true cost=21000 plasma=420000->399000
+txtype: self-transfer 1 included=true cost=21000 plasma=399000->378000
+txtype: self-transfer 2 included=true cost=21000 plasma=378000->357000
+txtype: testing send with data payload...
+txtype: data-send 0 included=true cost=27800 (planned 27800) plasma=357000->329200
+txtype: data-send 1 included=true cost=27800 (planned 27800) plasma=329200->301400
+txtype: data-send 2 included=true cost=27800 (planned 27800) plasma=301400->273600
+txtype: testing cross-account send + receive...
+txtype: cross-send 0 included=true cost=21000
+txtype: cross-receive 0 received=0 cost=0
+txtype: cross-send 1 included=true cost=21000
+txtype: cross-receive 1 received=2 cost=0
+txtype: cross-send 2 included=true cost=21000
+txtype: cross-receive 2 received=1 cost=0
+txtype: testing contract call (stake)...
+txtype: stake 0 included=true cost=52500 (planned 52500) plasma=420000->367500
+txtype: stake 1 included=true cost=52500 (planned 52500) plasma=367500->315000
+txtype: stake 2 included=true cost=52500 (planned 52500) plasma=315000->262500
+{
+  "account_index": 52,
+  "account_address": "z1qpnxeluef40f0y4dk5cnkclzd5xttxsn0thpmp",
+  "qsr_fused": 200,
+  "fused_plasma": 420000,
+  "initial_plasma": 420000,
+  "final_plasma": 262500,
+  "type_results": [
+    {
+      "tx_type": "self_transfer",
+      "planned_cost": 21000,
+      "plasma_before": 420000,
+      "plasma_after": 399000,
+      "actual_cost": 21000,
+      "inclusion_latency_ms": 3,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "self_transfer",
+      "planned_cost": 21000,
+      "plasma_before": 399000,
+      "plasma_after": 378000,
+      "actual_cost": 21000,
+      "inclusion_latency_ms": 3,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "self_transfer",
+      "planned_cost": 21000,
+      "plasma_before": 378000,
+      "plasma_after": 357000,
+      "actual_cost": 21000,
+      "inclusion_latency_ms": 3,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "send_with_data",
+      "planned_cost": 27800,
+      "plasma_before": 357000,
+      "plasma_after": 329200,
+      "actual_cost": 27800,
+      "inclusion_latency_ms": 3,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "send_with_data",
+      "planned_cost": 27800,
+      "plasma_before": 329200,
+      "plasma_after": 301400,
+      "actual_cost": 27800,
+      "inclusion_latency_ms": 2,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "send_with_data",
+      "planned_cost": 27800,
+      "plasma_before": 301400,
+      "plasma_after": 273600,
+      "actual_cost": 27800,
+      "inclusion_latency_ms": 4,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "cross_send",
+      "planned_cost": 21000,
+      "plasma_before": 273600,
+      "plasma_after": 252600,
+      "actual_cost": 21000,
+      "inclusion_latency_ms": 0,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "cross_receive",
+      "planned_cost": 21000,
+      "plasma_before": 0,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "inclusion_latency_ms": 0,
+      "pow_used": false,
+      "included": false
+    },
+    {
+      "tx_type": "cross_send",
+      "planned_cost": 21000,
+      "plasma_before": 252600,
+      "plasma_after": 231600,
+      "actual_cost": 21000,
+      "inclusion_latency_ms": 3,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "cross_receive",
+      "planned_cost": 21000,
+      "plasma_before": 0,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "inclusion_latency_ms": 0,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "cross_send",
+      "planned_cost": 21000,
+      "plasma_before": 420000,
+      "plasma_after": 399000,
+      "actual_cost": 21000,
+      "inclusion_latency_ms": 1,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "cross_receive",
+      "planned_cost": 21000,
+      "plasma_before": 0,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "inclusion_latency_ms": 0,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "contract_stake",
+      "planned_cost": 52500,
+      "plasma_before": 420000,
+      "plasma_after": 367500,
+      "actual_cost": 52500,
+      "inclusion_latency_ms": 0,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "contract_stake",
+      "planned_cost": 52500,
+      "plasma_before": 367500,
+      "plasma_after": 315000,
+      "actual_cost": 52500,
+      "inclusion_latency_ms": 0,
+      "pow_used": false,
+      "included": true
+    },
+    {
+      "tx_type": "contract_stake",
+      "planned_cost": 52500,
+      "plasma_before": 315000,
+      "plasma_after": 262500,
+      "actual_cost": 52500,
+      "inclusion_latency_ms": 0,
+      "pow_used": false,
+      "included": true
+    }
+  ]
+}

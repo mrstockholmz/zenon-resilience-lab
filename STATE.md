@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 16
+next_phase: 17
 cloud_sessions_run: 1
-local_sessions_run: 11
+local_sessions_run: 12
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-24 (local verification + gap check + crypto inventory)
+updated: 2026-10-24 (phase 16: transaction type diversity)
 ```
 
 ## Phase log
@@ -29,6 +29,7 @@ updated: 2026-10-24 (local verification + gap check + crypto inventory)
 | 13 mixed fused/unfused saturation | done | results/phase-13/20261023-phase13-mixed-saturation-results.md | No plasma-based prioritization under saturation. Mempool selection is FIFO by arrival time, not plasma amount. Fused txs are included first because they arrive instantly (0s PoW), not because of priority. Unfused txs with fast PoW (<20s) can get into the first momentum. 100% inclusion in all 3 seeds. R11 regression added. |
 | 14 content selector price priority | done | results/phase-14/20261023-phase14-price-priority-results.md | Price-based prioritization CONFIRMED. Content selector sorts by price-per-base-plasma; higher-priced txs included first under saturation. Corrects phase 13: priority exists when prices DIFFER, not when all txs pay floor price. Overpaying (FusedPlasma > BasePlasma) buys priority. Fee market is dormant at floor prices. |
 | 15 plasma regeneration rate | done | results/phase-15/20261023-phase15-plasma-regeneration-results.md | Plasma regenerates from 0 to full within 1 momentum. Two-counter model confirmed. An account with 100 QSR can send 10 txs per momentum indefinitely. Corrects phase 8: regeneration is on confirmation, not over time. |
+| 16 transaction type diversity | done | results/phase-16/20261024-phase16-txtype-results.md | Plasma cost ladder confirmed: self-transfer=21000, +data=21000+68/B, contract=52500. All match go-zenon source exactly. 3-seed reproducible. R13 added. |
 
 ## Local verification session 2026-10-24
 
@@ -113,6 +114,11 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     overpay (FusedPlasma > BasePlasma) are included before lower-priced txs
     under saturation. This creates a dormant fee market: priority can be bought
     by overpaying, but at floor prices all txs have equal priority.
+16. **Transaction type plasma costs match source exactly.** Self-transfer=
+    21,000, send+100B data=27,800 (21000+68×100), contract call=52,500
+    (EmbeddedSimple). All 3 seeds identical. The go-zenon plasma cost model
+    is empirically confirmed for all tested types. Data payload costs 68
+    plasma/byte linearly. Contract calls cost 2.5× a simple transfer.
 
 ## Suite tooling
 
@@ -120,9 +126,9 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   fuse, fund, fusefor, receive, waitfor, matrix, hvburst, sustain, contend,
   deplete, powlat, powburst, mixcontend. Disposable devnet keys only.
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
-- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|check|all.
+- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
-- `suite/check-regressions.py` — regression assertions R1-R11.
+- `suite/check-regressions.py` — regression assertions R1-R13.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
 - `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
 - `deplete` — plasma depletion + regeneration test (phase 8). Fuses QSR, sends
@@ -145,6 +151,9 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 - `regen` — plasma regeneration rate test (phase 15). Fuses QSR, depletes
   plasma via self-transfers, samples plasma at 1/3/6/10 momenta. Confirms
   plasma regenerates to full within 1 momentum.
+- `txtype` — transaction type diversity test (phase 16). Fuses QSR, then tests
+  self-transfer, send+data, cross-account send+receive, and contract call
+  (stake). Records plasma cost per type and verifies against go-zenon source.
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under

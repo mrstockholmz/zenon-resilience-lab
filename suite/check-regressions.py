@@ -17,6 +17,7 @@ Invariants tested:
   R10: Saturation: no momentum exceeds 200 txs; excess is queued not rejected (when plasma sufficient)
   R11: Mixed saturation: no plasma-based prioritization; fused txs are included first due to instant arrival, not priority
   R12: Plasma regenerates to full fused amount within 1 momentum after depletion
+  R13: Transaction type plasma costs match go-zenon source constants
 """
 import json, sys, os, glob
 
@@ -421,6 +422,57 @@ def check_regen(results_dir):
     
     return failures
 
+def check_txtype(results_dir):
+    """R13: Transaction type plasma costs match go-zenon source constants.
+    
+    Checks that:
+    1. Self-transfer costs exactly 21000 plasma
+    2. Send with 100-byte data costs exactly 27800 plasma (21000 + 68*100)
+    3. Cross-account send costs exactly 21000 plasma
+    4. Contract stake costs exactly 52500 plasma (EmbeddedSimple)
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-16")
+    if not os.path.isdir(phase_dir):
+        return ["R13 SKIP: phase-16 directory not found"]
+    
+    expected_costs = {
+        "self_transfer": 21000,
+        "send_with_data": 27800,
+        "cross_send": 21000,
+        "contract_stake": 52500,
+    }
+    
+    for f in sorted(glob.glob(os.path.join(phase_dir, "txtype-*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        
+        type_results = data.get("type_results", [])
+        if not type_results:
+            continue
+        
+        for tr in type_results:
+            tx_type = tr.get("tx_type", "")
+            if tx_type not in expected_costs:
+                continue  # skip cross_receive (tracked separately)
+            
+            expected = expected_costs[tx_type]
+            actual = tr.get("actual_cost", 0)
+            included = tr.get("included", False)
+            
+            if not included:
+                # Skip failed transactions
+                continue
+            
+            if actual != expected:
+                failures.append(
+                    f"R13 FAIL: {os.path.basename(f)} {tx_type} "
+                    f"cost={actual} (expected {expected})"
+                )
+    
+    return failures
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -438,6 +490,7 @@ def main():
         ("R10: saturation 200-tx limit + queue behavior (phase-12)", check_saturation),
         ("R11: mixed saturation no plasma priority (phase-13)", check_mixsaturate),
         ("R12: plasma regenerates within 1 momentum (phase-15)", check_regen),
+        ("R13: tx type plasma costs match source (phase-16)", check_txtype),
     ]
     
     for name, check_fn in checks:

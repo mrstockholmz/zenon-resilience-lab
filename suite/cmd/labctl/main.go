@@ -645,7 +645,7 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>")
 		os.Exit(1)
 	}
 
@@ -788,6 +788,11 @@ func main() {
 		idx, _ := strconv.Atoi(os.Args[2])
 		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		runRegen(uint32(idx), qsrAmt)
+
+	case "txtype":
+		idx, _ := strconv.Atoi(os.Args[2])
+		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runTxType(uint32(idx), qsrAmt)
 
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
@@ -3678,6 +3683,348 @@ func runOverpay(groups int, accountsPerGroup int, txPerAcct int, amt int64) {
 		Breakdowns:       breakdowns,
 		MomentumContents: momentumContents,
 	}
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+
+// runTxType: transaction type diversity experiment (phase 16).
+//
+// Tests plasma costs and inclusion behavior for different transaction types
+// from a single fused account. All prior phases used only self-transfers
+// (BlockTypeUserSend with nil data, 21000 plasma each). This experiment
+// measures the plasma cost ladder:
+//
+//  1. Self-transfer (baseline):     21000 plasma
+//  2. Send with 100-byte data:      21000 + 68*100 = 27800 plasma
+//  3. Cross-account send + receive:  21000 (send) + 21000 (receive) = 42000 total
+//  4. Contract call (stake):        52500 plasma (EmbeddedSimple)
+//
+// For each type, sends 3 transactions sequentially and records plasma
+// consumption, inclusion latency, and PoW usage.
+func runTxType(idx uint32, qsrAmt int64) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+	partner := derivedAccount(idx + 100) // separate partner account for cross-account tests
+
+	// Step 0: Fund and fuse target account
+	_, targetHeight := frontierAccount(target.addrStr)
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "txtype: funding account[%d] with 100 ZNN...\n", idx)
+		b, _, err := buildSend(agent, target.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Fund partner account for cross-account receive test
+	_, partnerHeight := frontierAccount(partner.addrStr)
+	if partnerHeight == 0 {
+		fmt.Fprintf(os.Stderr, "txtype: funding partner account[%d] with 10 ZNN...\n", idx+100)
+		b, _, err := buildSend(agent, partner.addr, znn, dec(10), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund partner: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund partner: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Wait for funding to arrive at target
+	fmt.Fprintf(os.Stderr, "txtype: waiting for funding to arrive at account[%d]...\n", idx)
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{target.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	fmt.Fprintf(os.Stderr, "txtype: receiving pending blocks on account[%d]...\n", idx)
+	receiveAll(target)
+
+	// Wait for partner funding to arrive
+	fmt.Fprintf(os.Stderr, "txtype: waiting for funding to arrive at partner[%d]...\n", idx+100)
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{partner.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	receiveAll(partner)
+
+	// Fuse QSR for plasma
+	fmt.Fprintf(os.Stderr, "txtype: fusing %d QSR on account[%d]...\n", qsrAmt, idx)
+	fuseData := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, target.addr)
+	fb, _, err := buildSend(agent, types.PlasmaContract, qsr, dec(qsrAmt), fuseData, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL fuse: %v\n", err)
+		os.Exit(1)
+	}
+	if err := publish(fb); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL publish fuse: %v\n", err)
+		os.Exit(1)
+	}
+	waitIncluded(agent.addrStr, fb.Height, 120*time.Second)
+
+	// Wait for fusion to be confirmed and plasma available
+	fmt.Fprintf(os.Stderr, "txtype: waiting for fusion to confirm...\n")
+	for i := 0; i < 60; i++ {
+		p := plasmaLevel(target.addrStr)
+		if p >= uint64(qsrAmt*2100) {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+
+	initialPlasma := plasmaLevel(target.addrStr)
+	fmt.Fprintf(os.Stderr, "txtype: initial plasma=%d (fused %d QSR)\n", initialPlasma, qsrAmt)
+
+	type txTypeResult struct {
+		TxType          string `json:"tx_type"`
+		PlannedCost     uint64 `json:"planned_cost"`
+		PlasmaBefore    uint64 `json:"plasma_before"`
+		PlasmaAfter     uint64 `json:"plasma_after"`
+		ActualCost      uint64 `json:"actual_cost"`
+		InclusionLatencyMs int64 `json:"inclusion_latency_ms"`
+		PoWUsed         bool   `json:"pow_used"`
+		Included        bool   `json:"included"`
+	}
+
+	var typeResults []txTypeResult
+	fusedPlasma := uint64(qsrAmt * 2100)
+
+	// --- Test 1: Self-transfer baseline (3 txs) ---
+	fmt.Fprintf(os.Stderr, "txtype: testing self-transfer baseline...\n")
+	for i := 0; i < 3; i++ {
+		plasmaBefore := plasmaLevel(target.addrStr)
+		b, powMs, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: self-transfer %d BUILD FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "self_transfer", PlannedCost: 21000,
+				PlasmaBefore: plasmaBefore, Included: false,
+			})
+			continue
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: self-transfer %d PUBLISH FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "self_transfer", PlannedCost: 21000,
+				PlasmaBefore: plasmaBefore, Included: false,
+			})
+			continue
+		}
+		lat, _, ok := waitIncluded(target.addrStr, b.Height, 60*time.Second)
+		plasmaAfter := plasmaLevel(target.addrStr)
+		actualCost := plasmaBefore - plasmaAfter
+		if plasmaAfter > plasmaBefore {
+			actualCost = 0 // regen during test
+		}
+		typeResults = append(typeResults, txTypeResult{
+			TxType: "self_transfer", PlannedCost: 21000,
+			PlasmaBefore: plasmaBefore, PlasmaAfter: plasmaAfter,
+			ActualCost: actualCost,
+			InclusionLatencyMs: lat.Milliseconds(),
+			PoWUsed:            powMs > 0,
+			Included:           ok,
+		})
+		fmt.Fprintf(os.Stderr, "txtype: self-transfer %d included=%v cost=%d plasma=%d->%d\n",
+			i, ok, actualCost, plasmaBefore, plasmaAfter)
+	}
+
+	// --- Test 2: Send with 100-byte data payload (3 txs) ---
+	fmt.Fprintf(os.Stderr, "txtype: testing send with data payload...\n")
+	dataPayload := make([]byte, 100)
+	for i := range dataPayload {
+		dataPayload[i] = byte(i % 256)
+	}
+	expectedDataCost := uint64(21000 + 68*100) // 27800
+	for i := 0; i < 3; i++ {
+		plasmaBefore := plasmaLevel(target.addrStr)
+		b, powMs, err := buildSend(target, target.addr, znn, dec(1), dataPayload, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: data-send %d BUILD FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "send_with_data", PlannedCost: expectedDataCost,
+				PlasmaBefore: plasmaBefore, Included: false,
+			})
+			continue
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: data-send %d PUBLISH FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "send_with_data", PlannedCost: expectedDataCost,
+				PlasmaBefore: plasmaBefore, Included: false,
+			})
+			continue
+		}
+		lat, _, ok := waitIncluded(target.addrStr, b.Height, 60*time.Second)
+		plasmaAfter := plasmaLevel(target.addrStr)
+		actualCost := plasmaBefore - plasmaAfter
+		if plasmaAfter > plasmaBefore {
+			actualCost = 0
+		}
+		typeResults = append(typeResults, txTypeResult{
+			TxType: "send_with_data", PlannedCost: expectedDataCost,
+			PlasmaBefore: plasmaBefore, PlasmaAfter: plasmaAfter,
+			ActualCost: actualCost,
+			InclusionLatencyMs: lat.Milliseconds(),
+			PoWUsed:            powMs > 0,
+			Included:           ok,
+		})
+		fmt.Fprintf(os.Stderr, "txtype: data-send %d included=%v cost=%d (planned %d) plasma=%d->%d\n",
+			i, ok, actualCost, expectedDataCost, plasmaBefore, plasmaAfter)
+	}
+
+	// --- Test 3: Cross-account send + receive (3 rounds) ---
+	fmt.Fprintf(os.Stderr, "txtype: testing cross-account send + receive...\n")
+	for i := 0; i < 3; i++ {
+		// Send from target to partner
+		plasmaBeforeSend := plasmaLevel(target.addrStr)
+		b, powMs, err := buildSend(target, partner.addr, znn, dec(1), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: cross-send %d BUILD FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "cross_send", PlannedCost: 21000,
+				PlasmaBefore: plasmaBeforeSend, Included: false,
+			})
+			continue
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: cross-send %d PUBLISH FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "cross_send", PlannedCost: 21000,
+				PlasmaBefore: plasmaBeforeSend, Included: false,
+			})
+			continue
+		}
+		latSend, _, okSend := waitIncluded(target.addrStr, b.Height, 60*time.Second)
+		plasmaAfterSend := plasmaLevel(target.addrStr)
+		sendCost := plasmaBeforeSend - plasmaAfterSend
+		if plasmaAfterSend > plasmaBeforeSend {
+			sendCost = 0
+		}
+		typeResults = append(typeResults, txTypeResult{
+			TxType: "cross_send", PlannedCost: 21000,
+			PlasmaBefore: plasmaBeforeSend, PlasmaAfter: plasmaAfterSend,
+			ActualCost: sendCost,
+			InclusionLatencyMs: latSend.Milliseconds(),
+			PoWUsed:            powMs > 0,
+			Included:           okSend,
+		})
+		fmt.Fprintf(os.Stderr, "txtype: cross-send %d included=%v cost=%d\n", i, okSend, sendCost)
+
+		// Partner receives — wait for unreceived block to appear
+		for w := 0; w < 15; w++ {
+			var ul unreceivedList
+			mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{partner.addrStr, 0, 50}, &ul)
+			if len(ul.List) > 0 {
+				break
+			}
+			time.Sleep(2 * time.Second)
+		}
+		plasmaBeforeRecv := plasmaLevel(partner.addrStr)
+		recvCount := receiveAll(partner)
+		plasmaAfterRecv := plasmaLevel(partner.addrStr)
+		recvCost := plasmaBeforeRecv - plasmaAfterRecv
+		if plasmaAfterRecv > plasmaBeforeRecv {
+			recvCost = 0
+		}
+		typeResults = append(typeResults, txTypeResult{
+			TxType: "cross_receive", PlannedCost: 21000,
+			PlasmaBefore: plasmaBeforeRecv, PlasmaAfter: plasmaAfterRecv,
+			ActualCost:       recvCost,
+			PoWUsed:          false,
+			Included:         recvCount > 0,
+		})
+		fmt.Fprintf(os.Stderr, "txtype: cross-receive %d received=%d cost=%d\n", i, recvCount, recvCost)
+	}
+
+	// --- Test 4: Contract call — Stake (3 txs, 52500 plasma each) ---
+	fmt.Fprintf(os.Stderr, "txtype: testing contract call (stake)...\n")
+	expectedStakeCost := uint64(52500)
+	for i := 0; i < 3; i++ {
+		plasmaBefore := plasmaLevel(target.addrStr)
+		if plasmaBefore < expectedStakeCost {
+			fmt.Fprintf(os.Stderr, "txtype: insufficient plasma for stake (%d < %d), skipping\n",
+				plasmaBefore, expectedStakeCost)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "contract_stake", PlannedCost: expectedStakeCost,
+				PlasmaBefore: plasmaBefore, Included: false,
+			})
+			continue
+		}
+		stakeData := definition.ABIStake.PackMethodPanic(definition.StakeMethodName, int64(2592000))
+		b, powMs, err := buildSend(target, types.StakeContract, znn, dec(1), stakeData, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: stake %d BUILD FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "contract_stake", PlannedCost: expectedStakeCost,
+				PlasmaBefore: plasmaBefore, Included: false,
+			})
+			continue
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "txtype: stake %d PUBLISH FAILED: %v\n", i, err)
+			typeResults = append(typeResults, txTypeResult{
+				TxType: "contract_stake", PlannedCost: expectedStakeCost,
+				PlasmaBefore: plasmaBefore, Included: false,
+			})
+			continue
+		}
+		lat, _, ok := waitIncluded(target.addrStr, b.Height, 60*time.Second)
+		plasmaAfter := plasmaLevel(target.addrStr)
+		actualCost := plasmaBefore - plasmaAfter
+		if plasmaAfter > plasmaBefore {
+			actualCost = 0
+		}
+		typeResults = append(typeResults, txTypeResult{
+			TxType: "contract_stake", PlannedCost: expectedStakeCost,
+			PlasmaBefore: plasmaBefore, PlasmaAfter: plasmaAfter,
+			ActualCost: actualCost,
+			InclusionLatencyMs: lat.Milliseconds(),
+			PoWUsed:            powMs > 0,
+			Included:           ok,
+		})
+		fmt.Fprintf(os.Stderr, "txtype: stake %d included=%v cost=%d (planned %d) plasma=%d->%d\n",
+			i, ok, actualCost, expectedStakeCost, plasmaBefore, plasmaAfter)
+	}
+
+	// --- Summary ---
+	type txTypeSummary struct {
+		AccountIndex   uint64           `json:"account_index"`
+		AccountAddress string           `json:"account_address"`
+		QSRFused       int64            `json:"qsr_fused"`
+		FusedPlasma    uint64           `json:"fused_plasma"`
+		InitialPlasma  uint64           `json:"initial_plasma"`
+		FinalPlasma    uint64           `json:"final_plasma"`
+		TypeResults    []txTypeResult   `json:"type_results"`
+	}
+
+	finalPlasma := plasmaLevel(target.addrStr)
+	out := txTypeSummary{
+		AccountIndex:   uint64(idx),
+		AccountAddress: target.addrStr,
+		QSRFused:       qsrAmt,
+		FusedPlasma:    fusedPlasma,
+		InitialPlasma:  initialPlasma,
+		FinalPlasma:    finalPlasma,
+		TypeResults:    typeResults,
+	}
+
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	enc.Encode(out)
