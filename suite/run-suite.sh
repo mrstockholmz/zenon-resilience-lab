@@ -1,6 +1,6 @@
 #!/bin/bash
 # Zenon Resilience Lab — one-command suite runner
-# Usage: ./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|phase21|phase22|check|all]
+# Usage: ./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|phase21|phase22|phase24|check|all]
 #
 # Prerequisites:
 #   - lab devnet running (znnd on 127.0.0.1:57997)
@@ -32,7 +32,8 @@ PHASE19_DIR="$RESULTS_DIR/phase-19"
 PHASE20_DIR="$RESULTS_DIR/phase-20"
 PHASE21_DIR="$RESULTS_DIR/phase-21"
 PHASE22_DIR="$RESULTS_DIR/phase-22"
-mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR" "$PHASE13_DIR" "$PHASE15_DIR" "$PHASE16_DIR" "$PHASE17_DIR" "$PHASE18_DIR" "$PHASE19_DIR" "$PHASE20_DIR" "$PHASE21_DIR" "$PHASE22_DIR"
+PHASE24_DIR="$RESULTS_DIR/phase-24"
+mkdir -p "$PHASE2_DIR" "$PHASE3_DIR" "$PHASE4_DIR" "$PHASE6_DIR" "$PHASE7_DIR" "$PHASE8_DIR" "$PHASE9_DIR" "$PHASE11_DIR" "$PHASE12_DIR" "$PHASE13_DIR" "$PHASE15_DIR" "$PHASE16_DIR" "$PHASE17_DIR" "$PHASE18_DIR" "$PHASE19_DIR" "$PHASE20_DIR" "$PHASE21_DIR" "$PHASE22_DIR" "$PHASE24_DIR"
 
 # Check node is reachable
 if ! curl -s http://127.0.0.1:57997 -X POST -H 'Content-Type: application/json' \
@@ -235,6 +236,14 @@ run_phase22() {
     echo ""
 }
 
+run_phase24() {
+    local seed=$1
+    local base_idx=$((2000 + seed * 20))
+    echo "--- Phase 24: multi-producer PoW latency (seed=$seed, base_idx=$base_idx) ---"
+    ./labctl powlat 5 1 "$base_idx" 2>"$PHASE24_DIR/powlat-5acct-3p-seed${seed}.log" | tee "$PHASE24_DIR/powlat-5acct-3p-seed${seed}.json"
+    echo ""
+}
+
 case "${1:-all}" in
     phase2)
         if [ "$REGIME" = "static" ]; then
@@ -356,6 +365,12 @@ case "${1:-all}" in
             run_phase22 "$seed"
         done
         ;;
+    phase24)
+        # Phase 24: multi-producer PoW latency (3 seeds)
+        for seed in 0 1 2; do
+            run_phase24 "$seed"
+        done
+        ;;
     check)
         echo "Running regression assertions..."
         python3 check-regressions.py "$RESULTS_DIR"
@@ -383,7 +398,7 @@ case "${1:-all}" in
         python3 json2csv.py "$RESULTS_DIR" "$RESULTS_DIR/summary.csv"
         ;;
     *)
-        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|phase21|phase22|check|all]" >&2
+        echo "Usage: $0 [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|phase21|phase22|phase24|check|all]" >&2
         exit 1
         ;;
 esac

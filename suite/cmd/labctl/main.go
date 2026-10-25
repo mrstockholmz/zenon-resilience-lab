@@ -1109,14 +1109,33 @@ func main() {
 	case "powlat":
 		numAccounts, _ := strconv.Atoi(os.Args[2])
 		amt, _ := strconv.ParseInt(os.Args[3], 10, 64)
-		runPowLat(numAccounts, amt)
+		baseIdx := uint32(200)
+		if len(os.Args) > 4 {
+			bi, _ := strconv.Atoi(os.Args[4])
+			baseIdx = uint32(bi)
+		}
+		runPowLat(numAccounts, amt, baseIdx)
 
 	case "mixcontend":
 		numFused, _ := strconv.Atoi(os.Args[2])
 		numUnfused, _ := strconv.Atoi(os.Args[3])
 		txPerAccount, _ := strconv.Atoi(os.Args[4])
 		amt, _ := strconv.ParseInt(os.Args[5], 10, 64)
-		runMixContend(numFused, numUnfused, txPerAccount, amt)
+		fusedBaseIdx := uint32(1)
+		unfusedBaseIdx := uint32(300)
+		skipFusion := false
+		if len(os.Args) > 6 {
+			bi, _ := strconv.Atoi(os.Args[6])
+			fusedBaseIdx = uint32(bi)
+		}
+		if len(os.Args) > 7 {
+			bi, _ := strconv.Atoi(os.Args[7])
+			unfusedBaseIdx = uint32(bi)
+		}
+		if len(os.Args) > 8 && os.Args[8] == "skipfusion" {
+			skipFusion = true
+		}
+		runMixContend(numFused, numUnfused, txPerAccount, amt, fusedBaseIdx, unfusedBaseIdx, skipFusion)
 
 	case "saturate":
 		numAccounts, _ := strconv.Atoi(os.Args[2])
@@ -1918,6 +1937,7 @@ func runContend(numAccounts int, txPerAccount int, amt int64) {
 		}
 		acctIdx := r.Idx / 100000
 		w := derivedAccount(uint32(acctIdx))
+		_ = w
 		_, h := frontierAccount(w.addrStr)
 		if h >= r.BlockHeight {
 			r.LatencyMs = 0 // can't measure individual latency in fire-and-forget
@@ -2783,8 +2803,7 @@ func runPowBurst(numAccounts int, durationSecs int, amt int64) {
 //
 // This gives concrete numbers for the cost of using PoW vs fused plasma.
 // On the lab hardware (i7-4770), PoW for a simple send takes ~30-60s.
-func runPowLat(numAccounts int, amt int64) {
-	baseIdx := uint32(200)
+func runPowLat(numAccounts int, amt int64, baseIdx uint32) {
 
 	// Verify accounts are funded
 	fmt.Fprintf(os.Stderr, "powlat: verifying %d accounts are funded...\n", numAccounts)
@@ -2920,19 +2939,20 @@ type mixGroupBreakdown struct {
 // when demand exceeds per-momentum capacity.
 //
 // Fused accounts use indices 1..numFused, unfused use indices 300..300+numUnfused-1.
-func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
+func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64, fusedBaseIdx uint32, unfusedBaseIdx uint32, skipFusion bool) {
 	// ---- Setup: fund all accounts ----
 	fmt.Fprintf(os.Stderr, "mixcontend setup: funding %d fused + %d unfused accounts...\n", numFused, numUnfused)
-	for i := 1; i <= numFused; i++ {
-		w := derivedAccount(uint32(i))
+	for i := 0; i < numFused; i++ {
+		idx := fusedBaseIdx + uint32(i)
+		w := derivedAccount(idx)
 		_, h := frontierAccount(w.addrStr)
 		if h == 0 {
-			fmt.Fprintf(os.Stderr, "  funding fused account %d (%s)...\n", i, w.addrStr)
-			runFund(uint32(i), 100)
+			fmt.Fprintf(os.Stderr, "  funding fused account %d (%s)...\n", idx, w.addrStr)
+			runFund(idx, 100)
 		}
 	}
 	for j := 0; j < numUnfused; j++ {
-		idx := uint32(300 + j)
+		idx := unfusedBaseIdx + uint32(j)
 		w := derivedAccount(idx)
 		_, h := frontierAccount(w.addrStr)
 		if h == 0 {
@@ -2954,21 +2974,25 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 
 	// Receive funded blocks
 	fmt.Fprintf(os.Stderr, "mixcontend setup: receiving funded blocks...\n")
-	for i := 1; i <= numFused; i++ {
-		w := derivedAccount(uint32(i))
+	for i := 0; i < numFused; i++ {
+		w := derivedAccount(fusedBaseIdx + uint32(i))
 		receiveAll(w)
 	}
 	for j := 0; j < numUnfused; j++ {
-		w := derivedAccount(uint32(300 + j))
+		w := derivedAccount(unfusedBaseIdx + uint32(j))
 		receiveAll(w)
 	}
 
-	// ---- Setup: fuse only the fused group ----
-	fmt.Fprintf(os.Stderr, "mixcontend setup: fusing QSR for %d fused accounts...\n", numFused)
-	for i := 1; i <= numFused; i++ {
-		fuseAmt := int64(i * 20) // 20, 40, 60, ... QSR
-		fmt.Fprintf(os.Stderr, "  fusing %d QSR for fused account %d...\n", fuseAmt, i)
-		runFuseFor(uint32(i), fuseAmt)
+	// ---- Setup: fuse only the fused group (skip if already fused) ----
+	if !skipFusion {
+		fmt.Fprintf(os.Stderr, "mixcontend setup: fusing QSR for %d fused accounts...\n", numFused)
+		for i := 0; i < numFused; i++ {
+			fuseAmt := int64((i + 1) * 20) // 20, 40, 60, ... QSR
+			fmt.Fprintf(os.Stderr, "  fusing %d QSR for fused account %d...\n", fuseAmt, fusedBaseIdx+uint32(i))
+			runFuseFor(fusedBaseIdx+uint32(i), fuseAmt)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "mixcontend setup: skipping fusion (using existing plasma)\n")
 	}
 
 	// Wait for fusion inclusion
@@ -2984,14 +3008,15 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 
 	// Record plasma levels
 	fusedPlasma := make(map[int]uint64)
-	for i := 1; i <= numFused; i++ {
-		w := derivedAccount(uint32(i))
-		fusedPlasma[i] = plasmaLevel(w.addrStr)
-		fmt.Fprintf(os.Stderr, "  fused account %d: plasma=%d\n", i, fusedPlasma[i])
+	for i := 0; i < numFused; i++ {
+		idx := int(fusedBaseIdx) + i
+		w := derivedAccount(uint32(idx))
+		fusedPlasma[idx] = plasmaLevel(w.addrStr)
+		fmt.Fprintf(os.Stderr, "  fused account %d: plasma=%d\n", idx, fusedPlasma[idx])
 	}
 	unfusedPlasma := make(map[int]uint64)
 	for j := 0; j < numUnfused; j++ {
-		idx := 300 + j
+		idx := int(unfusedBaseIdx) + j
 		w := derivedAccount(uint32(idx))
 		unfusedPlasma[idx] = plasmaLevel(w.addrStr)
 		fmt.Fprintf(os.Stderr, "  unfused account %d: plasma=%d\n", idx, unfusedPlasma[idx])
@@ -3011,10 +3036,11 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 	var wg sync.WaitGroup
 
 	// Fused accounts send with plasma (no PoW needed)
-	for i := 1; i <= numFused; i++ {
+	for i := 0; i < numFused; i++ {
 		wg.Add(1)
-		go func(idx int) {
+		go func(i int) {
 			defer wg.Done()
+			idx := int(fusedBaseIdx) + i
 			w := derivedAccount(uint32(idx))
 			for j := 0; j < txPerAccount; j++ {
 				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
@@ -3046,7 +3072,7 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 		wg.Add(1)
 		go func(j int) {
 			defer wg.Done()
-			idx := 300 + j
+			idx := int(unfusedBaseIdx) + j
 			w := derivedAccount(uint32(idx))
 			for k := 0; k < txPerAccount; k++ {
 				b, powMs, err := buildSend(w, w.addr, znn, dec(amt), nil, true)
@@ -3124,16 +3150,17 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 		acctCounts := make(map[int]int)
 		for _, blk := range ml.List[0].Content {
 			// Check fused accounts
-			for i := 1; i <= numFused; i++ {
-				w := derivedAccount(uint32(i))
+			for i := 0; i < numFused; i++ {
+				idx := int(fusedBaseIdx) + i
+				w := derivedAccount(uint32(idx))
 				if blk.Address == w.addrStr {
-					acctCounts[i]++
+					acctCounts[idx]++
 					break
 				}
 			}
 			// Check unfused accounts
 			for j := 0; j < numUnfused; j++ {
-				idx := 300 + j
+				idx := int(unfusedBaseIdx) + j
 				w := derivedAccount(uint32(idx))
 				if blk.Address == w.addrStr {
 					acctCounts[idx]++
@@ -3151,18 +3178,19 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 
 	// ---- Per-account breakdown ----
 	var breakdowns []mixGroupBreakdown
-	for i := 1; i <= numFused; i++ {
-		w := derivedAccount(uint32(i))
+	for i := 0; i < numFused; i++ {
+		idx := int(fusedBaseIdx) + i
+		w := derivedAccount(uint32(idx))
 		bd := mixGroupBreakdown{
 			Group:           "fused",
-			AccountIndex:    i,
+			AccountIndex:    idx,
 			Address:         w.addrStr,
-			FusedQSR:        int64(i * 20),
-			PlasmaAvailable: fusedPlasma[i],
+			FusedQSR:        int64((i + 1) * 20),
+			PlasmaAvailable: fusedPlasma[idx],
 		}
 		var lats []int64
 		for _, r := range allResults {
-			if r.Idx/100000 != i {
+			if r.Idx/100000 != idx {
 				continue
 			}
 			bd.Attempted++
@@ -3188,7 +3216,7 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64) {
 		breakdowns = append(breakdowns, bd)
 	}
 	for j := 0; j < numUnfused; j++ {
-		idx := 300 + j
+		idx := int(unfusedBaseIdx) + j
 		w := derivedAccount(uint32(idx))
 		bd := mixGroupBreakdown{
 			Group:           "unfused",

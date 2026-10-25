@@ -1,0 +1,59 @@
+{
+  "workload": "powlat",
+  "plasma_regime": "dynamic",
+  "attempted": 3,
+  "submitted": 2,
+  "included": 2,
+  "rejected": 1,
+  "unresolved": 0,
+  "pow_count": 2,
+  "total_pow_ms": 42695,
+  "latencies_ms": [
+    0,
+    1
+  ],
+  "p50_ms": 1,
+  "p90_ms": 1,
+  "p99_ms": 1,
+  "start_momentum": 10679,
+  "end_momentum": 10683,
+  "duration_sec": 45.027887148,
+  "generator_cpu_sec": 89.2,
+  "results": [
+    {
+      "idx": 1,
+      "block_height": 3,
+      "submit_momentum": 10680,
+      "pow_ms": 9600,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 10680,
+      "plasma_after": 31500000
+    },
+    {
+      "idx": 0,
+      "block_height": 3,
+      "submit_momentum": 10682,
+      "pow_ms": 33095,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 10682,
+      "plasma_after": 31500000
+    },
+    {
+      "idx": 2,
+      "block_height": 1,
+      "submit_momentum": 10683,
+      "pow_ms": 45023,
+      "included": false,
+      "latency_ms": 0,
+      "included_momentum": 0,
+      "plasma_after": 0,
+      "error": "acct2007: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    }
+  ],
+  "pre_fusion_price": 1000,
+  "pre_work_price": 1000,
+  "post_fusion_price": 1000,
+  "post_work_price": 1000
+}

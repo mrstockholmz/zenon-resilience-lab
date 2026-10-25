@@ -1,0 +1,59 @@
+{
+  "workload": "powlat",
+  "plasma_regime": "dynamic",
+  "attempted": 3,
+  "submitted": 3,
+  "included": 3,
+  "rejected": 0,
+  "unresolved": 0,
+  "pow_count": 3,
+  "total_pow_ms": 80786,
+  "latencies_ms": [
+    0,
+    0,
+    1
+  ],
+  "p50_ms": 0,
+  "p90_ms": 1,
+  "p99_ms": 1,
+  "start_momentum": 10727,
+  "end_momentum": 10730,
+  "duration_sec": 29.979344738,
+  "generator_cpu_sec": 81.87,
+  "results": [
+    {
+      "idx": 0,
+      "block_height": 2,
+      "submit_momentum": 10729,
+      "pow_ms": 22717,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 10729,
+      "plasma_after": 31500000
+    },
+    {
+      "idx": 2,
+      "block_height": 2,
+      "submit_momentum": 10730,
+      "pow_ms": 28097,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 10730,
+      "plasma_after": 31500000
+    },
+    {
+      "idx": 1,
+      "block_height": 2,
+      "submit_momentum": 10730,
+      "pow_ms": 29972,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 10730,
+      "plasma_after": 31500000
+    }
+  ],
+  "pre_fusion_price": 1000,
+  "pre_work_price": 1000,
+  "post_fusion_price": 1000,
+  "post_work_price": 1000
+}

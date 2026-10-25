@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 24
+next_phase: 25
 cloud_sessions_run: 1
-local_sessions_run: 15
+local_sessions_run: 16
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-25 (phase 23: multi-producer devnet, 3/3 active pillars)
+updated: 2026-10-25 (phase 24: multi-producer PoW latency, 10s momenta)
 ```
 
 ## Phase log
@@ -35,6 +35,7 @@ updated: 2026-10-25 (phase 23: multi-producer devnet, 3/3 active pillars)
 | 19 contract block throughput cap | done | results/phase-19/20261024-phase19-contractcap-results.md | Contract block cap of 80/momentum exists but is NOT binding. Plasma budget limits Stake calls to ~73-75/momentum. Cap and plasma budget aligned (4.2M/52.5K=80). Stake generates 1 contract block (receive only). 2-momentum pipeline. R16 added. |
 | 20 momentum content capacity | done | results/phase-20/20261024-phase20-contentmix-results.md | 280 content cap is NOT binding. Plasma budget limits user blocks to exactly 200. Max observed content: 200 (Config A seed 1, exactly at plasma budget). Mixing contract calls reduces content (Stake less plasma-efficient). Contract blocks in next momentum (2-pipeline). R17 added. |
 | 23 multi-producer devnet | done | results/phase-23/20261025-phase23-multiproducer-results.md | 3/3 active pillars: 10s mean dt (stdev=0), uniform producer distribution, 200 tx limit still enforced, queue drain 3x faster (30s vs 90s), plasma regen 3x faster (10s vs 30s), effective throughput ~20 txs/s. R20 added. |
+| 24 multi-producer PoW latency | done | results/phase-24/20261025-phase24-multiproducer-pow-results.md | PoW txs 100% inclusion + 100% same-momentum with 10s momenta (13/13). PoW time unchanged (~24s avg). Inclusion latency 0-3ms. Mixed contention: fused all in first momentum, unfused spread by PoW speed. 100% inclusion both groups. |
 | 22 validation edge cases | done | results/phase-22/20261025-phase22-valedge-results.md | All 13 negative cases correctly rejected with matching error messages. Zero-amount send accepted (correct boundary). No validation gaps found. 3-seed reproducible. R19 added. |
 | 21 momentum production rate | done | results/phase-21/20261025-phase21-momentum-rate-results.md | Mean inter-momentum time: 30.0s (3× slowdown, matching 3-pillar 1-active config). Distribution does NOT match uniform shuffle model — 30.9% at 10s vs 11.1% predicted. Momentum timestamp = slot start time (0s delay). Tx load does not affect production rate. Effective throughput: ~6.7 txs/s not 20 txs/s. R18 added. |
 
@@ -234,6 +235,9 @@ configured in a mesh. All three nodes share the same lab-patched genesis.
   frontier momentum to measure inter-momentum time distribution. Compares
   with theoretical model from election algorithm. Usage: `python3 momentum-rate.py
   --duration SECS --out FILE`.
+- `powlat` now accepts optional baseIdx (default 200). Usage: `labctl powlat <n> <amt> [baseIdx]`.
+- `mixcontend` now accepts optional fusedBaseIdx, unfusedBaseIdx, skipfusion.
+  Usage: `labctl mixcontend <f> <u> <txPerAcct> <amt> [fusedBaseIdx] [unfusedBaseIdx] [skipfusion]`.
 - `momentum-rate-load.sh` — runs momentum-rate collector while sending a
   transaction burst to test if load affects production rate.
 
