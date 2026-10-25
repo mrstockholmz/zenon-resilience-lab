@@ -9,19 +9,24 @@ Reviewed by humans and a second AI (Claude). Status and roadmap: [STATE.md](STAT
 
 Audience: go-zenon maintainers weighing changes, application builders sizing resources, node operators.
 
-## Status (2026-10-22)
+## Status (v0.1, 2026-10-25)
 
-Phases 1–4 complete. Phase 5 (reproducible suite) built and documented.
+Phases 1–24 complete. Reproducible suite built and documented.
 
-**Key findings so far:**
+**Key findings:**
 1. Fused plasma eliminates PoW entirely (0.02s vs 41–79s for 5 sequential txs).
 2. Single-account burst rejection is caused by PoW delay, not account-chain limits.
 3. Each simple self-transfer consumes exactly 21000 plasma.
-4. No observable static vs dynamic plasma difference for fused accounts at low volume.
-5. Dynamic Plasma pricing only activates under high momentum-level demand.
+4. The 200 tx/momentum limit is strictly enforced; excess is queued (effective ~67 txs/momentum).
+5. No plasma-based prioritization at floor prices; price-based priority exists when prices differ.
+6. Plasma is a per-momentum rate limit, regenerating to full within 1 momentum.
+7. Dynamic Plasma repricing fires at >50 fused txs/momentum, capped at ±10%/momentum.
+
+Full current findings: [docs/CURRENT-FINDINGS.md](docs/CURRENT-FINDINGS.md).
+Reset procedure: [docs/RESET.md](docs/RESET.md).
 
 **Suite:** `suite/` contains a one-command runner, workload generator (labctl), regression
-assertions (R1–R5), and CSV export. See [suite/README.md](suite/README.md) for reproduction
+assertions (R1–R20, all passing), and CSV export. See [suite/README.md](suite/README.md) for reproduction
 instructions.
 
 ## Principles
@@ -40,5 +45,8 @@ instructions.
 - `legacy/` — earlier devnet tools from mr.stockholm.Z (Aug–Oct 2026), sanitized, not yet validated here
 - `results/` — raw data and reports per phase (`results/phase-N/`)
 - `suite/` — the reproducible workload suite (built in phases 2–5)
+- `docs/CURRENT-FINDINGS.md` — one current conclusion per topic, superseded claims marked
+- `docs/RESET.md` — how to reset the lab and re-run from scratch
+- `docs/crypto-dependencies.md` — inventory of Zenon cryptographic dependencies (phase 5 follow-up)
 
 License: MIT.

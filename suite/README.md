@@ -130,7 +130,7 @@ go build -o labctl ./cmd/labctl
 | `phase16` | txtype 200 QSR x 3 seeds (transaction type plasma costs) |
 | `phase17` | poolcap + frontconf x 3 seeds (mempool cap + frontier conflict) |
 | `phase18` | datasize 3000 QSR x 3 seeds (data payload size limits) |
-| `check` | Regression assertions (R1-R15) + CSV export |
+| `check` | Regression assertions (R1-R20) + CSV export |
 | `all` | phase2 + phase3 + phase4 + check |
 
 Results are written to `../results/phase-N/*.json`.
@@ -138,7 +138,7 @@ CSV summary: `../results/summary.csv`.
 
 ## Regression assertions
 
-`check-regressions.py` verifies five invariants against the raw JSON results:
+`check-regressions.py` verifies invariants against the raw JSON results. Each check reports PASS, FAIL, or NOT TESTED (when insufficient result files are present).
 
 | ID | Assertion |
 |---|---|
@@ -160,7 +160,7 @@ CSV summary: `../results/summary.csv`.
 
 Run: `python3 check-regressions.py ../results`
 
-All R1-R15 assertions passing as of 2026-10-24 (phase 18).
+All R1-R20 assertions passing as of 2026-10-25 (v0.1).
 
 ## Safety
 

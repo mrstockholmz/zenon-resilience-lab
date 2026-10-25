@@ -4,11 +4,12 @@
 ```
 next_phase: 25
 cloud_sessions_run: 1
-local_sessions_run: 17
+local_sessions_run: 18
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-25 (local verification: phase 2+3 on multi-producer devnet)
+release: v0.1
+updated: 2026-10-25 (v0.1 release: honest regression checks + CURRENT findings + reset procedure)
 ```
 
 ## Phase log
@@ -243,6 +244,19 @@ configured in a mesh. All three nodes share the same lab-patched genesis.
   Usage: `labctl mixcontend <f> <u> <txPerAcct> <amt> [fusedBaseIdx] [unfusedBaseIdx] [skipfusion]`.
 - `momentum-rate-load.sh` — runs momentum-rate collector while sending a
   transaction burst to test if load affects production rate.
+
+## v0.1 release notes (2026-10-25)
+
+- **Honest regression checks:** `check-regressions.py` now reports PASS / FAIL / NOT TESTED
+  per assertion. Requires expected file counts; reports NOT TESTED when insufficient data.
+  Skipped setups and excluded outliers are visible in the output. R3 preconditions documented.
+- **Current findings:** `docs/CURRENT-FINDINGS.md` — one conclusion per topic, superseded
+  claims marked (13→14 priority, 8→15 regeneration, single-account unfused burst limits).
+- **Single-producer limits:** documented in CURRENT-FINDINGS.md. Phases 2–20 used 1 pillar,
+  30s momenta. Multi-producer phases 21–24 confirmed core findings on 3 pillars, 10s momenta.
+- **Reset procedure:** `docs/RESET.md` — stop nodes, remove data dirs, rebuild from pin,
+  recreate genesis, restart, verify.
+- **Regression status:** R1–R20 all PASS (20 PASS, 0 FAIL, 0 NOT TESTED).
 
 ## Rules for updating
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under
