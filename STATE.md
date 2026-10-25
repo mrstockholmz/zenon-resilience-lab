@@ -4,21 +4,21 @@
 ```
 next_phase: 25
 cloud_sessions_run: 1
-local_sessions_run: 16
+local_sessions_run: 17
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-25 (phase 24: multi-producer PoW latency, 10s momenta)
+updated: 2026-10-25 (local verification: phase 2+3 on multi-producer devnet)
 ```
 
 ## Phase log
 | phase | status | result file | note |
 |---|---|---|---|
-| 1 gap check + baseline | partial-pass | results/phase-1/20261020-cloud-phase1-baseline.md, results/phase-1/20261021-gap-check.md | Baseline proven (round trip, PoW fallback, plasma regime pinned). Gap check redone locally 2026-10-21: no existing suite measures plasma/demand/latency — lab fills a real gap. Genesis defect found; fix merged upstream as PR #201. |
-| 2 smallest experiment | done | results/phase-2/20261021-phase2-static-results.md, results/phase-2/20261021-phase2-dynamic-results.md | Ordinary + burst workloads in static (<30) and dynamic (>=30) regimes. Key finding: fused plasma eliminates PoW and enables instant inclusion; single-account burst rejection is caused by PoW delay, not account-chain limits. |
-| 3 resource matrix | done | results/phase-3/20261021-phase3-matrix-results.md | Low vs high fused x steady vs burst x 1 vs multi accounts, 3 seeds each. 100% inclusion for sequential (all regimes) and for fused burst. 20-40% inclusion for unfused burst (PoW race). |
+| 1 gap check + baseline | partial-pass | results/phase-1/20261020-cloud-phase1-baseline.md, results/phase-1/20261021-gap-check.md, results/phase-1/20261025-gap-check-local.md | Baseline proven (round trip, PoW fallback, plasma regime pinned). Gap check redone locally 2026-10-21 and 2026-10-25: no existing suite measures plasma/demand/latency — lab fills a real gap. Genesis defect found; fix merged upstream as PR #201. |
+| 2 smallest experiment | done | results/phase-2/20261021-phase2-static-results.md, results/phase-2/20261021-phase2-dynamic-results.md, results/phase-2/20261025-phase2-local-verification.md | Ordinary + burst workloads in static (<30) and dynamic (>=30) regimes. Key finding: fused plasma eliminates PoW and enables instant inclusion; single-account burst rejection is caused by PoW delay, not account-chain limits. **Local verification 2026-10-25:** confirmed on multi-producer devnet (10s momenta). |
+| 3 resource matrix | done | results/phase-3/20261021-phase3-matrix-results.md, results/phase-3/20261025-phase3-local-verification.md | Low vs high fused x steady vs burst x 1 vs multi accounts, 3 seeds each. 100% inclusion for sequential (all regimes) and for fused burst. 20-40% inclusion for unfused burst (PoW race). **Local verification 2026-10-25:** fused cases confirmed on multi-producer devnet. |
 | 4 comparison | done | results/phase-4/20261022-phase4-comparison-results.md | Fused plasma static vs dynamic: no observable difference for existing fusion holders at low volume. Dynamic pricing (nextFusionPrice/workPrice=1000) only affects new fusions and PoW fallback under high demand. |
-| 5 package | done | suite/ | One-command runner (suite/run-suite.sh with phase2/phase3/phase4/check/all), labctl tool, raw JSON results, CSV export (json2csv.py), regression assertions (check-regressions.py R1-R5 all passing). Documentation: suite/README.md with full reproduction instructions. Main README updated. |
+| 5 package | done | suite/ | One-command runner (suite/run-suite.sh with phase2/phase3/phase4/check/all), labctl tool, raw JSON results, CSV export (json2csv.py), regression assertions (check-regressions.py R1-R20 all passing). Documentation: suite/README.md with full reproduction instructions. Main README updated. |
 | 6 next experiment | done | results/phase-6/20261022-phase6-repricing-results.md | Dynamic Plasma repricing confirmed. >50 fused txs/momentum triggers price rise, capped at +10%/momentum. Price decays ~5%/empty momentum to floor of 1000. 3-seed reproducible. Decision informed: when to activate dynamic-plasma spork on mainnet. |
 | 7 multi-sender contention | done | results/phase-7/20261022-phase7-contention-results.md | 10 accounts with plasma gradient compete for momentum space. Higher plasma correlates with higher inclusion (Spearman rho=0.47-0.84). No automatic PoW fallback — insufficient plasma = rejection. 200-tx/momentum limit confirmed. |
 | 8 plasma depletion + regeneration | done | results/phase-8/20261022-phase8-plasma-depletion-results.md | Plasma depletes by exactly 21000 per simple self-transfer. After confirmation, plasma fully regenerates to fused amount (two-counter system: committed/unconfirmed sync). 100 QSR = 10 txs/momentum. Plasma is a rate limit, not a permanent budget. |
@@ -39,12 +39,13 @@ updated: 2026-10-25 (phase 24: multi-producer PoW latency, 10s momenta)
 | 22 validation edge cases | done | results/phase-22/20261025-phase22-valedge-results.md | All 13 negative cases correctly rejected with matching error messages. Zero-amount send accepted (correct boundary). No validation gaps found. 3-seed reproducible. R19 added. |
 | 21 momentum production rate | done | results/phase-21/20261025-phase21-momentum-rate-results.md | Mean inter-momentum time: 30.0s (3× slowdown, matching 3-pillar 1-active config). Distribution does NOT match uniform shuffle model — 30.9% at 10s vs 11.1% predicted. Momentum timestamp = slot start time (0s delay). Tx load does not affect production rate. Effective throughput: ~6.7 txs/s not 20 txs/s. R18 added. |
 
-## Local verification session 2026-10-24
+## Local verification session 2026-10-25
 
-- Phase 2 dynamic regime re-verified locally: ordinary (3/3 included, 0ms latency) + burst (5/5 included, 0-1ms latency).
-- Gap check redone from nummer13: sol-znn/go-zenon-fuzz (fuzzing, no overlap), 0x3639/testnet (infra tooling, no overlap). Conclusion unchanged: lab fills a real gap.
-- Suite runner verified: `run-suite.sh check` passes all R1-R12 regression assertions.
-- Non-JSON `.json` files renamed to `.log` (phases 7, 9, 13, 14) — CSV exporter now clean (74 rows, 0 skips).
+- Phase 2 dynamic regime re-verified locally on multi-producer devnet: ordinary (3/3 included, 0-1ms latency) + burst (5/5 included, 0-1ms latency) + probe (3/3 included, 1-4ms latency).
+- Phase 3 matrix re-verified locally on multi-producer devnet: low-steady-1 (3 seeds, 100% inclusion), low-burst-1 (3 seeds, 100% inclusion), low-steady-multi (3 seeds, 100% inclusion).
+- Gap check redone from nummer13 (2026-10-25): sol-znn/go-zenon-fuzz (fuzzing, no overlap), 0x3639/testnet (infra tooling, no overlap), TminusZ/zenon-developer-commons (research papers, no empirical suite). Conclusion unchanged: lab fills a real gap.
+- Suite runner verified: `run-suite.sh check` passes all R1-R20 regression assertions.
+- Local verification files moved to `results/phase-{2,3}/local-verification/` to avoid glob collision with original unfused results.
 - Crypto dependency inventory completed: `docs/crypto-dependencies.md` — full inventory of signature scheme (Ed25519), hash functions (SHA3-256/SHA-256/Keccak-256/RIPEMD-160), producer keys (BIP-39+SLIP-0010), bridge keys (secp256k1 TSS), address derivation, PoW, wallet encryption (Argon2id+AES-256-GCM), PTLC, P2P transport crypto.
 
 ## Genesis defect (found in phase 1, verified locally)
@@ -180,9 +181,11 @@ configured in a mesh. All three nodes share the same lab-patched genesis.
 
 - `suite/cmd/labctl/main.go` — Go CLI: info, ordinary, burst, multiburst, probe,
   fuse, fund, fusefor, receive, waitfor, matrix, hvburst, sustain, contend,
-  deplete, powlat, powburst, mixcontend. Disposable devnet keys only.
+  deplete, powlat, powburst, mixcontend, saturate, mixsaturate, overpay, regen,
+  txtype, poolcap, frontconf, datasize, contractcap, contentmix, valedge.
+  Disposable devnet keys only.
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
-- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|check|all.
+- `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|phase21|phase22|phase24|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
 - `suite/check-regressions.py` — regression assertions R1-R20.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
