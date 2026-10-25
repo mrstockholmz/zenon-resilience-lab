@@ -1,0 +1,178 @@
+{
+  "config": {
+    "pillars_total": 3,
+    "pillars_active": 3,
+    "block_time": 10,
+    "expected_mean_dt": 10,
+    "collection_duration_s": 240,
+    "total_momentums": 25
+  },
+  "momentums": [
+    {
+      "height": 9366,
+      "producer": "dev3",
+      "timestamp": 1792903790,
+      "dt": 0
+    },
+    {
+      "height": 9367,
+      "producer": "dev3",
+      "timestamp": 1792903800,
+      "dt": 10
+    },
+    {
+      "height": 9368,
+      "producer": "dev3",
+      "timestamp": 1792903810,
+      "dt": 10
+    },
+    {
+      "height": 9369,
+      "producer": "dev1",
+      "timestamp": 1792903820,
+      "dt": 10
+    },
+    {
+      "height": 9370,
+      "producer": "dev1",
+      "timestamp": 1792903830,
+      "dt": 10
+    },
+    {
+      "height": 9371,
+      "producer": "dev3",
+      "timestamp": 1792903840,
+      "dt": 10
+    },
+    {
+      "height": 9372,
+      "producer": "dev2",
+      "timestamp": 1792903850,
+      "dt": 10
+    },
+    {
+      "height": 9373,
+      "producer": "dev1",
+      "timestamp": 1792903860,
+      "dt": 10
+    },
+    {
+      "height": 9374,
+      "producer": "dev3",
+      "timestamp": 1792903870,
+      "dt": 10
+    },
+    {
+      "height": 9375,
+      "producer": "dev2",
+      "timestamp": 1792903880,
+      "dt": 10
+    },
+    {
+      "height": 9376,
+      "producer": "dev3",
+      "timestamp": 1792903890,
+      "dt": 10
+    },
+    {
+      "height": 9377,
+      "producer": "dev2",
+      "timestamp": 1792903900,
+      "dt": 10
+    },
+    {
+      "height": 9378,
+      "producer": "dev3",
+      "timestamp": 1792903910,
+      "dt": 10
+    },
+    {
+      "height": 9379,
+      "producer": "dev1",
+      "timestamp": 1792903920,
+      "dt": 10
+    },
+    {
+      "height": 9380,
+      "producer": "dev1",
+      "timestamp": 1792903930,
+      "dt": 10
+    },
+    {
+      "height": 9381,
+      "producer": "dev2",
+      "timestamp": 1792903940,
+      "dt": 10
+    },
+    {
+      "height": 9382,
+      "producer": "dev2",
+      "timestamp": 1792903950,
+      "dt": 10
+    },
+    {
+      "height": 9383,
+      "producer": "dev3",
+      "timestamp": 1792903960,
+      "dt": 10
+    },
+    {
+      "height": 9384,
+      "producer": "dev1",
+      "timestamp": 1792903970,
+      "dt": 10
+    },
+    {
+      "height": 9385,
+      "producer": "dev1",
+      "timestamp": 1792903980,
+      "dt": 10
+    },
+    {
+      "height": 9386,
+      "producer": "dev3",
+      "timestamp": 1792903990,
+      "dt": 10
+    },
+    {
+      "height": 9387,
+      "producer": "dev2",
+      "timestamp": 1792904000,
+      "dt": 10
+    },
+    {
+      "height": 9388,
+      "producer": "dev1",
+      "timestamp": 1792904010,
+      "dt": 10
+    },
+    {
+      "height": 9389,
+      "producer": "dev2",
+      "timestamp": 1792904020,
+      "dt": 10
+    },
+    {
+      "height": 9390,
+      "producer": "dev3",
+      "timestamp": 1792904030,
+      "dt": 10
+    }
+  ],
+  "statistics": {
+    "count": 24,
+    "mean": 10,
+    "median": 10.0,
+    "stdev": 0.0,
+    "min": 10,
+    "max": 10
+  },
+  "distribution": {
+    "10": 24
+  },
+  "producer_counts": {
+    "dev3": 10,
+    "dev1": 8,
+    "dev2": 7
+  }
+}

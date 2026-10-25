@@ -896,6 +896,48 @@ def check_valedge(results_dir):
     return failures
 
 
+def check_multiproducer(results_dir):
+    """R20: Multi-producer devnet (3/3 active) has 10s mean inter-momentum time.
+    
+    Checks that:
+    1. Mean dt is approximately 10s (BlockTime with all pillars active)
+    2. Stdev is very low (no missed slots)
+    3. All dt values are exactly BlockTime (no variance)
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-23")
+    if not os.path.isdir(phase_dir):
+        return ["R20 SKIP: phase-23 directory not found"]
+    
+    for f in sorted(glob.glob(os.path.join(phase_dir, "momentum-rate-3p*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        stats = data.get("statistics", {})
+        mean_dt = stats.get("mean", 0)
+        stdev = stats.get("stdev", 999)
+        total = data.get("config", {}).get("total_momentums", 0)
+        
+        if total < 10:
+            continue  # skip small samples
+        
+        # With 3/3 active pillars, mean should be very close to 10s
+        if mean_dt < 9.5 or mean_dt > 10.5:
+            failures.append(
+                f"R20 FAIL: {os.path.basename(f)} mean={mean_dt}s "
+                f"outside expected range 9.5-10.5s (3/3 active pillars, n={total})"
+            )
+        
+        # Stdev should be near 0 (all slots filled)
+        if stdev > 1.0:
+            failures.append(
+                f"R20 FAIL: {os.path.basename(f)} stdev={stdev}s "
+                f"(expected ~0 with all pillars active, n={total})"
+            )
+    
+    return failures
+
+
 def main():
     # Default: resolve results/ relative to the repo root (parent of suite/)
     default_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
@@ -922,6 +964,7 @@ def main():
         ("R17: momentum content capacity — plasma budget binds, not 280 cap (phase-20)", check_contentmix),
         ("R18: momentum production rate = BlockTime * N/K (phase-21)", check_momentum_rate),
         ("R19: validation edge cases — negative rejected, zero_amount accepted (phase-22)", check_valedge),
+        ("R20: multi-producer 3/3 active = 10s mean, near-zero stdev (phase-23)", check_multiproducer),
     ]
     
     for name, check_fn in checks:

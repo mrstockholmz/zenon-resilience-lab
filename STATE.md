@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 23
+next_phase: 24
 cloud_sessions_run: 1
-local_sessions_run: 14
+local_sessions_run: 15
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-25 (phase 22: transaction validation edge cases)
+updated: 2026-10-25 (phase 23: multi-producer devnet, 3/3 active pillars)
 ```
 
 ## Phase log
@@ -34,6 +34,7 @@ updated: 2026-10-25 (phase 22: transaction validation edge cases)
 | 18 data payload size limits | done | results/phase-18/20261024-phase18-datasize-results.md | Plasma cost formula exact: 21000+68*N bytes for 0-16KB. 16KB limit strictly enforced. Max-size tx costs 1,135,112 plasma (~541 QSR). Plasma budget (4.2M) limits large-data txs to 3 per momentum. R15 added. |
 | 19 contract block throughput cap | done | results/phase-19/20261024-phase19-contractcap-results.md | Contract block cap of 80/momentum exists but is NOT binding. Plasma budget limits Stake calls to ~73-75/momentum. Cap and plasma budget aligned (4.2M/52.5K=80). Stake generates 1 contract block (receive only). 2-momentum pipeline. R16 added. |
 | 20 momentum content capacity | done | results/phase-20/20261024-phase20-contentmix-results.md | 280 content cap is NOT binding. Plasma budget limits user blocks to exactly 200. Max observed content: 200 (Config A seed 1, exactly at plasma budget). Mixing contract calls reduces content (Stake less plasma-efficient). Contract blocks in next momentum (2-pipeline). R17 added. |
+| 23 multi-producer devnet | done | results/phase-23/20261025-phase23-multiproducer-results.md | 3/3 active pillars: 10s mean dt (stdev=0), uniform producer distribution, 200 tx limit still enforced, queue drain 3x faster (30s vs 90s), plasma regen 3x faster (10s vs 30s), effective throughput ~20 txs/s. R20 added. |
 | 22 validation edge cases | done | results/phase-22/20261025-phase22-valedge-results.md | All 13 negative cases correctly rejected with matching error messages. Zero-amount send accepted (correct boundary). No validation gaps found. 3-seed reproducible. R19 added. |
 | 21 momentum production rate | done | results/phase-21/20261025-phase21-momentum-rate-results.md | Mean inter-momentum time: 30.0s (3× slowdown, matching 3-pillar 1-active config). Distribution does NOT match uniform shuffle model — 30.9% at 10s vs 11.1% predicted. Momentum timestamp = slot start time (0s delay). Tx load does not affect production rate. Effective throughput: ~6.7 txs/s not 20 txs/s. R18 added. |
 
@@ -164,6 +165,16 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     plasma-efficient per content entry. The theoretical 280 maximum requires
     precise two-momentum orchestration (80 Stake in N-1, 200 self in N).
 
+## Multi-producer setup (phase 23)
+
+Three znnd instances run simultaneously for multi-producer tests:
+- **Pillar 1** (dev1): `~/lab-devnet/`, RPC 127.0.0.1:57997, P2P 127.0.0.1:56995
+- **Pillar 2** (dev2): `~/lab-devnet-pillar2/`, RPC 127.0.0.1:57996, P2P 127.0.0.1:56996
+- **Pillar 3** (dev3): `~/lab-devnet-pillar3/`, RPC 127.0.0.1:57995, P2P 127.0.0.1:56997
+
+All use `P2PBackend: "libp2p"` (forced, skipping spork oracle). BootstrapPeers
+configured in a mesh. All three nodes share the same lab-patched genesis.
+
 ## Suite tooling
 
 - `suite/cmd/labctl/main.go` — Go CLI: info, ordinary, burst, multiburst, probe,
@@ -172,7 +183,7 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
 - `suite/rpcload.sh` — RPC latency under load measurement (phase 10).
 - `suite/run-suite.sh` — one-command runner: phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|check|all.
 - `suite/json2csv.py` — exports all JSON results to summary.csv.
-- `suite/check-regressions.py` — regression assertions R1-R18.
+- `suite/check-regressions.py` — regression assertions R1-R20.
 - `hvburst` — high-volume burst with per-momentum price tracking (phase 6).
 - `sustain` — continuous multi-account burst for sustained repricing tests (phase 6).
 - `deplete` — plasma depletion + regeneration test (phase 8). Fuses QSR, sends

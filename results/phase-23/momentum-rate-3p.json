@@ -1,0 +1,172 @@
+{
+  "config": {
+    "pillars_total": 3,
+    "pillars_active": 3,
+    "block_time": 10,
+    "expected_mean_dt": 10,
+    "collection_duration_s": 180,
+    "total_momentums": 18
+  },
+  "momentums": [
+    {
+      "height": 9292,
+      "producer": "dev3",
+      "timestamp": 1792903050,
+      "dt": 0,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9293,
+      "producer": "dev1",
+      "timestamp": 1792903060,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9294,
+      "producer": "dev3",
+      "timestamp": 1792903070,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9295,
+      "producer": "dev3",
+      "timestamp": 1792903080,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9296,
+      "producer": "dev2",
+      "timestamp": 1792903090,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9297,
+      "producer": "dev2",
+      "timestamp": 1792903100,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9298,
+      "producer": "dev3",
+      "timestamp": 1792903110,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9299,
+      "producer": "dev2",
+      "timestamp": 1792903120,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9300,
+      "producer": "dev1",
+      "timestamp": 1792903130,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9301,
+      "producer": "dev1",
+      "timestamp": 1792903140,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9302,
+      "producer": "dev2",
+      "timestamp": 1792903150,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9303,
+      "producer": "dev1",
+      "timestamp": 1792903160,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9304,
+      "producer": "dev2",
+      "timestamp": 1792903170,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9305,
+      "producer": "dev1",
+      "timestamp": 1792903180,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9306,
+      "producer": "dev3",
+      "timestamp": 1792903190,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9307,
+      "producer": "dev2",
+      "timestamp": 1792903200,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9308,
+      "producer": "dev3",
+      "timestamp": 1792903210,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    },
+    {
+      "height": 9309,
+      "producer": "dev1",
+      "timestamp": 1792903220,
+      "dt": 10,
+      "nextFusionPrice": 1000,
+      "nextWorkPrice": 1000
+    }
+  ],
+  "statistics": {
+    "count": 17,
+    "mean": 10,
+    "median": 10,
+    "stdev": 0.0,
+    "min": 10,
+    "max": 10
+  },
+  "distribution": {
+    "10": 17
+  },
+  "producer_counts": {
+    "dev3": 6,
+    "dev1": 6,
+    "dev2": 6
+  }
+}

@@ -1,0 +1,67 @@
+contentmix: 3 self-transfers (63000 plasma) + 0 stake calls (0 plasma) = 63000 total user plasma
+contentmix: theoretical max content=3 (if all included in one momentum)
+contentmix setup: funding 3 accounts (index 400-402) with 10 ZNN each...
+contentmix setup: waiting for funding inclusion (height 9354)...
+contentmix setup: fusing 10 QSR for 3 accounts...
+  fusing 10 QSR for account 400...
+fusefor [400] z1qz4c3qwjf6y02ej7jcflvf50jtzrzfpdwvtjp4: 10 QSR height=7540 included=true latency=3.315127ms momentum=9354 target_plasma=2520000
+  fusing 10 QSR for account 401...
+fusefor [401] z1qqmsycchu7lnxhpqjkkc3y2mr724yn22hn8ch8: 10 QSR height=7541 included=true latency=3.799633ms momentum=9354 target_plasma=2520000
+  fusing 10 QSR for account 402...
+fusefor [402] z1qrancl09mv2z3p9nfgruyk3dz0z7s53k03m6jr: 10 QSR height=7542 included=true latency=3.677833ms momentum=9354 target_plasma=2520000
+contentmix setup: waiting for fusion inclusion (height 9356)...
+contentmix setup: receiving funded blocks...
+  account 400: plasma=2520000
+  account 401: plasma=2520000
+  account 402: plasma=2520000
+contentmix setup: min plasma=52500
+contentmix: all 3 transactions published in 7.629129ms, waiting for inclusion...
+contentmix: waiting for momentum 9361...
+contentmix: analyzing momentum contents (9356 to 9361)...
+contentmix: actual max content=6 at height 9357
+contentmix: 280 cap bind: false
+{
+  "num_self_transfer_accounts": 3,
+  "num_stake_accounts": 0,
+  "total_transactions": 3,
+  "self_transfer_plasma": 63000,
+  "stake_call_plasma": 0,
+  "total_user_plasma": 63000,
+  "theoretical_max_content": 3,
+  "actual_max_content": 6,
+  "actual_max_content_height": 9357,
+  "cap_280_bind": false,
+  "momentum_details": [
+    {
+      "height": 9357,
+      "total_content": 6,
+      "user_blocks": 6,
+      "contract_blocks": 0,
+      "self_transfer_blocks": 3,
+      "stake_send_blocks": 0,
+      "other_blocks": 0
+    }
+  ],
+  "transactions": [
+    {
+      "account_index": 402,
+      "address": "z1qrancl09mv2z3p9nfgruyk3dz0z7s53k03m6jr",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 400,
+      "address": "z1qz4c3qwjf6y02ej7jcflvf50jtzrzfpdwvtjp4",
+      "tx_type": "self_transfer",
+      "published": true
+    },
+    {
+      "account_index": 401,
+      "address": "z1qqmsycchu7lnxhpqjkkc3y2mr724yn22hn8ch8",
+      "tx_type": "self_transfer",
+      "published": true
+    }
+  ],
+  "setup_momentum": 9356,
+  "end_momentum": 9361
+}
