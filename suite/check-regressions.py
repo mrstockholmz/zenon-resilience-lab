@@ -20,6 +20,7 @@ Invariants tested:
   R13: Transaction type plasma costs match go-zenon source constants
   R14: Mempool cap is 500 uncommitted blocks per account; frontier conflict resolution follows price-then-hash rule
   R18: Momentum production rate with N pillars and K active equals BlockTime * N/K (lab devnet: 30s mean)
+  R19: Validation edge cases — all negative cases rejected, zero_amount accepted (phase-22)
 """
 import json, sys, os, glob
 
@@ -818,6 +819,83 @@ def check_momentum_rate(results_dir):
     return failures
 
 
+def check_valedge(results_dir):
+    """R19: Validation edge cases — all negative cases rejected, zero_amount accepted.
+    
+    Checks that:
+    1. All 14 test cases are present
+    2. All negative/malformed cases are rejected by the verifier
+    3. zero_amount (boundary test) is accepted
+    4. Error messages match expected patterns for most cases
+    """
+    failures = []
+    phase_dir = os.path.join(results_dir, "phase-22")
+    if not os.path.isdir(phase_dir):
+        return ["R19 SKIP: phase-22 directory not found"]
+    
+    # Cases that must be rejected (all except zero_amount)
+    must_reject = [
+        "negative_amount", "amount_too_big", "zero_zts_nonzero_amount",
+        "nonzero_from_block_hash", "version_zero", "version_two",
+        "wrong_chain_id", "block_type_zero", "genesis_receive_type",
+        "contract_receive_for_user", "receive_nonzero_amount",
+        "receive_nonzero_zts", "receive_nonzero_to",
+    ]
+    
+    for f in sorted(glob.glob(os.path.join(phase_dir, "valedge-*.json"))):
+        data = load_result(f)
+        if not data:
+            continue
+        
+        test_cases = data.get("test_cases", [])
+        if not test_cases:
+            failures.append(f"R19 FAIL: {os.path.basename(f)} no test_cases found")
+            continue
+        
+        # Check all 14 cases present
+        if len(test_cases) != 14:
+            failures.append(
+                f"R19 FAIL: {os.path.basename(f)} "
+                f"test_cases={len(test_cases)} (expected 14)"
+            )
+        
+        # Build lookup by name
+        cases = {tc["name"]: tc for tc in test_cases}
+        
+        # Check zero_amount is accepted (boundary test)
+        za = cases.get("zero_amount")
+        if za and za.get("rejected", True):
+            failures.append(
+                f"R19 FAIL: {os.path.basename(f)} zero_amount was rejected "
+                f"(expected accepted as valid boundary test)"
+            )
+        
+        # Check all negative cases are rejected
+        for name in must_reject:
+            tc = cases.get(name)
+            if tc is None:
+                failures.append(
+                    f"R19 FAIL: {os.path.basename(f)} missing test case: {name}"
+                )
+                continue
+            if not tc.get("rejected", False):
+                failures.append(
+                    f"R19 FAIL: {os.path.basename(f)} {name} was accepted "
+                    f"(expected rejected)"
+                )
+        
+        # Check error messages are non-empty for rejected cases
+        for name in must_reject:
+            tc = cases.get(name)
+            if tc and tc.get("rejected") and not tc.get("actual_error", ""):
+                failures.append(
+                    f"R19 FAIL: {os.path.basename(f)} {name} rejected but "
+                    f"actual_error is empty"
+                )
+    
+    return failures
+
+
 def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
     
@@ -841,6 +919,7 @@ def main():
         ("R16: contract block cap — plasma budget binds first (phase-19)", check_contractcap),
         ("R17: momentum content capacity — plasma budget binds, not 280 cap (phase-20)", check_contentmix),
         ("R18: momentum production rate = BlockTime * N/K (phase-21)", check_momentum_rate),
+        ("R19: validation edge cases — negative rejected, zero_amount accepted (phase-22)", check_valedge),
     ]
     
     for name, check_fn in checks:

@@ -2,13 +2,13 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 22
+next_phase: 23
 cloud_sessions_run: 1
 local_sessions_run: 14
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-updated: 2026-10-25 (phase 21: momentum production rate analysis)
+updated: 2026-10-25 (phase 22: transaction validation edge cases)
 ```
 
 ## Phase log
@@ -34,6 +34,7 @@ updated: 2026-10-25 (phase 21: momentum production rate analysis)
 | 18 data payload size limits | done | results/phase-18/20261024-phase18-datasize-results.md | Plasma cost formula exact: 21000+68*N bytes for 0-16KB. 16KB limit strictly enforced. Max-size tx costs 1,135,112 plasma (~541 QSR). Plasma budget (4.2M) limits large-data txs to 3 per momentum. R15 added. |
 | 19 contract block throughput cap | done | results/phase-19/20261024-phase19-contractcap-results.md | Contract block cap of 80/momentum exists but is NOT binding. Plasma budget limits Stake calls to ~73-75/momentum. Cap and plasma budget aligned (4.2M/52.5K=80). Stake generates 1 contract block (receive only). 2-momentum pipeline. R16 added. |
 | 20 momentum content capacity | done | results/phase-20/20261024-phase20-contentmix-results.md | 280 content cap is NOT binding. Plasma budget limits user blocks to exactly 200. Max observed content: 200 (Config A seed 1, exactly at plasma budget). Mixing contract calls reduces content (Stake less plasma-efficient). Contract blocks in next momentum (2-pipeline). R17 added. |
+| 22 validation edge cases | done | results/phase-22/20261025-phase22-valedge-results.md | All 13 negative cases correctly rejected with matching error messages. Zero-amount send accepted (correct boundary). No validation gaps found. 3-seed reproducible. R19 added. |
 | 21 momentum production rate | done | results/phase-21/20261025-phase21-momentum-rate-results.md | Mean inter-momentum time: 30.0s (3× slowdown, matching 3-pillar 1-active config). Distribution does NOT match uniform shuffle model — 30.9% at 10s vs 11.1% predicted. Momentum timestamp = slot start time (0s delay). Tx load does not affect production rate. Effective throughput: ~6.7 txs/s not 20 txs/s. R18 added. |
 
 ## Local verification session 2026-10-24
@@ -151,6 +152,7 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
     follow a 2-momentum pipeline: user sends in N, contract blocks in N+1.
     Effective sustained contract throughput is ~37-40 calls per 10s
     momentum-period, not 80.
+23. **The transaction validation pipeline is robust against malformed inputs.** All 13 negative test cases (negative amount, oversized amount, zero ZTS with non-zero amount, non-zero FromBlockHash on send, invalid version, wrong chain ID, invalid block type, genesis receive type, contract receive for user address, receive with non-zero amount/ZTS/ToAddress) are correctly rejected with informative error messages matching the verifier source. Zero-amount sends are valid (boundary case). No validation gaps found.
 22. **Momentum production rate scales as BlockTime × N/K** (N pillars, K active). On the lab devnet (3 pillars, 1 active): 30s mean, 3× slowdown. The distribution is irregular (10–180s, stddev 22.4s) and does NOT match a uniform shuffle model — the deterministic shuffle (math/rand with height seed) is biased toward consecutive slots for small permutation spaces. Momentum timestamps are slot start times (deterministic from genesis), not wall-clock times. Transaction load does not affect production rate. Effective throughput: ~6.7 txs/s (200 txs / 30s), not 20 txs/s.
 21. **The 280 content cap is a correctness bound, not a throughput limit.**
     The actual maximum content per momentum is ~200 (plasma budget limit).
@@ -216,6 +218,7 @@ QSR block (3e12) and raise QSR `totalSupply` by 3e12. **Fix merged upstream as P
   actual max content entries per momentum. Verifies that plasma budget,
   not the 280 content cap, is the binding constraint. Optional base index
   parameter for multiple seeds.
+- `valedge` — transaction validation edge cases test (phase 22). Sends 14 intentionally malformed transactions (negative amount, oversized amount, wrong version, wrong chain ID, invalid block type, etc.) and records exact error responses. Verifies the validation pipeline rejects all malformed inputs with informative error messages. Usage: `labctl valedge <idx> <qsr>`.
 - `momentum-rate.py` — momentum production rate analysis (phase 21). Polls
   frontier momentum to measure inter-momentum time distribution. Compares
   with theoretical model from election algorithm. Usage: `python3 momentum-rate.py

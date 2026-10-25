@@ -1188,6 +1188,11 @@ func main() {
 		}
 		runContentMix(numSelf, numStake, qsrPer, base)
 
+	case "valedge":
+		idx, _ := strconv.Atoi(os.Args[2])
+		qsrAmt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runValEdge(uint32(idx), qsrAmt)
+
 	default:
 		fmt.Fprintf(os.Stderr, "unknown command: %s\n", cmd)
 		os.Exit(1)
@@ -5588,6 +5593,441 @@ func runContentMix(numSelfTransfer int, numStake int, qsrPerAccount int64, baseI
 		Transactions:            transactions,
 		SetupMomentum:           setupMomentum,
 		EndMomentum:             endMomentum,
+	}
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", "  ")
+	enc.Encode(out)
+}
+
+
+// ---- Phase 22: Validation Edge Cases ----
+
+type valEdgeCaseResult struct {
+	Name          string `json:"name"`
+	Category      string `json:"category"` // "send" or "receive"
+	Field         string `json:"field"`
+	Modification  string `json:"modification"`
+	ExpectedError string `json:"expected_error"`
+	ActualError   string `json:"actual_error"`
+	Rejected      bool   `json:"rejected"`
+	ErrorMatch    bool   `json:"error_match"`
+}
+
+type valEdgeSummary struct {
+	Phase        string              `json:"phase"`
+	Timestamp    string              `json:"timestamp"`
+	AccountIndex uint32              `json:"account_index"`
+	QSRFused     int64               `json:"qsr_fused"`
+	TestCases    []valEdgeCaseResult `json:"test_cases"`
+	Summary      struct {
+		Total        int `json:"total"`
+		Rejected     int `json:"rejected"`
+		Accepted     int `json:"accepted"`
+		ErrorMatches int `json:"error_matches"`
+	} `json:"summary"`
+}
+
+// runValEdge: validation edge-case experiment (phase 22).
+//
+// Sends intentionally malformed transactions to test the validation pipeline's
+// error responses. For each test case, builds a valid transaction, corrupts one
+// field, attempts to publish it, and records the exact error message returned.
+//
+// Send-block validation (cases 1-11): corrupt one field of a valid send and
+// verify the verifier rejects it with the expected error.
+//
+// Receive-block validation (cases 12-14): first do a valid send to create an
+// unreceived block, then build a receive and corrupt one field.
+func runValEdge(idx uint32, qsrAmt int64) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+	partner := derivedAccount(idx + 100) // separate partner account to receive sends
+
+	// ---- Setup: fund target account ----
+	_, targetHeight := frontierAccount(target.addrStr)
+	if targetHeight == 0 {
+		fmt.Fprintf(os.Stderr, "valedge: funding account[%d] with 100 ZNN...\n", idx)
+		b, _, err := buildSend(agent, target.addr, znn, dec(100), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Wait for funding to arrive and receive it
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{target.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	receiveAll(target)
+
+	// ---- Setup: fund partner account (needed for receive-block tests) ----
+	_, partnerHeight := frontierAccount(partner.addrStr)
+	if partnerHeight == 0 {
+		fmt.Fprintf(os.Stderr, "valedge: funding partner account[%d] with 10 ZNN...\n", idx+100)
+		b, _, err := buildSend(agent, partner.addr, znn, dec(10), nil, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fund partner: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL publish fund partner: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{partner.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	receiveAll(partner)
+
+	// ---- Setup: fuse QSR for plasma ----
+	fmt.Fprintf(os.Stderr, "valedge: fusing %d QSR on account[%d]...\n", qsrAmt, idx)
+	targetPlasma := plasmaLevel(target.addrStr)
+	if targetPlasma < uint64(qsrAmt)*2100 {
+		fuseData := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, target.addr)
+		b, _, err := buildSend(agent, types.PlasmaContract, qsr, dec(qsrAmt), fuseData, true)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fuse build: %v\n", err)
+			os.Exit(1)
+		}
+		if err := publish(b); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL fuse publish: %v\n", err)
+			os.Exit(1)
+		}
+		waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	}
+
+	// Wait for fusion to be credited
+	for i := 0; i < 60; i++ {
+		receiveAll(target)
+		targetPlasma = plasmaLevel(target.addrStr)
+		if targetPlasma >= uint64(qsrAmt)*2100/2 {
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	fmt.Fprintf(os.Stderr, "valedge: initial plasma=%d (fused %d QSR)\n", targetPlasma, qsrAmt)
+
+	var results []valEdgeCaseResult
+
+	// Helper: recompute hash and re-sign
+	rehashAndSign := func(b *nom.AccountBlock, a account) {
+		b.Hash = b.ComputeHash()
+		b.PublicKey = a.kp.Public
+		b.Signature = a.kp.Sign(b.Hash.Bytes())
+	}
+
+	// Helper: record a test case result
+	record := func(name, category, field, modification, expectedError string, pubErr error) valEdgeCaseResult {
+		actualError := ""
+		rejected := false
+		if pubErr != nil {
+			actualError = pubErr.Error()
+			rejected = true
+		}
+		errorMatch := false
+		if expectedError != "" && strings.Contains(actualError, expectedError) {
+			errorMatch = true
+		}
+		// Also match if we expected rejection and got one
+		if expectedError != "" && rejected && !errorMatch {
+			// Try partial match on key words
+			errorMatch = strings.Contains(actualError, expectedError)
+		}
+		fmt.Fprintf(os.Stderr, "valedge: %-30s rejected=%-5v error_match=%-5v actual=%.80s\n",
+			name, rejected, errorMatch, actualError)
+		return valEdgeCaseResult{
+			Name:          name,
+			Category:      category,
+			Field:         field,
+			Modification:  modification,
+			ExpectedError: expectedError,
+			ActualError:   actualError,
+			Rejected:      rejected,
+			ErrorMatch:    errorMatch,
+		}
+	}
+
+	// =============================================
+	// Send-block validation tests (cases 1-11)
+	// =============================================
+
+	// --- Case 1: zero_amount — Amount = 0 (valid, boundary test) ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, big.NewInt(0), nil, true)
+		if err != nil {
+			results = append(results, record("zero_amount", "send", "Amount", "set to 0", "", fmt.Errorf("build: %v", err)))
+		} else {
+			pubErr := publish(b)
+			results = append(results, record("zero_amount", "send", "Amount", "set to 0", "", pubErr))
+			if pubErr == nil {
+				waitIncluded(target.addrStr, b.Height, 60*time.Second)
+			}
+		}
+	}
+
+	// --- Case 2: negative_amount — Amount = -1 ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("negative_amount", "send", "Amount", "set to -1", "amount can't be negative", fmt.Errorf("build: %v", err)))
+		} else {
+			b.Amount = big.NewInt(-1)
+			// ComputeHash may fail for negative amount; set hash manually
+			b.Hash = b.ComputeHash()
+			b.PublicKey = target.kp.Public
+			b.Signature = target.kp.Sign(b.Hash.Bytes())
+			pubErr := publish(b)
+			results = append(results, record("negative_amount", "send", "Amount", "set to -1", "amount can't be negative", pubErr))
+		}
+	}
+
+	// --- Case 3: amount_too_big — Amount = 2^256 ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("amount_too_big", "send", "Amount", "set to 2^256", "amount is too big", fmt.Errorf("build: %v", err)))
+		} else {
+			b.Amount = new(big.Int).Lsh(big.NewInt(1), 256)
+			b.Hash = b.ComputeHash()
+			b.PublicKey = target.kp.Public
+			b.Signature = target.kp.Sign(b.Hash.Bytes())
+			pubErr := publish(b)
+			results = append(results, record("amount_too_big", "send", "Amount", "set to 2^256", "amount is too big", pubErr))
+		}
+	}
+
+	// --- Case 4: zero_zts_nonzero_amount — TokenStandard = ZeroTokenStandard, Amount = 1 ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("zero_zts_nonzero_amount", "send", "TokenStandard", "set to ZeroTokenStandard", "zts is missing", fmt.Errorf("build: %v", err)))
+		} else {
+			b.TokenStandard = types.ZeroTokenStandard
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("zero_zts_nonzero_amount", "send", "TokenStandard", "set to ZeroTokenStandard", "zts is missing", pubErr))
+		}
+	}
+
+	// --- Case 5: nonzero_from_block_hash — FromBlockHash = random hash ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("nonzero_from_block_hash", "send", "FromBlockHash", "set to random hash", "from-block-hash must be zero", fmt.Errorf("build: %v", err)))
+		} else {
+			var randHash types.Hash
+			rand.Read(randHash[:])
+			b.FromBlockHash = randHash
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("nonzero_from_block_hash", "send", "FromBlockHash", "set to random hash", "from-block-hash must be zero", pubErr))
+		}
+	}
+
+	// --- Case 6: version_zero — Version = 0 ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("version_zero", "send", "Version", "set to 0", "version is missing", fmt.Errorf("build: %v", err)))
+		} else {
+			b.Version = 0
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("version_zero", "send", "Version", "set to 0", "version is missing", pubErr))
+		}
+	}
+
+	// --- Case 7: version_two — Version = 2 ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("version_two", "send", "Version", "set to 2", "version is invalid", fmt.Errorf("build: %v", err)))
+		} else {
+			b.Version = 2
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("version_two", "send", "Version", "set to 2", "version is invalid", pubErr))
+		}
+	}
+
+	// --- Case 8: wrong_chain_id — ChainIdentifier = 999 ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("wrong_chain_id", "send", "ChainIdentifier", "set to 999", "different network Id", fmt.Errorf("build: %v", err)))
+		} else {
+			b.ChainIdentifier = 999
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("wrong_chain_id", "send", "ChainIdentifier", "set to 999", "different network Id", pubErr))
+		}
+	}
+
+	// --- Case 9: block_type_zero — BlockType = 0 ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("block_type_zero", "send", "BlockType", "set to 0", "type is missing", fmt.Errorf("build: %v", err)))
+		} else {
+			b.BlockType = 0
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("block_type_zero", "send", "BlockType", "set to 0", "type is missing", pubErr))
+		}
+	}
+
+	// --- Case 10: genesis_receive_type — BlockType = GenesisReceive for user address ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("genesis_receive_type", "send", "BlockType", "set to GenesisReceive", "must not be genesis", fmt.Errorf("build: %v", err)))
+		} else {
+			b.BlockType = nom.BlockTypeGenesisReceive
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("genesis_receive_type", "send", "BlockType", "set to GenesisReceive", "must not be genesis", pubErr))
+		}
+	}
+
+	// --- Case 11: contract_receive_for_user — BlockType = ContractReceive for user address ---
+	{
+		b, _, err := buildSend(target, target.addr, znn, dec(1), nil, true)
+		if err != nil {
+			results = append(results, record("contract_receive_for_user", "send", "BlockType", "set to ContractReceive", "not suitable for user-blocks", fmt.Errorf("build: %v", err)))
+		} else {
+			b.BlockType = nom.BlockTypeContractReceive
+			rehashAndSign(b, target)
+			pubErr := publish(b)
+			results = append(results, record("contract_receive_for_user", "send", "BlockType", "set to ContractReceive", "not suitable for user-blocks", pubErr))
+		}
+	}
+
+	// =============================================
+	// Receive-block validation tests (cases 12-14)
+	// =============================================
+
+	// First: send a valid transaction from target to partner to create an unreceived block
+	fmt.Fprintf(os.Stderr, "valedge: creating unreceived block for receive tests...\n")
+	sendB, _, err := buildSend(target, partner.addr, znn, dec(1), nil, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL build send for receive setup: %v\n", err)
+		os.Exit(1)
+	}
+	if err := publish(sendB); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL publish send for receive setup: %v\n", err)
+		os.Exit(1)
+	}
+	waitIncluded(target.addrStr, sendB.Height, 60*time.Second)
+
+	// Wait for the block to appear as unreceived at partner
+	var unreceivedHash types.Hash
+	for i := 0; i < 30; i++ {
+		var ul unreceivedList
+		mustRPC("ledger.getUnreceivedBlocksByAddress", []interface{}{partner.addrStr, 0, 50}, &ul)
+		if len(ul.List) > 0 {
+			unreceivedHash = ul.List[0].Hash
+			break
+		}
+		time.Sleep(2 * time.Second)
+	}
+	if unreceivedHash == (types.Hash{}) {
+		fmt.Fprintf(os.Stderr, "FATAL: no unreceived block found for partner\n")
+		os.Exit(1)
+	}
+
+	// Helper: build a valid receive block for the partner
+	buildReceive := func() *nom.AccountBlock {
+		prevHash, height := frontierAccount(partner.addrStr)
+		fm := frontierMomentum()
+		rb := &nom.AccountBlock{
+			Version:              1,
+			ChainIdentifier:      chainID,
+			BlockType:            nom.BlockTypeUserReceive,
+			PreviousHash:         prevHash,
+			Height:               height + 1,
+			MomentumAcknowledged: types.HashHeight{Hash: fm.Hash, Height: fm.Height},
+			Address:              partner.addr,
+			FromBlockHash:        unreceivedHash,
+			Amount:               big.NewInt(0),
+			TokenStandard:        types.ZeroTokenStandard,
+		}
+		req := requiredPoW(partner.addrStr, rb.BlockType, nil, nil)
+		if req.RequiredDifficulty > 0 {
+			rb.Difficulty = req.RequiredDifficulty
+			dataHash := pow.GetAccountBlockHash(rb)
+			nonce := pow.GetPoWNonce(big.NewInt(int64(req.RequiredDifficulty)), dataHash)
+			copy(rb.Nonce.Data[:], nonce)
+		} else {
+			rb.FusedPlasma = req.BasePlasma
+		}
+		rb.Hash = rb.ComputeHash()
+		rb.PublicKey = partner.kp.Public
+		rb.Signature = partner.kp.Sign(rb.Hash.Bytes())
+		return rb
+	}
+
+	// --- Case 12: receive_nonzero_amount — UserReceive with Amount = 1 ---
+	{
+		rb := buildReceive()
+		rb.Amount = dec(1)
+		rehashAndSign(rb, partner)
+		pubErr := publish(rb)
+		results = append(results, record("receive_nonzero_amount", "receive", "Amount", "set to 1", "amount must be zero", pubErr))
+	}
+
+	// --- Case 13: receive_nonzero_zts — UserReceive with TokenStandard != ZeroTokenStandard ---
+	{
+		rb := buildReceive()
+		rb.TokenStandard = znn
+		rehashAndSign(rb, partner)
+		pubErr := publish(rb)
+		results = append(results, record("receive_nonzero_zts", "receive", "TokenStandard", "set to ZNN", "zts must be zero", pubErr))
+	}
+
+	// --- Case 14: receive_nonzero_to — UserReceive with ToAddress != ZeroAddress ---
+	{
+		rb := buildReceive()
+		rb.ToAddress = target.addr
+		rehashAndSign(rb, partner)
+		pubErr := publish(rb)
+		results = append(results, record("receive_nonzero_to", "receive", "ToAddress", "set to target address", "to-address must be zero", pubErr))
+	}
+
+	// ---- Summary ----
+	out := valEdgeSummary{
+		Phase:        "valedge",
+		Timestamp:    time.Now().UTC().Format(time.RFC3339),
+		AccountIndex: idx,
+		QSRFused:     qsrAmt,
+		TestCases:    results,
+	}
+	out.Summary.Total = len(results)
+	for _, r := range results {
+		if r.Rejected {
+			out.Summary.Rejected++
+		} else {
+			out.Summary.Accepted++
+		}
+		if r.ErrorMatch {
+			out.Summary.ErrorMatches++
+		}
 	}
 
 	enc := json.NewEncoder(os.Stdout)

@@ -1,0 +1,154 @@
+{
+  "phase": "valedge",
+  "timestamp": "2026-10-25T01:01:18Z",
+  "account_index": 82,
+  "qsr_fused": 100,
+  "test_cases": [
+    {
+      "name": "zero_amount",
+      "category": "send",
+      "field": "Amount",
+      "modification": "set to 0",
+      "expected_error": "",
+      "actual_error": "",
+      "rejected": false,
+      "error_match": false
+    },
+    {
+      "name": "negative_amount",
+      "category": "send",
+      "field": "Amount",
+      "modification": "set to -1",
+      "expected_error": "amount can't be negative",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block amount can't be negative",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "amount_too_big",
+      "category": "send",
+      "field": "Amount",
+      "modification": "set to 2^256",
+      "expected_error": "amount is too big",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block amount is too big",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "zero_zts_nonzero_amount",
+      "category": "send",
+      "field": "TokenStandard",
+      "modification": "set to ZeroTokenStandard",
+      "expected_error": "zts is missing",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block zts is missing (non-zero amount)",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "nonzero_from_block_hash",
+      "category": "send",
+      "field": "FromBlockHash",
+      "modification": "set to random hash",
+      "expected_error": "from-block-hash must be zero",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block from-block-hash must be zero",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "version_zero",
+      "category": "send",
+      "field": "Version",
+      "modification": "set to 0",
+      "expected_error": "version is missing",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block version is missing",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "version_two",
+      "category": "send",
+      "field": "Version",
+      "modification": "set to 2",
+      "expected_error": "version is invalid",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block version is invalid",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "wrong_chain_id",
+      "category": "send",
+      "field": "ChainIdentifier",
+      "modification": "set to 999",
+      "expected_error": "different network Id",
+      "actual_error": "rpc ledger.publishRawTransaction error: the block has a different network Id (999) from the node (69)",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "block_type_zero",
+      "category": "send",
+      "field": "BlockType",
+      "modification": "set to 0",
+      "expected_error": "type is missing",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block type is missing",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "genesis_receive_type",
+      "category": "send",
+      "field": "BlockType",
+      "modification": "set to GenesisReceive",
+      "expected_error": "must not be genesis",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block type must not be genesis",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "contract_receive_for_user",
+      "category": "send",
+      "field": "BlockType",
+      "modification": "set to ContractReceive",
+      "expected_error": "not suitable for user-blocks",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block type is not suitable for user-blocks",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "receive_nonzero_amount",
+      "category": "receive",
+      "field": "Amount",
+      "modification": "set to 1",
+      "expected_error": "amount must be zero",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block amount must be zero",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "receive_nonzero_zts",
+      "category": "receive",
+      "field": "TokenStandard",
+      "modification": "set to ZNN",
+      "expected_error": "zts must be zero",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block zts must be zero",
+      "rejected": true,
+      "error_match": true
+    },
+    {
+      "name": "receive_nonzero_to",
+      "category": "receive",
+      "field": "ToAddress",
+      "modification": "set to target address",
+      "expected_error": "to-address must be zero",
+      "actual_error": "rpc ledger.publishRawTransaction error: account-block to-address must be zero",
+      "rejected": true,
+      "error_match": true
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "rejected": 13,
+    "accepted": 1,
+    "error_matches": 13
+  }
+}
