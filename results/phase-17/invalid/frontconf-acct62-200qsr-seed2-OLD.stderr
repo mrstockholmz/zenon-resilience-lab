@@ -1,0 +1,15 @@
+frontconf: funding account[62] with 100 ZNN...
+frontconf: fusing 200 QSR on account[62]...
+frontconf: initial plasma=420000, testing frontier conflicts...
+frontconf: round 0 — txA(hash=2dc03ba4490c7a10... data=1B plasma=21068 overpay=1x) vs txB(hash=262db7ab04315dab... data=100B plasma=27800 overpay=1x) expect=B
+frontconf: round 0 — B won (equal plasma, hash tie-break) expected=B correct=true
+frontconf: round 1 — txA(hash=6c17ec47889f0297... data=1B plasma=21068 overpay=1x) vs txB(hash=76b60532f78813d0... data=100B plasma=27800 overpay=1x) expect=A
+frontconf: round 1 — A won (equal plasma, hash tie-break) expected=A correct=true
+frontconf: round 1 — publish errors: A="" B="rpc ledger.publishRawTransaction error: hash tie-break is worse for current block"
+frontconf: round 2 — txA(hash=ae7814082dfd6d5a... data=1B plasma=21068 overpay=1x) vs txB(hash=5d1fa9f3be0a3ee9... data=100B plasma=55600 overpay=2x) expect=B
+frontconf: round 2 — B won (price priority) expected=B correct=true
+frontconf: round 3 — txA(hash=6e99421a48c31f90... data=1B plasma=21068 overpay=1x) vs txB(hash=56491f3e7d29382a... data=100B plasma=55600 overpay=2x) expect=B
+frontconf: round 3 — B won (price priority) expected=B correct=true
+frontconf: round 4 — txA(hash=5d4fb67c052da841... data=1B plasma=42136 overpay=2x) vs txB(hash=c26a23785d1e89a6... data=100B plasma=27800 overpay=1x) expect=A
+frontconf: round 4 — A won (price priority) expected=A correct=true
+frontconf: round 4 — publish errors: A="" B="rpc ledger.publishRawTransaction error: block price is smaller for current block"

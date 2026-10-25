@@ -1,0 +1,115 @@
+{
+  "account_index": 62,
+  "account_address": "z1qrwfhsucymyn03e30dhvj2n42p6e3nye48speh",
+  "qsr_fused": 200,
+  "conflicts_tested": 5,
+  "equal_plasma_rounds": 2,
+  "overpay_rounds": 3,
+  "equal_hash_wins": 2,
+  "price_wins": 3,
+  "correct_predictions": 5,
+  "results": [
+    {
+      "tx_index": 0,
+      "block_height": 2,
+      "hash": "2dc03ba4490c7a10933e3de9504c2a53ae8e0532ecba21f1de291dad735ea8ae",
+      "data_len": 1,
+      "fused_plasma": 21068,
+      "base_plasma": 21068,
+      "overpay_mult": 1,
+      "included": false
+    },
+    {
+      "tx_index": 1,
+      "block_height": 2,
+      "hash": "262db7ab04315dab4455e1d82841dc96138d1e8631fe9d8a9a80f365bbe6cc44",
+      "data_len": 100,
+      "fused_plasma": 27800,
+      "base_plasma": 27800,
+      "overpay_mult": 1,
+      "included": true
+    },
+    {
+      "tx_index": 2,
+      "block_height": 3,
+      "hash": "6c17ec47889f0297cd3670a6ed68b64f70f3441165c97d99935981bbaabdbd40",
+      "data_len": 1,
+      "fused_plasma": 21068,
+      "base_plasma": 21068,
+      "overpay_mult": 1,
+      "included": true
+    },
+    {
+      "tx_index": 3,
+      "block_height": 3,
+      "hash": "76b60532f78813d03b5e01fae671e7dd8b45c6a735980dbd6c5e1d5c797dd2bb",
+      "data_len": 100,
+      "fused_plasma": 27800,
+      "base_plasma": 27800,
+      "overpay_mult": 1,
+      "publish_error": "rpc ledger.publishRawTransaction error: hash tie-break is worse for current block",
+      "included": false
+    },
+    {
+      "tx_index": 4,
+      "block_height": 4,
+      "hash": "ae7814082dfd6d5a0b46319a950b6c12edef90ab44e0fa4cd894134e26becd44",
+      "data_len": 1,
+      "fused_plasma": 21068,
+      "base_plasma": 21068,
+      "overpay_mult": 1,
+      "included": false
+    },
+    {
+      "tx_index": 5,
+      "block_height": 4,
+      "hash": "5d1fa9f3be0a3ee98a8ca0d4c16c53f96f49a17f1a8e65cdaf18ec24776b261c",
+      "data_len": 100,
+      "fused_plasma": 55600,
+      "base_plasma": 27800,
+      "overpay_mult": 2,
+      "included": true
+    },
+    {
+      "tx_index": 6,
+      "block_height": 5,
+      "hash": "6e99421a48c31f905ed455c84f4a840f958ab7c9eb45fb57b3b6e0dd41b92219",
+      "data_len": 1,
+      "fused_plasma": 21068,
+      "base_plasma": 21068,
+      "overpay_mult": 1,
+      "included": false
+    },
+    {
+      "tx_index": 7,
+      "block_height": 5,
+      "hash": "56491f3e7d29382a606d878d4538ec3016685d3c7c4abd9bf429520a855dad60",
+      "data_len": 100,
+      "fused_plasma": 55600,
+      "base_plasma": 27800,
+      "overpay_mult": 2,
+      "included": true
+    },
+    {
+      "tx_index": 8,
+      "block_height": 6,
+      "hash": "5d4fb67c052da8418727d66decc9a38f35d5269a1736d7fd214a6b19c1b97a43",
+      "data_len": 1,
+      "fused_plasma": 42136,
+      "base_plasma": 21068,
+      "overpay_mult": 2,
+      "included": true
+    },
+    {
+      "tx_index": 9,
+      "block_height": 6,
+      "hash": "c26a23785d1e89a6fd6d22eb0b16ecf472e5bf55db398663beedade6fc2cabb2",
+      "data_len": 100,
+      "fused_plasma": 27800,
+      "base_plasma": 27800,
+      "overpay_mult": 1,
+      "publish_error": "rpc ledger.publishRawTransaction error: block price is smaller for current block",
+      "included": false
+    }
+  ]
+}

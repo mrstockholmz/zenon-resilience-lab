@@ -1,0 +1,94 @@
+{
+  "account_index": 60,
+  "account_address": "z1qrjvplff9a2hcx72yncvczj8ee7v0exadlxfqq",
+  "qsr_fused": 200,
+  "conflicts_tested": 5,
+  "wins_by_price": 0,
+  "wins_by_hash": 0,
+  "all_included": 0,
+  "any_rejected": 2,
+  "results": [
+    {
+      "tx_index": 0,
+      "block_height": 2,
+      "hash": "c5091f622684ed4d4b61464652ca2198eb556bef36b76115e06d00ac52f8b352",
+      "amount": 1,
+      "data_len": 1,
+      "included": false
+    },
+    {
+      "tx_index": 1,
+      "block_height": 2,
+      "hash": "1f9bed12c4b8420594cabe2b134828d8d38949fb8922fc72bc62a39b6e64ae3d",
+      "amount": 1,
+      "data_len": 100,
+      "included": false
+    },
+    {
+      "tx_index": 2,
+      "block_height": 3,
+      "hash": "a2672ed1cd79738edac96660ee2bdf33ee541f987515de5cf695493baf831015",
+      "amount": 1,
+      "data_len": 1,
+      "included": false
+    },
+    {
+      "tx_index": 3,
+      "block_height": 3,
+      "hash": "394a94ca084e4ec3098ebd65e8a62caec3ff87a953d26dbf0288d83b09d53bdc",
+      "amount": 1,
+      "data_len": 100,
+      "included": false
+    },
+    {
+      "tx_index": 4,
+      "block_height": 4,
+      "hash": "31493fe8bafbca37ec9a6df60d75f9e744ffc980c4b78017b4cdd964d73cf45b",
+      "amount": 1,
+      "data_len": 1,
+      "included": false
+    },
+    {
+      "tx_index": 5,
+      "block_height": 4,
+      "hash": "84398adb29e07ff621b0b1ce1469f2e0f400689b941b18afafd271d62626f3f4",
+      "amount": 1,
+      "data_len": 100,
+      "publish_error": "rpc ledger.publishRawTransaction error: hash tie-break is worse for current block",
+      "included": false
+    },
+    {
+      "tx_index": 6,
+      "block_height": 5,
+      "hash": "57df9b490774082f4f36eb10b0586f6d3c70a467d1a01f24eeff4068831d123b",
+      "amount": 1,
+      "data_len": 1,
+      "included": false
+    },
+    {
+      "tx_index": 7,
+      "block_height": 5,
+      "hash": "063a36f3111b5ec826899a8823a596e1e01d7bff74016856a363d44b3fb16020",
+      "amount": 1,
+      "data_len": 100,
+      "included": false
+    },
+    {
+      "tx_index": 8,
+      "block_height": 6,
+      "hash": "17b8521c511f700dd44c26382833c77569ba174ec05f477eca4f3230ab468ec8",
+      "amount": 1,
+      "data_len": 1,
+      "included": false
+    },
+    {
+      "tx_index": 9,
+      "block_height": 6,
+      "hash": "5cc0db544851d53aa775d3701da8c468843b9e44a208c3be77eb59026bf716a7",
+      "amount": 1,
+      "data_len": 100,
+      "publish_error": "rpc ledger.publishRawTransaction error: hash tie-break is worse for current block",
+      "included": false
+    }
+  ]
+}

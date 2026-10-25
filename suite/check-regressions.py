@@ -897,7 +897,9 @@ def check_valedge(results_dir):
 
 
 def main():
-    results_dir = sys.argv[1] if len(sys.argv) > 1 else "../results"
+    # Default: resolve results/ relative to the repo root (parent of suite/)
+    default_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
+    results_dir = sys.argv[1] if len(sys.argv) > 1 else default_dir
     
     all_failures = []
     checks = [

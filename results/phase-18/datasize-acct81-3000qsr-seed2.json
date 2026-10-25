@@ -1,0 +1,147 @@
+datasize: funding account[81] with 100 ZNN...
+datasize: fusing 3000 QSR on account[81]...
+datasize: waiting for fusion to confirm...
+datasize: initial plasma=0 (fused 3000 QSR)
+datasize: testing data size 0 (planned plasma=21000)...
+datasize:   requiredPoW BasePlasma=21000 RequiredDifficulty=31500000
+datasize:   PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: testing data size 256 (planned plasma=38408)...
+datasize:   requiredPoW BasePlasma=38408 RequiredDifficulty=57612000
+datasize:   PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: testing data size 1024 (planned plasma=90632)...
+datasize:   requiredPoW BasePlasma=90632 RequiredDifficulty=0
+datasize:   PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: testing data size 4096 (planned plasma=299528)...
+datasize:   requiredPoW BasePlasma=299528 RequiredDifficulty=0
+datasize:   PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: testing data size 8192 (planned plasma=578056)...
+datasize:   requiredPoW BasePlasma=578056 RequiredDifficulty=0
+datasize:   PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: testing data size 16384 (planned plasma=1135112)...
+datasize:   requiredPoW BasePlasma=1135112 RequiredDifficulty=0
+datasize:   PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: testing data size 16385 (over 16KB limit)...
+datasize:   requiredPoW failed (non-fatal): rpc embedded.plasma.getRequiredPoWForAccountBlock error: account-block data field is too big
+datasize: testing burst of 5 max-size (16KB) txs...
+datasize: burst 0 PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: burst 1 PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: burst 2 PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: burst 3 PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: burst 4 PUBLISH FAILED: rpc ledger.publishRawTransaction error: insufficient balance for transfer
+datasize: waiting for burst inclusion...
+datasize: scanning momenta 7256 to 7255 for z1qz73uvf57dkrek8le4l6jsquul9n503mvx7ql4
+{
+  "account_index": 81,
+  "account_address": "z1qz73uvf57dkrek8le4l6jsquul9n503mvx7ql4",
+  "qsr_fused": 3000,
+  "fused_plasma": 6300000,
+  "initial_plasma": 0,
+  "final_plasma": 6300000,
+  "size_results": [
+    {
+      "data_size_bytes": 0,
+      "planned_plasma": 21000,
+      "plasma_before": 0,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 1,
+      "publish_error": "publish: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "data_size_bytes": 256,
+      "planned_plasma": 38408,
+      "plasma_before": 0,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 1,
+      "publish_error": "publish: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "data_size_bytes": 1024,
+      "planned_plasma": 90632,
+      "plasma_before": 6300000,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 1,
+      "publish_error": "publish: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "data_size_bytes": 4096,
+      "planned_plasma": 299528,
+      "plasma_before": 6300000,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 1,
+      "publish_error": "publish: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "data_size_bytes": 8192,
+      "planned_plasma": 578056,
+      "plasma_before": 6300000,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 1,
+      "publish_error": "publish: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "data_size_bytes": 16384,
+      "planned_plasma": 1135112,
+      "plasma_before": 6300000,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 1,
+      "publish_error": "publish: rpc ledger.publishRawTransaction error: insufficient balance for transfer"
+    },
+    {
+      "data_size_bytes": 16385,
+      "planned_plasma": 1135180,
+      "plasma_before": 6300000,
+      "plasma_after": 0,
+      "actual_cost": 0,
+      "pow_used": false,
+      "pow_ms": 0,
+      "included": false,
+      "inclusion_latency_ms": 0,
+      "included_momentum": 0,
+      "block_height": 0,
+      "publish_error": "account-block data field is too big"
+    }
+  ],
+  "burst_attempted": 5,
+  "burst_submitted": 0,
+  "burst_included": 0,
+  "burst_rejected": 5,
+  "burst_momenta": null,
+  "burst_plasma_costs": null,
+  "burst_wire_sizes": null
+}

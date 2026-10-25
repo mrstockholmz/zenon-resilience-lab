@@ -1,0 +1,4718 @@
+{
+  "account_index": 70,
+  "account_address": "z1qr90rqgylwkwaq37tguv60uuk2x356a9czm45c",
+  "qsr_fused": 500,
+  "fused_plasma": 1050000,
+  "attempted": 600,
+  "submitted": 100,
+  "rejected": 500,
+  "included": 100,
+  "unresolved": 0,
+  "first_reject_idx": 100,
+  "first_reject_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+  "momenta_used": 6,
+  "start_momentum": 6721,
+  "end_momentum": 6726,
+  "results": [
+    {
+      "tx_index": 0,
+      "block_height": 2,
+      "submit_momentum": 6721,
+      "plasma_before": 1050000,
+      "included": true
+    },
+    {
+      "tx_index": 1,
+      "block_height": 3,
+      "submit_momentum": 6721,
+      "plasma_before": 1029000,
+      "included": true
+    },
+    {
+      "tx_index": 2,
+      "block_height": 4,
+      "submit_momentum": 6721,
+      "plasma_before": 1008000,
+      "included": true
+    },
+    {
+      "tx_index": 3,
+      "block_height": 5,
+      "submit_momentum": 6721,
+      "plasma_before": 987000,
+      "included": true
+    },
+    {
+      "tx_index": 4,
+      "block_height": 6,
+      "submit_momentum": 6721,
+      "plasma_before": 966000,
+      "included": true
+    },
+    {
+      "tx_index": 5,
+      "block_height": 7,
+      "submit_momentum": 6721,
+      "plasma_before": 945000,
+      "included": true
+    },
+    {
+      "tx_index": 6,
+      "block_height": 8,
+      "submit_momentum": 6721,
+      "plasma_before": 924000,
+      "included": true
+    },
+    {
+      "tx_index": 7,
+      "block_height": 9,
+      "submit_momentum": 6721,
+      "plasma_before": 903000,
+      "included": true
+    },
+    {
+      "tx_index": 8,
+      "block_height": 10,
+      "submit_momentum": 6721,
+      "plasma_before": 882000,
+      "included": true
+    },
+    {
+      "tx_index": 9,
+      "block_height": 11,
+      "submit_momentum": 6721,
+      "plasma_before": 861000,
+      "included": true
+    },
+    {
+      "tx_index": 10,
+      "block_height": 12,
+      "submit_momentum": 6721,
+      "plasma_before": 840000,
+      "included": true
+    },
+    {
+      "tx_index": 11,
+      "block_height": 13,
+      "submit_momentum": 6721,
+      "plasma_before": 819000,
+      "included": true
+    },
+    {
+      "tx_index": 12,
+      "block_height": 14,
+      "submit_momentum": 6721,
+      "plasma_before": 798000,
+      "included": true
+    },
+    {
+      "tx_index": 13,
+      "block_height": 15,
+      "submit_momentum": 6721,
+      "plasma_before": 777000,
+      "included": true
+    },
+    {
+      "tx_index": 14,
+      "block_height": 16,
+      "submit_momentum": 6721,
+      "plasma_before": 756000,
+      "included": true
+    },
+    {
+      "tx_index": 15,
+      "block_height": 17,
+      "submit_momentum": 6721,
+      "plasma_before": 735000,
+      "included": true
+    },
+    {
+      "tx_index": 16,
+      "block_height": 18,
+      "submit_momentum": 6721,
+      "plasma_before": 714000,
+      "included": true
+    },
+    {
+      "tx_index": 17,
+      "block_height": 19,
+      "submit_momentum": 6721,
+      "plasma_before": 693000,
+      "included": true
+    },
+    {
+      "tx_index": 18,
+      "block_height": 20,
+      "submit_momentum": 6721,
+      "plasma_before": 672000,
+      "included": true
+    },
+    {
+      "tx_index": 19,
+      "block_height": 21,
+      "submit_momentum": 6721,
+      "plasma_before": 651000,
+      "included": true
+    },
+    {
+      "tx_index": 20,
+      "block_height": 22,
+      "submit_momentum": 6721,
+      "plasma_before": 630000,
+      "included": true
+    },
+    {
+      "tx_index": 21,
+      "block_height": 23,
+      "submit_momentum": 6721,
+      "plasma_before": 609000,
+      "included": true
+    },
+    {
+      "tx_index": 22,
+      "block_height": 24,
+      "submit_momentum": 6721,
+      "plasma_before": 588000,
+      "included": true
+    },
+    {
+      "tx_index": 23,
+      "block_height": 25,
+      "submit_momentum": 6721,
+      "plasma_before": 567000,
+      "included": true
+    },
+    {
+      "tx_index": 24,
+      "block_height": 26,
+      "submit_momentum": 6721,
+      "plasma_before": 546000,
+      "included": true
+    },
+    {
+      "tx_index": 25,
+      "block_height": 27,
+      "submit_momentum": 6721,
+      "plasma_before": 525000,
+      "included": true
+    },
+    {
+      "tx_index": 26,
+      "block_height": 28,
+      "submit_momentum": 6721,
+      "plasma_before": 504000,
+      "included": true
+    },
+    {
+      "tx_index": 27,
+      "block_height": 29,
+      "submit_momentum": 6721,
+      "plasma_before": 483000,
+      "included": true
+    },
+    {
+      "tx_index": 28,
+      "block_height": 30,
+      "submit_momentum": 6721,
+      "plasma_before": 462000,
+      "included": true
+    },
+    {
+      "tx_index": 29,
+      "block_height": 31,
+      "submit_momentum": 6721,
+      "plasma_before": 441000,
+      "included": true
+    },
+    {
+      "tx_index": 30,
+      "block_height": 32,
+      "submit_momentum": 6721,
+      "plasma_before": 420000,
+      "included": true
+    },
+    {
+      "tx_index": 31,
+      "block_height": 33,
+      "submit_momentum": 6721,
+      "plasma_before": 399000,
+      "included": true
+    },
+    {
+      "tx_index": 32,
+      "block_height": 34,
+      "submit_momentum": 6721,
+      "plasma_before": 378000,
+      "included": true
+    },
+    {
+      "tx_index": 33,
+      "block_height": 35,
+      "submit_momentum": 6721,
+      "plasma_before": 357000,
+      "included": true
+    },
+    {
+      "tx_index": 34,
+      "block_height": 36,
+      "submit_momentum": 6721,
+      "plasma_before": 336000,
+      "included": true
+    },
+    {
+      "tx_index": 35,
+      "block_height": 37,
+      "submit_momentum": 6721,
+      "plasma_before": 315000,
+      "included": true
+    },
+    {
+      "tx_index": 36,
+      "block_height": 38,
+      "submit_momentum": 6721,
+      "plasma_before": 294000,
+      "included": true
+    },
+    {
+      "tx_index": 37,
+      "block_height": 39,
+      "submit_momentum": 6721,
+      "plasma_before": 273000,
+      "included": true
+    },
+    {
+      "tx_index": 38,
+      "block_height": 40,
+      "submit_momentum": 6721,
+      "plasma_before": 252000,
+      "included": true
+    },
+    {
+      "tx_index": 39,
+      "block_height": 41,
+      "submit_momentum": 6721,
+      "plasma_before": 231000,
+      "included": true
+    },
+    {
+      "tx_index": 40,
+      "block_height": 42,
+      "submit_momentum": 6721,
+      "plasma_before": 210000,
+      "included": true
+    },
+    {
+      "tx_index": 41,
+      "block_height": 43,
+      "submit_momentum": 6721,
+      "plasma_before": 189000,
+      "included": true
+    },
+    {
+      "tx_index": 42,
+      "block_height": 44,
+      "submit_momentum": 6721,
+      "plasma_before": 168000,
+      "included": true
+    },
+    {
+      "tx_index": 43,
+      "block_height": 45,
+      "submit_momentum": 6721,
+      "plasma_before": 147000,
+      "included": true
+    },
+    {
+      "tx_index": 44,
+      "block_height": 46,
+      "submit_momentum": 6721,
+      "plasma_before": 126000,
+      "included": true
+    },
+    {
+      "tx_index": 45,
+      "block_height": 47,
+      "submit_momentum": 6721,
+      "plasma_before": 105000,
+      "included": true
+    },
+    {
+      "tx_index": 46,
+      "block_height": 48,
+      "submit_momentum": 6721,
+      "plasma_before": 84000,
+      "included": true
+    },
+    {
+      "tx_index": 47,
+      "block_height": 49,
+      "submit_momentum": 6721,
+      "plasma_before": 63000,
+      "included": true
+    },
+    {
+      "tx_index": 48,
+      "block_height": 50,
+      "submit_momentum": 6721,
+      "plasma_before": 42000,
+      "included": true
+    },
+    {
+      "tx_index": 49,
+      "block_height": 51,
+      "submit_momentum": 6721,
+      "plasma_before": 21000,
+      "included": true
+    },
+    {
+      "tx_index": 50,
+      "block_height": 52,
+      "submit_momentum": 6721,
+      "plasma_before": 0,
+      "included": true
+    },
+    {
+      "tx_index": 51,
+      "block_height": 53,
+      "submit_momentum": 6721,
+      "plasma_before": 0,
+      "included": true
+    },
+    {
+      "tx_index": 52,
+      "block_height": 54,
+      "submit_momentum": 6724,
+      "plasma_before": 0,
+      "included": true
+    },
+    {
+      "tx_index": 53,
+      "block_height": 55,
+      "submit_momentum": 6724,
+      "plasma_before": 1050000,
+      "included": true
+    },
+    {
+      "tx_index": 54,
+      "block_height": 56,
+      "submit_momentum": 6724,
+      "plasma_before": 1029000,
+      "included": true
+    },
+    {
+      "tx_index": 55,
+      "block_height": 57,
+      "submit_momentum": 6724,
+      "plasma_before": 1008000,
+      "included": true
+    },
+    {
+      "tx_index": 56,
+      "block_height": 58,
+      "submit_momentum": 6724,
+      "plasma_before": 987000,
+      "included": true
+    },
+    {
+      "tx_index": 57,
+      "block_height": 59,
+      "submit_momentum": 6724,
+      "plasma_before": 966000,
+      "included": true
+    },
+    {
+      "tx_index": 58,
+      "block_height": 60,
+      "submit_momentum": 6724,
+      "plasma_before": 945000,
+      "included": true
+    },
+    {
+      "tx_index": 59,
+      "block_height": 61,
+      "submit_momentum": 6724,
+      "plasma_before": 924000,
+      "included": true
+    },
+    {
+      "tx_index": 60,
+      "block_height": 62,
+      "submit_momentum": 6724,
+      "plasma_before": 903000,
+      "included": true
+    },
+    {
+      "tx_index": 61,
+      "block_height": 63,
+      "submit_momentum": 6724,
+      "plasma_before": 882000,
+      "included": true
+    },
+    {
+      "tx_index": 62,
+      "block_height": 64,
+      "submit_momentum": 6724,
+      "plasma_before": 861000,
+      "included": true
+    },
+    {
+      "tx_index": 63,
+      "block_height": 65,
+      "submit_momentum": 6724,
+      "plasma_before": 840000,
+      "included": true
+    },
+    {
+      "tx_index": 64,
+      "block_height": 66,
+      "submit_momentum": 6724,
+      "plasma_before": 819000,
+      "included": true
+    },
+    {
+      "tx_index": 65,
+      "block_height": 67,
+      "submit_momentum": 6724,
+      "plasma_before": 798000,
+      "included": true
+    },
+    {
+      "tx_index": 66,
+      "block_height": 68,
+      "submit_momentum": 6724,
+      "plasma_before": 777000,
+      "included": true
+    },
+    {
+      "tx_index": 67,
+      "block_height": 69,
+      "submit_momentum": 6724,
+      "plasma_before": 756000,
+      "included": true
+    },
+    {
+      "tx_index": 68,
+      "block_height": 70,
+      "submit_momentum": 6724,
+      "plasma_before": 735000,
+      "included": true
+    },
+    {
+      "tx_index": 69,
+      "block_height": 71,
+      "submit_momentum": 6724,
+      "plasma_before": 714000,
+      "included": true
+    },
+    {
+      "tx_index": 70,
+      "block_height": 72,
+      "submit_momentum": 6724,
+      "plasma_before": 693000,
+      "included": true
+    },
+    {
+      "tx_index": 71,
+      "block_height": 73,
+      "submit_momentum": 6724,
+      "plasma_before": 672000,
+      "included": true
+    },
+    {
+      "tx_index": 72,
+      "block_height": 74,
+      "submit_momentum": 6724,
+      "plasma_before": 651000,
+      "included": true
+    },
+    {
+      "tx_index": 73,
+      "block_height": 75,
+      "submit_momentum": 6724,
+      "plasma_before": 630000,
+      "included": true
+    },
+    {
+      "tx_index": 74,
+      "block_height": 76,
+      "submit_momentum": 6724,
+      "plasma_before": 609000,
+      "included": true
+    },
+    {
+      "tx_index": 75,
+      "block_height": 77,
+      "submit_momentum": 6724,
+      "plasma_before": 588000,
+      "included": true
+    },
+    {
+      "tx_index": 76,
+      "block_height": 78,
+      "submit_momentum": 6724,
+      "plasma_before": 567000,
+      "included": true
+    },
+    {
+      "tx_index": 77,
+      "block_height": 79,
+      "submit_momentum": 6724,
+      "plasma_before": 546000,
+      "included": true
+    },
+    {
+      "tx_index": 78,
+      "block_height": 80,
+      "submit_momentum": 6724,
+      "plasma_before": 525000,
+      "included": true
+    },
+    {
+      "tx_index": 79,
+      "block_height": 81,
+      "submit_momentum": 6724,
+      "plasma_before": 504000,
+      "included": true
+    },
+    {
+      "tx_index": 80,
+      "block_height": 82,
+      "submit_momentum": 6724,
+      "plasma_before": 483000,
+      "included": true
+    },
+    {
+      "tx_index": 81,
+      "block_height": 83,
+      "submit_momentum": 6724,
+      "plasma_before": 462000,
+      "included": true
+    },
+    {
+      "tx_index": 82,
+      "block_height": 84,
+      "submit_momentum": 6724,
+      "plasma_before": 441000,
+      "included": true
+    },
+    {
+      "tx_index": 83,
+      "block_height": 85,
+      "submit_momentum": 6724,
+      "plasma_before": 420000,
+      "included": true
+    },
+    {
+      "tx_index": 84,
+      "block_height": 86,
+      "submit_momentum": 6724,
+      "plasma_before": 399000,
+      "included": true
+    },
+    {
+      "tx_index": 85,
+      "block_height": 87,
+      "submit_momentum": 6724,
+      "plasma_before": 378000,
+      "included": true
+    },
+    {
+      "tx_index": 86,
+      "block_height": 88,
+      "submit_momentum": 6724,
+      "plasma_before": 357000,
+      "included": true
+    },
+    {
+      "tx_index": 87,
+      "block_height": 89,
+      "submit_momentum": 6724,
+      "plasma_before": 336000,
+      "included": true
+    },
+    {
+      "tx_index": 88,
+      "block_height": 90,
+      "submit_momentum": 6724,
+      "plasma_before": 315000,
+      "included": true
+    },
+    {
+      "tx_index": 89,
+      "block_height": 91,
+      "submit_momentum": 6724,
+      "plasma_before": 294000,
+      "included": true
+    },
+    {
+      "tx_index": 90,
+      "block_height": 92,
+      "submit_momentum": 6724,
+      "plasma_before": 273000,
+      "included": true
+    },
+    {
+      "tx_index": 91,
+      "block_height": 93,
+      "submit_momentum": 6724,
+      "plasma_before": 252000,
+      "included": true
+    },
+    {
+      "tx_index": 92,
+      "block_height": 94,
+      "submit_momentum": 6724,
+      "plasma_before": 231000,
+      "included": true
+    },
+    {
+      "tx_index": 93,
+      "block_height": 95,
+      "submit_momentum": 6724,
+      "plasma_before": 210000,
+      "included": true
+    },
+    {
+      "tx_index": 94,
+      "block_height": 96,
+      "submit_momentum": 6724,
+      "plasma_before": 189000,
+      "included": true
+    },
+    {
+      "tx_index": 95,
+      "block_height": 97,
+      "submit_momentum": 6724,
+      "plasma_before": 168000,
+      "included": true
+    },
+    {
+      "tx_index": 96,
+      "block_height": 98,
+      "submit_momentum": 6724,
+      "plasma_before": 147000,
+      "included": true
+    },
+    {
+      "tx_index": 97,
+      "block_height": 99,
+      "submit_momentum": 6724,
+      "plasma_before": 126000,
+      "included": true
+    },
+    {
+      "tx_index": 98,
+      "block_height": 100,
+      "submit_momentum": 6724,
+      "plasma_before": 105000,
+      "included": true
+    },
+    {
+      "tx_index": 99,
+      "block_height": 101,
+      "submit_momentum": 6724,
+      "plasma_before": 84000,
+      "included": true
+    },
+    {
+      "tx_index": 100,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 101,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 102,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 103,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 104,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 105,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 106,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 107,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 108,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 109,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 110,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 111,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 112,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 113,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 114,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 115,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 116,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 117,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 118,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 119,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 120,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 121,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 122,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 123,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 124,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 125,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 126,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 127,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 128,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 129,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 130,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 131,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 132,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 133,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 134,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 135,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 136,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 137,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 138,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 139,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 140,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 141,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 142,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 143,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 144,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 145,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 146,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 147,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 148,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 149,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 150,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 151,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 152,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 153,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 154,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 155,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 156,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 157,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 158,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 159,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 160,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 161,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 162,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 163,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 164,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 165,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 166,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 167,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 168,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 169,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 170,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 171,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 172,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 173,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 174,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 175,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 176,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 177,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 178,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 179,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 180,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 181,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 182,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 183,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 184,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 185,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 186,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 187,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 188,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 189,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 190,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 191,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 192,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 193,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 194,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 195,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 196,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 197,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 198,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 199,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 200,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 201,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 202,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 203,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 204,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 205,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 206,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 207,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 208,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 209,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 210,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 211,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 212,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 213,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 214,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 215,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 216,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 217,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 218,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 219,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 220,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 221,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 222,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 223,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 224,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 225,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 226,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 227,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 228,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 229,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 230,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 231,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 232,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 233,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 234,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 235,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 236,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 237,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 238,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 239,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 240,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 241,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 242,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 243,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 244,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 245,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 246,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 247,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 248,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 249,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 250,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 251,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 252,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 253,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 254,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 255,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 256,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 257,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 258,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 259,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 260,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 261,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 262,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 263,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 264,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 265,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 266,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 267,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 268,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 269,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 270,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 271,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 272,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 273,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 274,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 275,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 276,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 277,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 278,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 279,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 280,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 281,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 282,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 283,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 284,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 285,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 286,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 287,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 288,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 289,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 290,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 291,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 292,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 293,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 294,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 295,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 296,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 297,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 298,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 299,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 300,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 301,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 302,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 303,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 304,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 305,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 306,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 307,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 308,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 309,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 310,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 311,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 312,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 313,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 314,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 315,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 316,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 317,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 318,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 319,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 320,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 321,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 322,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 323,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 324,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 325,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 326,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 327,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 328,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 329,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 330,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 331,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 332,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 333,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 334,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 335,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 336,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 337,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 338,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 339,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 340,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 341,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 342,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 343,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 344,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 345,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 346,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 347,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 348,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 349,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 350,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 351,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 352,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 353,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 354,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 355,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 356,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 357,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 358,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 359,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 360,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 361,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 362,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 363,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 364,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 365,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 366,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 367,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 368,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 369,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 370,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 371,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 372,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 373,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 374,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 375,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 376,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 377,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 378,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 379,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 380,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 381,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 382,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 383,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 384,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 385,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 386,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 387,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 388,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 389,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 390,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 391,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 392,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 393,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 394,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 395,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 396,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 397,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 398,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 399,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 400,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 401,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 402,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 403,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 404,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 405,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 406,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 407,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 408,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 409,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 410,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 411,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 412,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 413,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 414,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 415,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 416,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 417,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 418,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 419,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 420,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 421,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 422,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 423,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 424,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 425,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 426,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 427,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 428,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 429,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 430,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 431,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 432,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 433,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 434,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 435,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 436,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 437,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 438,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 439,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 440,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 441,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 442,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 443,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 444,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 445,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 446,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 447,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 448,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 449,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 450,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 451,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 452,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 453,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 454,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 455,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 456,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 457,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 458,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 459,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 460,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 461,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 462,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 463,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 464,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 465,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 466,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 467,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 468,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 469,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 470,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 471,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 472,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 473,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 474,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 475,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 476,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 477,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 478,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 479,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 480,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 481,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 482,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 483,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 484,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 485,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 486,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 487,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 488,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 489,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 490,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 491,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 492,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 493,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 494,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 495,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 496,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 497,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 498,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 499,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 500,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 501,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 502,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 503,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 504,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 505,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 506,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 507,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 508,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 509,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 510,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 511,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 512,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 513,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 514,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 515,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 516,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 517,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 518,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 519,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 520,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 521,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 522,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 523,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 524,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 525,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 526,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 527,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 528,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 529,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 530,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 531,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 532,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 533,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 534,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 535,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 536,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 537,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 538,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 539,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 540,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 541,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 542,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 543,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 544,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 545,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 546,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 547,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 548,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 549,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 550,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 551,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 552,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 553,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 554,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 555,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 556,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 557,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 558,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 559,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 560,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 561,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 562,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 563,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 564,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 565,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 566,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 567,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 568,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 569,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 570,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 571,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 572,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 573,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 574,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 575,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 576,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 577,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 578,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 579,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 580,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 581,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 582,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 583,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 584,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 585,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 586,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 587,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 588,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 589,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 590,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 591,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 592,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 593,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 594,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 595,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 596,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 597,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 598,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    },
+    {
+      "tx_index": 599,
+      "block_height": 102,
+      "submit_momentum": 6724,
+      "plasma_before": 63000,
+      "publish_error": "rpc ledger.publishRawTransaction error: insufficient balance for transfer",
+      "included": false
+    }
+  ]
+}
