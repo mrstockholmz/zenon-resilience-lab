@@ -65,6 +65,21 @@ cost, and whether a lightly provisioned account can still transact.
 - RPC latency unchanged under burst load (100/200/500 txs). p50: 9–10ms → 10–11ms under load.
   Node is I/O-bound for RPC, not CPU-bound.
 
+## ZVM relayer batches on NoM L1 (phase 25, 2026-11-05, ZVM devnet L1 chain 69)
+
+- Relayer batch posts are plain sends (amount 0); cost = `21,000 + 68·B` plasma,
+  measured exact for B = 0..16,384 at floor price; B = 16,385 rejected. A fused
+  account short of plasma covers the rest with PoW, used plasma unchanged.
+- Full 16 KiB batch block = 1,135,112 plasma. Per-momentum budget 4.2 M binds at
+  **3 full blocks per momentum** (measured: max 6-7 × 8 KiB blocks per momentum).
+  ⇒ ≤ 49 KiB compressed settled per 10 s momentum ⇒ ~38-49 L2 txs/s at 10 s
+  momenta (per-tx compressed size is a code-constant estimate, zero real traffic).
+- Batch posting burns nothing: plasma is a rate limit (QSR stays fused), so L1
+  cost is QSR opportunity cost plus any PoW electricity.
+- Devnet cannot show: real price discovery, real L2 tx byte distribution,
+  multi-relayer competition, mainnet momentum-rate variance.
+  Details: `results/phase-25-zvm-batch-plasma/MODEL.md` (R21a/R21b PASS).
+
 ## Superseded claims
 
 | # | Original claim | Superseded by | Why |

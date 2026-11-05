@@ -107,11 +107,14 @@ go build -o labctl ./cmd/labctl
 | `poolcap <idx> <qsr> <maxTx>` | Mempool cap test (phase 17) |
 | `frontconf <idx> <qsr>` | Frontier conflict resolution test (phase 17) |
 | `datasize <idx> <qsr>` | Data payload size limits + plasma cost formula (phase 18) |
+| `contractcap <n> <amt> [baseIdx]` | Contract block throughput cap test (phase 19) |
+| `contentmix <n> <m> <amt> [baseIdx]` | Momentum content capacity test (phase 20) |
+| `valedge <idx> <qsr>` | Transaction validation edge cases test (phase 22) |
 
 ## run-suite.sh
 
 ```bash
-./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|check|all]
+./run-suite.sh [phase2|phase3|phase4|phase6|phase7|phase8|phase9|phase11|phase12|phase13|phase15|phase16|phase17|phase18|phase19|phase20|phase21|phase22|phase24|check|all]
 ```
 
 | Target | What it runs |
@@ -130,6 +133,11 @@ go build -o labctl ./cmd/labctl
 | `phase16` | txtype 200 QSR x 3 seeds (transaction type plasma costs) |
 | `phase17` | poolcap + frontconf x 3 seeds (mempool cap + frontier conflict) |
 | `phase18` | datasize 3000 QSR x 3 seeds (data payload size limits) |
+| `phase19` | contractcap 100 Stake x 3 seeds (contract block throughput cap) |
+| `phase20` | contentmix configs A/B/C x 3 seeds (momentum content capacity) |
+| `phase21` | momentum-rate.py baseline + burst (momentum production rate) |
+| `phase22` | valedge 200 QSR x 3 seeds (validation edge cases) |
+| `phase24` | powlat 5 accounts x 3 seeds, multi-producer (PoW latency) |
 | `check` | Regression assertions (R1-R20) + CSV export |
 | `all` | phase2 + phase3 + phase4 + check |
 
@@ -157,14 +165,39 @@ CSV summary: `../results/summary.csv`.
 | R13 | Transaction type plasma costs match go-zenon source constants (self=21000, data=21000+68/B, contract=52500) |
 | R14 | Mempool cap is 500 uncommitted blocks per account; frontier conflict follows price-then-hash rule |
 | R15 | Data payload plasma cost = 21000+68*N for N ≤ 16384; >16KB rejected with "account-block data field is too big" |
+| R16 | Contract block cap (80) is not binding; plasma budget limits contract calls to ~73-75/momentum |
+| R17 | Momentum content capacity: plasma budget (4.2M) limits to 200, not the 280 content cap |
+| R18 | Momentum production rate = BlockTime × N/K (N pillars, K active) |
+| R19 | Validation edge cases: all negative cases rejected, zero-amount accepted |
+| R20 | Multi-producer: 3/3 active pillars = 10s mean momentum rate, near-zero stdev |
 
 Run: `python3 check-regressions.py ../results`
 
 All R1-R20 assertions passing as of 2026-10-25 (v0.1).
 
+## Phase 25: ZVM devnet L1 (different substrate)
+
+Phase 25 is **not** part of the R1-R20 lab-devnet suite: it runs against the
+ZVM devnet L1 (chain 69, go-zenon dev ruleset with dynamic plasma, 10 s
+momenta, docker stack `zvm-devnet-*`) and measures what ZVM relayer batches
+cost on NoM L1. See `../results/phase-25-zvm-batch-plasma/MODEL.md` for the
+model, measured numbers and devnet limits. Its own assertions:
+
+| ID | Assertion |
+|---|---|
+| R21a | Data-bearing send cost = 21000+68·B for B = 0..16384 on the ZVM devnet L1; B = 16385 rejected |
+| R21b | At most 7 × 8 KiB data blocks confirm in one momentum (4.2 M plasma budget binding) |
+
+Run: `python3 ../results/phase-25-zvm-batch-plasma/check-phase25.py ../results/phase-25-zvm-batch-plasma`
+
+Both PASS as of 2026-11-05. Reproduce the measurements with the probe in
+`../results/phase-25-zvm-batch-plasma/probe/` (see MODEL.md).
+
 ## Safety
 
-- Devnet only (chain 69, isolated). Never touches mainnet/testnet/shared networks.
+- Devnet only (chain 69/100, isolated). Never touches mainnet/testnet/shared networks.
+- Phase 25 additionally uses the ZVM devnet stack's L1 (chain 69) and its
+  public faucet; the probe account is a devnet-mnemonic index (disposable).
 - Disposable dev keys from the committed go-zenon devnet keyfile.
 - RPC on 127.0.0.1 only. No external traffic.
 - Read `../SAFETY.md` before running anything.

@@ -1,0 +1,89 @@
+{
+  "network": "zvm-devnet L1 (go-zenon dev ruleset, dynamic plasma)",
+  "chain_id": 69,
+  "l1_rpc": "http://172.18.0.8:35997",
+  "account_index": 400,
+  "account": "z1qz4c3qwjf6y02ej7jcflvf50jtzrzfpdwvtjp4",
+  "fused_qsr": "100000000000",
+  "max_plasma": 2100000,
+  "frontier_momentum_at_start": 111603,
+  "sizes": [
+    {
+      "data_size_bytes": 0,
+      "planned_plasma": 21000,
+      "base_plasma": 21000,
+      "used_plasma": 21000,
+      "fused_plasma": 21000,
+      "pow_difficulty": 0,
+      "plasma_delta": 0,
+      "fusion_price_next": 1000,
+      "send_hash": "06729ade9e1ab03b41819beaedc6efed3057936d700826affda8f2b2bfbf4bce",
+      "included_height": 111604,
+      "inclusion_sec": 10.015
+    },
+    {
+      "data_size_bytes": 1024,
+      "planned_plasma": 90632,
+      "base_plasma": 90632,
+      "used_plasma": 90632,
+      "fused_plasma": 90632,
+      "pow_difficulty": 0,
+      "plasma_delta": 0,
+      "fusion_price_next": 1000,
+      "send_hash": "5bbe4acb7783f0d08c0c9bdc343066216141a76c589689cde6e41192bc87c06c",
+      "included_height": 111605,
+      "inclusion_sec": 10.026
+    },
+    {
+      "data_size_bytes": 4096,
+      "planned_plasma": 299528,
+      "base_plasma": 299528,
+      "used_plasma": 299528,
+      "fused_plasma": 299528,
+      "pow_difficulty": 0,
+      "plasma_delta": 0,
+      "fusion_price_next": 1000,
+      "send_hash": "1a6d76807b7a6e2f09777c19afe1b7e1c407760f40766df3e469841fadb356c7",
+      "included_height": 111606,
+      "inclusion_sec": 10.026
+    },
+    {
+      "data_size_bytes": 8192,
+      "planned_plasma": 578056,
+      "base_plasma": 578056,
+      "used_plasma": 578056,
+      "fused_plasma": 578056,
+      "pow_difficulty": 0,
+      "plasma_delta": 0,
+      "fusion_price_next": 1000,
+      "send_hash": "ce1f85171341a1d50c36b702f1882f35f9574bd1f49b294d84141e1e2d7ebd38",
+      "included_height": 111607,
+      "inclusion_sec": 10.029
+    },
+    {
+      "data_size_bytes": 16384,
+      "planned_plasma": 1135112,
+      "base_plasma": 1135112,
+      "used_plasma": 1135112,
+      "fused_plasma": 1135112,
+      "pow_difficulty": 0,
+      "plasma_delta": 0,
+      "fusion_price_next": 1004,
+      "send_hash": "4138eebfe0c4df3d543e5db355893876dac8c975020963d11b8e5584d3a1ce1c",
+      "included_height": 111608,
+      "inclusion_sec": 10.021
+    },
+    {
+      "data_size_bytes": 16385,
+      "planned_plasma": 1135180,
+      "base_plasma": 0,
+      "used_plasma": 0,
+      "fused_plasma": 0,
+      "pow_difficulty": 0,
+      "plasma_delta": 0,
+      "fusion_price_next": 0,
+      "publish_error": "data is 16385 bytes, the limit is 16384",
+      "rejected_over_cap": true
+    }
+  ]
+}

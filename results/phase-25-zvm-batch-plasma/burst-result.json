@@ -1,0 +1,86 @@
+{
+  "blocks": [
+    {
+      "account": 400,
+      "size_bytes": 8192,
+      "hash": "ad5f6275eb7cefaea07f240aec44221b3e20308227e8e3e950a6eab32cc9fad3",
+      "account_height": 47,
+      "used_plasma": 578056,
+      "confirming_momentum": 111609
+    },
+    {
+      "account": 401,
+      "size_bytes": 8192,
+      "hash": "e95f2b712297433140b0f6f5482ca2e20dc814f325f1e707bcce76dc98570e92",
+      "account_height": 17,
+      "used_plasma": 578056,
+      "confirming_momentum": 111609
+    },
+    {
+      "account": 401,
+      "size_bytes": 8192,
+      "hash": "008b616ebfe8130b2a4662652017278081e10d8ca1480460c34d1c4b40a8ff08",
+      "account_height": 16,
+      "used_plasma": 578056,
+      "confirming_momentum": 111609
+    },
+    {
+      "account": 400,
+      "size_bytes": 8192,
+      "hash": "7c33d4789fe04af40377e31519cbf35d683701576a06dec9f193be99465bca68",
+      "account_height": 48,
+      "used_plasma": 578056,
+      "confirming_momentum": 111609
+    },
+    {
+      "account": 400,
+      "size_bytes": 8192,
+      "hash": "ca919fefd9b210a6cf10389efd639297674a501df005db46181eca0be083fd10",
+      "account_height": 46,
+      "used_plasma": 578056,
+      "confirming_momentum": 111609
+    },
+    {
+      "account": 401,
+      "size_bytes": 8192,
+      "hash": "43f30b165e6dc5ac0d212e85ee0bdf5159094a62737711f8f7c3a58e12143eab",
+      "account_height": 18,
+      "used_plasma": 578056,
+      "confirming_momentum": 111609
+    },
+    {
+      "account": 402,
+      "size_bytes": 8192,
+      "hash": "533fcf3bc1dcc2ef82b62983fae510bd7f6a5a503ec04c08b4a997a503d01be5",
+      "account_height": 10,
+      "used_plasma": 578056,
+      "confirming_momentum": 111612
+    },
+    {
+      "account": 402,
+      "size_bytes": 8192,
+      "hash": "aff9588ccc73c5a9ed140bd11f6aa6a3ed8028b07a48bb8fc4371c84ee2cd4b3",
+      "account_height": 12,
+      "used_plasma": 578056,
+      "confirming_momentum": 111612
+    },
+    {
+      "account": 402,
+      "size_bytes": 8192,
+      "hash": "a1371d675bd68cfc6aee820a9818549e42356ffd7cb15255308ff46fd523bd22",
+      "account_height": 11,
+      "used_plasma": 578056,
+      "confirming_momentum": 111612
+    }
+  ],
+  "per_momentum_counts": {
+    "111609": 6,
+    "111612": 3
+  },
+  "fused_plasma_per_account": {
+    "400": 2100000,
+    "401": 2100000,
+    "402": 2100000
+  },
+  "notes": "3 accounts x 3 blocks of 8192 data bytes; planned plasma per block = 21000+68*8192 = 578056; protocol budget hypothesis: floor(4200000/planned) = 7 blocks/momentum at floor price"
+}
