@@ -40,9 +40,27 @@ import (
 )
 
 const (
-	rpcURL  = "http://127.0.0.1:57997"
-	chainID = 69
+	defaultRPCURL = "http://127.0.0.1:57997"
+	chainID       = 69
 )
+
+// rpcURL is the devnet RPC endpoint. Override with LAB_RPC_URL when the
+// devnet runs on non-default ports (e.g. a docker stack on 55997).
+var rpcURL = func() string {
+	if v := os.Getenv("LAB_RPC_URL"); v != "" {
+		return v
+	}
+	return defaultRPCURL
+}()
+
+// labDevnetHome is the devnet data dir that holds wallet/ and genesis.json.
+// Override with LAB_DEVNET_HOME (the default matches the README setup).
+func labDevnetHome() string {
+	if v := os.Getenv("LAB_DEVNET_HOME"); v != "" {
+		return v
+	}
+	return os.Getenv("HOME") + "/lab-devnet"
+}
 
 var (
 	znn = types.ZnnTokenStandard
@@ -174,7 +192,7 @@ func keystore() *wallet.KeyStore {
 		return cachedKS
 	}
 	// Use the committed devnet keyfile (disposable, public mnemonic)
-	kf, err := wallet.ReadKeyFile(os.Getenv("HOME") + "/lab-devnet/wallet/z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq")
+	kf, err := wallet.ReadKeyFile(labDevnetHome() + "/wallet/z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "FATAL read keyfile: %v\n", err)
 		os.Exit(1)

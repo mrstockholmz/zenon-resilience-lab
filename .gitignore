@@ -6,5 +6,4 @@ znn-*/
 datadir*/
 *.log
 /bin/
-suite/go.sum
 suite/labctl

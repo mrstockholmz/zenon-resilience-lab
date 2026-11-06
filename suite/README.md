@@ -12,73 +12,48 @@ workloads against an isolated Zenon devnet and records results as JSON.
 | Python 3 | >= 3.9 | for check-regressions.py, json2csv.py |
 | znnd (lab build) | from pinned go-zenon | isolated data dir, RPC 127.0.0.1 only |
 
-## Quick start (one command)
+## Quick start
+
+Prerequisite: the go-zenon checkout must be a **sibling** of this repo named
+`lab-go-zenon` (the suite's `go.mod` replaces the go-zenon module with
+`../../lab-go-zenon`).
 
 ```bash
-# 1. Clone and build go-zenon at the pinned revision
-git clone https://github.com/zenon-network/go-zenon ~/lab-go-zenon
-cd ~/lab-go-zenon
+# 1. Clone both repos (siblings), build go-zenon at the pinned revision
+git clone https://github.com/mrstockholmz/zenon-resilience-lab
+git clone https://github.com/zenon-network/go-zenon lab-go-zenon
+cd lab-go-zenon
 git checkout e89f91f68b922a65370b7ffd9cfe860045a99b29
 make znnd        # or: go build -o build/znnd ./cmd/znnd
+cd ../zenon-resilience-lab
 
-# 2. Create the lab devnet data dir
-mkdir -p ~/lab-devnet
-# Copy the lab genesis (with plasma-contract funding fix from phase 1).
-# The committed docker/devnet/genesis.json at e89f91f FAILS CheckPlasmaInfo.
-# The lab genesis adds 3e12 QSR to the plasma contract and raises QSR totalSupply.
-# See results/phase-1/ for the full defect report.
+# 2. One-command devnet setup (genesis + keyfile + config from the repo)
+scripts/setup-devnet.sh --start --go-zenon ../lab-go-zenon
 
-# 3. Create config.json (RPC on 127.0.0.1 only, no external peers)
-cat > ~/lab-devnet/config.json << 'EOF'
-{
-  "DataPath": "/home/user/lab-devnet",
-  "GenesisFile": "/home/user/lab-devnet/genesis.json",
-  "LogLevel": "info",
-  "Name": "lab-devnet-pillar",
-  "Net": {
-    "BootstrapPeers": [],
-    "ListenHost": "127.0.0.1",
-    "ListenPort": 56995,
-    "MinConnectedPeers": 0,
-    "MinPeers": 0,
-    "Seeders": []
-  },
-  "Producer": {
-    "Address": "z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq",
-    "Index": 0,
-    "KeyFilePath": "z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq",
-    "Password": "devnet"
-  },
-  "RPC": {
-    "EnableHTTP": true,
-    "EnableWS": false,
-    "Endpoints": [],
-    "HTTPCors": [],
-    "HTTPHost": "127.0.0.1",
-    "HTTPPort": 57997,
-    "HTTPVirtualHosts": ["localhost"],
-    "WSHost": "127.0.0.1",
-    "WSPort": 57998
-  }
-}
-EOF
+# 3. Build labctl
+cd suite && go build -o labctl ./cmd/labctl
 
-# 4. Start the devnet (under nice, local only)
-nice -n 10 ~/lab-go-zenon/build/znnd --data ~/lab-devnet &
-
-# 5. Build labctl
-cd suite/
-go build -o labctl ./cmd/labctl
-
-# 6. Verify
+# 4. Verify
 ./labctl info
 # Should show: momentum_height, plasma_regime, agent address, plasma balance
 
-# 7. Run the suite
+# 5. Run the suite
 ./run-suite.sh all
 ```
 
+`setup-devnet.sh` copies the lab genesis (`suite/devnet/genesis.json`,
+committed — the stock `docker/devnet/genesis.json` at `e89f91f` fails
+`CheckPlasmaInfo`, see `results/phase-1/`) and the disposable public devnet
+keyfile from the go-zenon checkout, patches the keyfile's embedded `Path`
+field (the wallet manager indexes by it — an unpatched copy fails node
+startup with "key store could not be found"), and writes `config.json`
+(RPC on 127.0.0.1 only, no external peers).
+
 ## labctl commands
+
+Environment overrides: `LAB_RPC_URL` (default `http://127.0.0.1:57997`),
+`LAB_DEVNET_HOME` (default `$HOME/lab-devnet`, the dir with `wallet/` and
+`genesis.json`), `LAB_AGENT_IDX` (default agent = derived account 3).
 
 | Command | Description |
 |---|---|

@@ -21,28 +21,27 @@ rm -rf ~/lab-devnet-pillar3/
 ## 3. Rebuild from pinned go-zenon
 
 ```bash
-cd ~/lab-go-zenon
+cd ../lab-go-zenon   # sibling of this repo (see suite/README.md)
 git fetch origin
 git checkout e89f91f68b922a65370b7ffd9cfe860045a99b29
 make znnd
 ```
 
-## 4. Recreate the lab genesis
+## 4. Recreate the lab devnet data dir
 
-The committed `docker/devnet/genesis.json` at `e89f91f` fails `CheckPlasmaInfo`
-(3 Plasma fusions declared but no genesis block credits the Plasma contract).
-The lab genesis adds 3e12 QSR to the plasma contract and raises QSR totalSupply.
-See `results/phase-1/` for the full defect report.
+One command (from the repo root):
 
-Copy the lab-patched genesis into `~/lab-devnet/genesis.json`.
+```bash
+scripts/setup-devnet.sh --go-zenon ../lab-go-zenon
+```
 
-## 5. Recreate config
-
-See `suite/README.md` for the full config template. Key points:
-- RPC on 127.0.0.1 only
-- No external peers
-- `P2PBackend: "libp2p"` for multi-pillar setups
-- Producer keyfile from the go-zenon devnet keyfile
+This copies the committed lab genesis (`suite/devnet/genesis.json`) — the
+stock `docker/devnet/genesis.json` at `e89f91f` fails `CheckPlasmaInfo`
+(3 Plasma fusions declared but no genesis block credits the Plasma contract;
+the lab genesis adds 3e12 QSR to the plasma contract and raises QSR
+totalSupply. See `results/phase-1/`) — plus the producer keyfile from the
+go-zenon checkout, patches the keyfile's embedded `Path` field to the new
+location, and writes `config.json`.
 
 ## 6. Start the devnet
 
