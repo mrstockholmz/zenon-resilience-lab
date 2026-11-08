@@ -168,6 +168,27 @@ Run: `python3 ../results/phase-25-zvm-batch-plasma/check-phase25.py ../results/p
 Both PASS as of 2026-11-05. Reproduce the measurements with the probe in
 `../results/phase-25-zvm-batch-plasma/probe/` (see MODEL.md).
 
+## Phase 26: Zeno settlement attack checks (different substrate)
+
+Phase 26 is **not** part of the R1-R20 lab-devnet suite either: it runs
+against the Zeno settlement devnet (chain 69, domain 1, docker stack
+`zeno-devnet-*` + `znnd-devnet-*`) and turns the M1 settlement-invariant review
+into executable negative tests. Canonical script:
+`../results/phase-26-zeno-attacks/zeno-attacks.ts`; runner:
+`../results/phase-26-zeno-attacks/run-zeno-attacks.sh` (stages the script into
+the local zeno-devnet checkout and runs it with tsx). See that directory's
+README for the check table and prerequisites.
+
+First run (2026-11-08): **9 PASS / 0 FAIL / 2 NOT TESTED** in 16m22s. The
+devnet rejected every attack: executor batch-commitment replay and non-executor
+SubmitBatch, RelayMessage before batch finality, a second relay of the same
+outboxId, Deposit with `plasmaLimit = MaxInputGas+1`, CallL2 with an
+8 KiB+1 payload. On-chain invariants hold (custody conservation;
+`burned + credited = collected`, `rewards = credited`). NOT TESTED: deposit
+with the spork off (needs a pillar-signed spork tx; unit-test authority) and
+the 1-momentum release rate limit (live timing race; unit-test authority).
+No break found — nothing was reported as a finding to any channel.
+
 ## Safety
 
 - Devnet only (chain 69/100, isolated). Never touches mainnet/testnet/shared networks.
