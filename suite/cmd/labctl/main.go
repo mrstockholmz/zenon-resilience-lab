@@ -177,6 +177,14 @@ func plasmaLevel(addrStr string) uint64 {
 	return info.CurrentPlasma
 }
 
+func maxPlasmaOf(addrStr string) uint64 {
+	var info struct {
+		MaxPlasma uint64 `json:"maxPlasma"`
+	}
+	mustRPC("embedded.plasma.get", []string{addrStr}, &info)
+	return info.MaxPlasma
+}
+
 // ---- Accounts ----
 
 type account struct {
@@ -2228,6 +2236,7 @@ func runProbe(secs int) {
 // runFuse: fuse QSR for plasma on the agent account
 func runFuse(amt int64) {
 	a := agentAccount()
+	plasmaBefore := maxPlasmaOf(a.addrStr)
 	data := definition.ABIPlasma.PackMethodPanic(definition.FuseMethodName, a.addr)
 	b, powMs, err := buildSend(a, types.PlasmaContract, qsr, dec(amt), data, true)
 	if err != nil {
@@ -2239,6 +2248,21 @@ func runFuse(amt int64) {
 		os.Exit(1)
 	}
 	lat, mh, ok := waitIncluded(a.addrStr, b.Height, 120*time.Second)
+	// The embedded plasma store credits the fusion a beat after the block is
+	// visible in the ledger; sends published in that window fail with
+	// "not enough TotalPlasma". Wait until maxPlasma increases (credit
+	// landed) before letting the caller continue; bounded at 20s.
+	credited := false
+	for i := 0; i < 100; i++ {
+		if maxPlasmaOf(a.addrStr) > plasmaBefore {
+			credited = true
+			break
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+	if !credited {
+		fmt.Fprintf(os.Stderr, "warn: fusion credit not observed within 20s after inclusion\n")
+	}
 	fmt.Printf("fuse %d QSR: height=%d pow_ms=%d included=%v latency=%v momentum=%d plasma=%d\n",
 		amt, b.Height, powMs, ok, lat, mh, plasmaLevel(a.addrStr))
 }
