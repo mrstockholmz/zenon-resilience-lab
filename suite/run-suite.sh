@@ -254,8 +254,17 @@ case "${1:-all}" in
         ;;
     phase3)
         # Phase 3 matrix: 4 cases x 3 seeds = 12 runs
-        for seed in 0 1 2; do
-            for case in low-steady-1 low-burst-1 high-steady-1 high-burst-1; do
+        # Order matters: ALL low-* (unfused) cases must run BEFORE any
+        # high-* case — high-* fuses the agent (runFuse), and a fused
+        # agent invalidates R3 (unfused-burst rejection expects <100%
+        # inclusion on every seed file).
+        for case in low-steady-1 low-burst-1; do
+            for seed in 0 1 2; do
+                run_phase3_case "$case" "$seed" "$REGIME"
+            done
+        done
+        for case in high-steady-1 high-burst-1; do
+            for seed in 0 1 2; do
                 run_phase3_case "$case" "$seed" "$REGIME"
             done
         done
@@ -381,8 +390,15 @@ case "${1:-all}" in
     all)
         echo "Running full suite (phases 2-4)..."
         run_phase2 "$REGIME" r1
-        for seed in 0 1 2; do
-            for case in low-steady-1 low-burst-1 high-steady-1 high-burst-1; do
+        # Phase 3: all low-* (unfused) seeds BEFORE any high-* (fusing)
+        # case — see the phase3) block for why.
+        for case in low-steady-1 low-burst-1; do
+            for seed in 0 1 2; do
+                run_phase3_case "$case" "$seed" "$REGIME"
+            done
+        done
+        for case in high-steady-1 high-burst-1; do
+            for seed in 0 1 2; do
                 run_phase3_case "$case" "$seed" "$REGIME"
             done
         done

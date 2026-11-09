@@ -69,6 +69,11 @@ LAB_AGENT_IDX=1 ./labctl sendqsr 250 20000   # QSR for fusions
 LAB_AGENT_IDX=250 ./run-suite.sh all
 ```
 
+Within a single run the phase-3 runner executes all `low-*` (unfused) seeds
+before any `high-*` case, because `high-*` fuses the agent and a fused agent
+invalidates R3/R4. The agent account must still be **unfused at run start**
+— phase 2 and the phase-3 `low-*` cases assume zero fused QSR.
+
 Using a fused account as the agent invalidates R3/R4 (the "unfused" burst cases
 include instantly and never see PoW-delay rejection). The agent must have zero fused
 plasma for R3 to discriminate.
