@@ -55,6 +55,24 @@ Environment overrides: `LAB_RPC_URL` (default `http://127.0.0.1:57997`),
 `LAB_DEVNET_HOME` (default `$HOME/lab-devnet`, the dir with `wallet/` and
 `genesis.json`), `LAB_AGENT_IDX` (default agent = derived account 3).
 
+**Long-lived devnets:** the default agent (derived account 3) is genesis-funded with
+500k ZNN/QSR, but suite runs consume QSR (fusions are never fully undone) and the
+account eventually cannot fund high-fusion cases. On a long-lived devnet, provision a
+fresh agent instead (see `results/v0.2-fresh-clone/` for a worked example):
+
+```bash
+# from a QSR-rich account (e.g. derived account 1, genesis-funded 100k QSR):
+LAB_AGENT_IDX=1 ./labctl fund 250 200        # ZNN for tx amounts
+LAB_AGENT_IDX=1 ./labctl sendqsr 250 20000   # QSR for fusions
+./labctl receive 250                          # credit the funding (agent side)
+# then run the suite against the fresh, unfused account:
+LAB_AGENT_IDX=250 ./run-suite.sh all
+```
+
+Using a fused account as the agent invalidates R3/R4 (the "unfused" burst cases
+include instantly and never see PoW-delay rejection). The agent must have zero fused
+plasma for R3 to discriminate.
+
 | Command | Description |
 |---|---|
 | `info` | Node state: height, regime, agent plasma |
@@ -63,6 +81,7 @@ Environment overrides: `LAB_RPC_URL` (default `http://127.0.0.1:57997`),
 | `probe <seconds>` | Lightly-provisioned probe: periodic small sends |
 | `fuse <qsr>` | Fuse QSR for plasma on the agent account |
 | `fund <index> <znn>` | Send ZNN from agent to derived account[index] |
+| `sendqsr <index> <qsr>` | Send QSR from agent to derived account[index] (agent provisioning) |
 | `fusefor <index> <qsr>` | Fuse QSR with beneficiary=derived account[index] |
 | `receive <index>` | Receive pending blocks on derived account[index] |
 | `waitfor <height>` | Block until momentum height >= target |

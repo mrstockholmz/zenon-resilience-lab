@@ -4,19 +4,20 @@
 // mnemonic. Never touches real wallets or shared networks.
 //
 // Commands:
-//   info                              node state summary
-//   ordinary <n> <amount>             sequential self-transfers (ordinary workload)
-//   burst <n> <amount>                rapid-fire self-transfers without waiting (burst workload)
-//   waitfor <height>                  block until momentum height >= target
-//   probe <seconds>                   lightly-provisioned probe: periodic small sends
-//   fuse <qsr>                        fuse QSR for plasma on the agent account
-//   fund <index> <znn>                send ZNN from agent to derived account[index]
-//   fusefor <index> <qsr>             fuse QSR with beneficiary=derived account[index]
-//   matrix <case> <seed>              run one phase-3 matrix case
-//   contend <numAccounts> <txPerAccount> <amount>  multi-sender contention experiment (phase 7)
-//   powburst <numAccounts> <txPerAcct> <amount>    PoW repricing experiment (phase 9)
-//   mixcontend <fused> <unfused> <txPerAcct> <amt>  mixed fused/unfused contention (phase 10)
-//   mixsaturate <fused> <unfused> <txPerAcct> <amt> mixed fused/unfused saturation (phase 13)
+//
+//	info                              node state summary
+//	ordinary <n> <amount>             sequential self-transfers (ordinary workload)
+//	burst <n> <amount>                rapid-fire self-transfers without waiting (burst workload)
+//	waitfor <height>                  block until momentum height >= target
+//	probe <seconds>                   lightly-provisioned probe: periodic small sends
+//	fuse <qsr>                        fuse QSR for plasma on the agent account
+//	fund <index> <znn>                send ZNN from agent to derived account[index]
+//	fusefor <index> <qsr>             fuse QSR with beneficiary=derived account[index]
+//	matrix <case> <seed>              run one phase-3 matrix case
+//	contend <numAccounts> <txPerAccount> <amount>  multi-sender contention experiment (phase 7)
+//	powburst <numAccounts> <txPerAcct> <amount>    PoW repricing experiment (phase 9)
+//	mixcontend <fused> <unfused> <txPerAcct> <amt>  mixed fused/unfused contention (phase 10)
+//	mixsaturate <fused> <unfused> <txPerAcct> <amt> mixed fused/unfused saturation (phase 13)
 package main
 
 import (
@@ -304,24 +305,24 @@ type txResult struct {
 }
 
 type runSummary struct {
-	Workload       string     `json:"workload"`
-	PlasmaRegime   string     `json:"plasma_regime"`
-	Attempted      int        `json:"attempted"`
-	Submitted      int        `json:"submitted"`
-	Included       int        `json:"included"`
-	Rejected       int        `json:"rejected"`
-	Unresolved     int        `json:"unresolved"`
-	PoWCount       int        `json:"pow_count"`
-	TotalPoWMs     int64      `json:"total_pow_ms"`
-	LatenciesMs    []int64    `json:"latencies_ms"`
-	P50Ms          int64      `json:"p50_ms"`
-	P90Ms          int64      `json:"p90_ms"`
-	P99Ms          int64      `json:"p99_ms"`
-	StartMomentum  uint64     `json:"start_momentum"`
-	EndMomentum    uint64     `json:"end_momentum"`
-	DurationSec    float64    `json:"duration_sec"`
-	GeneratorCPU   float64    `json:"generator_cpu_sec"`
-	Results        []txResult `json:"results"`
+	Workload      string     `json:"workload"`
+	PlasmaRegime  string     `json:"plasma_regime"`
+	Attempted     int        `json:"attempted"`
+	Submitted     int        `json:"submitted"`
+	Included      int        `json:"included"`
+	Rejected      int        `json:"rejected"`
+	Unresolved    int        `json:"unresolved"`
+	PoWCount      int        `json:"pow_count"`
+	TotalPoWMs    int64      `json:"total_pow_ms"`
+	LatenciesMs   []int64    `json:"latencies_ms"`
+	P50Ms         int64      `json:"p50_ms"`
+	P90Ms         int64      `json:"p90_ms"`
+	P99Ms         int64      `json:"p99_ms"`
+	StartMomentum uint64     `json:"start_momentum"`
+	EndMomentum   uint64     `json:"end_momentum"`
+	DurationSec   float64    `json:"duration_sec"`
+	GeneratorCPU  float64    `json:"generator_cpu_sec"`
+	Results       []txResult `json:"results"`
 }
 
 func percentile(sorted []int64, p float64) int64 {
@@ -563,8 +564,8 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 	// ---- Per-momentum content tracking ----
 	fmt.Fprintf(os.Stderr, "saturate: analyzing momentum contents (%d to %d)...\n", startM, endM)
 	type momentumDetail struct {
-		Height   uint64 `json:"momentum_height"`
-		TotalTxs int    `json:"total_txs"`
+		Height   uint64      `json:"momentum_height"`
+		TotalTxs int         `json:"total_txs"`
 		Accounts map[int]int `json:"accounts"`
 	}
 	var momentumDetails []momentumDetail
@@ -638,14 +639,14 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 
 	type saturateOutput struct {
 		runSummary
-		NumAccounts      int                `json:"num_accounts"`
-		TxPerAccount     int                `json:"tx_per_account"`
-		QSRPerAccount    int64              `json:"qsr_per_account"`
-		TotalTxs         int                `json:"total_txs"`
-		MomentumLimit    int                `json:"momentum_limit"`
-		MomentaUsed      int                `json:"momenta_used"`
-		Breakdowns       []saturateBreakdown `json:"breakdowns"`
-		MomentumDetails  []momentumDetail   `json:"momentum_details"`
+		NumAccounts     int                 `json:"num_accounts"`
+		TxPerAccount    int                 `json:"tx_per_account"`
+		QSRPerAccount   int64               `json:"qsr_per_account"`
+		TotalTxs        int                 `json:"total_txs"`
+		MomentumLimit   int                 `json:"momentum_limit"`
+		MomentaUsed     int                 `json:"momenta_used"`
+		Breakdowns      []saturateBreakdown `json:"breakdowns"`
+		MomentumDetails []momentumDetail    `json:"momentum_details"`
 	}
 
 	out := saturateOutput{
@@ -667,13 +668,13 @@ func runSaturate(numAccounts int, txPerAccount int, qsrPerAccount int64, amt int
 // ---- Contract Cap ----
 
 type contractCapCall struct {
-	AccountIndex      int    `json:"account_index"`
-	CallIndex         int    `json:"call_index"`
-	Published         bool   `json:"published"`
-	Error             string `json:"error,omitempty"`
-	Included          bool   `json:"included"`
-	InclusionHeight   uint64 `json:"inclusion_height"`
-	InclusionLatencyMs int64 `json:"inclusion_latency_ms"`
+	AccountIndex       int    `json:"account_index"`
+	CallIndex          int    `json:"call_index"`
+	Published          bool   `json:"published"`
+	Error              string `json:"error,omitempty"`
+	Included           bool   `json:"included"`
+	InclusionHeight    uint64 `json:"inclusion_height"`
+	InclusionLatencyMs int64  `json:"inclusion_latency_ms"`
 }
 
 // runContractCap: per-momentum contract block cap experiment.
@@ -975,39 +976,39 @@ func runContractCap(numAccounts int, callsPerAccount int, qsrPerAccount int64, b
 
 	// ---- Output ----
 	type contractCapOutput struct {
-		NumAccounts               int               `json:"num_accounts"`
-		CallsPerAccount           int               `json:"calls_per_account"`
-		TotalCalls                int               `json:"total_calls"`
-		QSRPerAccount             int64             `json:"qsr_per_account"`
-		PlasmaPerAccount          uint64            `json:"plasma_per_account"`
-		SetupMomentum             uint64            `json:"setup_momentum"`
-		EndMomentum               uint64            `json:"end_momentum"`
-		Calls                     []contractCapCall `json:"calls"`
-		PerMomentumInclusion      map[uint64]int    `json:"per_momentum_inclusion"`
-		PerMomentumContractBlocks map[uint64]int    `json:"per_momentum_contract_blocks"`
-		FirstMomentum             uint64            `json:"first_momentum"`
-		FirstMomentumCalls        int               `json:"first_momentum_calls"`
-		FirstMomentumContractBlocks int             `json:"first_momentum_contract_blocks"`
-		TheoreticalCap            int               `json:"theoretical_cap"`
-		CapEnforced               bool              `json:"cap_enforced"`
+		NumAccounts                 int               `json:"num_accounts"`
+		CallsPerAccount             int               `json:"calls_per_account"`
+		TotalCalls                  int               `json:"total_calls"`
+		QSRPerAccount               int64             `json:"qsr_per_account"`
+		PlasmaPerAccount            uint64            `json:"plasma_per_account"`
+		SetupMomentum               uint64            `json:"setup_momentum"`
+		EndMomentum                 uint64            `json:"end_momentum"`
+		Calls                       []contractCapCall `json:"calls"`
+		PerMomentumInclusion        map[uint64]int    `json:"per_momentum_inclusion"`
+		PerMomentumContractBlocks   map[uint64]int    `json:"per_momentum_contract_blocks"`
+		FirstMomentum               uint64            `json:"first_momentum"`
+		FirstMomentumCalls          int               `json:"first_momentum_calls"`
+		FirstMomentumContractBlocks int               `json:"first_momentum_contract_blocks"`
+		TheoreticalCap              int               `json:"theoretical_cap"`
+		CapEnforced                 bool              `json:"cap_enforced"`
 	}
 
 	out := contractCapOutput{
-		NumAccounts:               numAccounts,
-		CallsPerAccount:           callsPerAccount,
-		TotalCalls:                totalCalls,
-		QSRPerAccount:             qsrPerAccount,
-		PlasmaPerAccount:          uint64(qsrPerAccount) * 2100,
-		SetupMomentum:             setupMomentum,
-		EndMomentum:               endMomentum,
-		Calls:                     calls,
-		PerMomentumInclusion:      perMomentumInclusion,
-		PerMomentumContractBlocks: perMomentumContracts,
-		FirstMomentum:             firstMomentum,
-		FirstMomentumCalls:        firstMomentumCalls,
+		NumAccounts:                 numAccounts,
+		CallsPerAccount:             callsPerAccount,
+		TotalCalls:                  totalCalls,
+		QSRPerAccount:               qsrPerAccount,
+		PlasmaPerAccount:            uint64(qsrPerAccount) * 2100,
+		SetupMomentum:               setupMomentum,
+		EndMomentum:                 endMomentum,
+		Calls:                       calls,
+		PerMomentumInclusion:        perMomentumInclusion,
+		PerMomentumContractBlocks:   perMomentumContracts,
+		FirstMomentum:               firstMomentum,
+		FirstMomentumCalls:          firstMomentumCalls,
 		FirstMomentumContractBlocks: firstMomentumContractBlocks,
-		TheoreticalCap:            theoreticalCap,
-		CapEnforced:               capEnforced,
+		TheoreticalCap:              theoreticalCap,
+		CapEnforced:                 capEnforced,
 	}
 
 	enc := json.NewEncoder(os.Stdout)
@@ -1019,7 +1020,7 @@ func runContractCap(numAccounts int, callsPerAccount int, qsrPerAccount int64, b
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>|datasize <idx> <qsr>|contractcap <n> <callsPerAcct> <qsr> [baseIdx]|contentmix <selfTransfer> <stake> <qsr> [baseIdx]")
+		fmt.Fprintln(os.Stderr, "usage: labctl info|ordinary <n> <amt>|burst <n> <amt>|waitfor <height>|probe <sec>|fuse <qsr>|fund <idx> <znn>|fusefor <idx> <qsr>|sendqsr <idx> <qsr>|matrix <case> <seed>|contend <n> <txPerAcct> <amt>|deplete <idx> <qsr> <maxTx>|powburst <n> <secs> <amt>|powlat <n> <amt>|mixcontend <fused> <unfused> <txPerAcct> <amt>|saturate <n> <txPerAcct> <qsr> <amt>|mixsaturate <fused> <unfused> <fusedTxPer> <unfusedTxPer> <amt>|overpay <groups> <accountsPerGroup> <txPerAcct> <amt>|regen <idx> <qsr>|txtype <idx> <qsr>|poolcap <idx> <qsr> <maxTx>|frontconf <idx> <qsr>|datasize <idx> <qsr>|contractcap <n> <callsPerAcct> <qsr> [baseIdx]|contentmix <selfTransfer> <stake> <qsr> [baseIdx]")
 		os.Exit(1)
 	}
 
@@ -1075,6 +1076,13 @@ func main() {
 		idx, _ := strconv.Atoi(os.Args[2])
 		amt, _ := strconv.ParseInt(os.Args[3], 10, 64)
 		runFund(uint32(idx), amt)
+
+	case "sendqsr":
+		// Like fund, but sends QSR — needed to provision an agent account on a
+		// long-lived devnet (fusion consumes QSR balance and fund only moves ZNN).
+		idx, _ := strconv.Atoi(os.Args[2])
+		amt, _ := strconv.ParseInt(os.Args[3], 10, 64)
+		runSendQSR(uint32(idx), amt)
 
 	case "fusefor":
 		idx, _ := strconv.Atoi(os.Args[2])
@@ -1318,19 +1326,19 @@ func runDeplete(idx uint32, qsrAmt int64, maxTx int) {
 	// Step 3: Send self-transfers until plasma exhausted
 	type depleteResult struct {
 		runSummary
-		AccountIndex     uint64 `json:"account_index"`
-		AccountAddress   string `json:"account_address"`
-		QSRFused         int64  `json:"qsr_fused"`
-		InitialPlasma    uint64 `json:"initial_plasma"`
-		PostFusionPlasma uint64 `json:"post_fusion_plasma"`
-		PlasmaPerTx      []uint64 `json:"plasma_per_tx"`
-		ExpectedPlasmaPerTx uint64 `json:"expected_plasma_per_tx"`
-		RegenTestPlasma  uint64 `json:"regen_test_plasma"`
-		RegenWaitMomenta int    `json:"regen_wait_momenta"`
-		PoWFallbackUsed  bool   `json:"pow_fallback_used"`
-		PoWFallbackMs    int64  `json:"pow_fallback_ms"`
-		PoWFallbackOK    bool   `json:"pow_fallback_ok"`
-		DepletedAtTx     int    `json:"depleted_at_tx"`
+		AccountIndex        uint64   `json:"account_index"`
+		AccountAddress      string   `json:"account_address"`
+		QSRFused            int64    `json:"qsr_fused"`
+		InitialPlasma       uint64   `json:"initial_plasma"`
+		PostFusionPlasma    uint64   `json:"post_fusion_plasma"`
+		PlasmaPerTx         []uint64 `json:"plasma_per_tx"`
+		ExpectedPlasmaPerTx uint64   `json:"expected_plasma_per_tx"`
+		RegenTestPlasma     uint64   `json:"regen_test_plasma"`
+		RegenWaitMomenta    int      `json:"regen_wait_momenta"`
+		PoWFallbackUsed     bool     `json:"pow_fallback_used"`
+		PoWFallbackMs       int64    `json:"pow_fallback_ms"`
+		PoWFallbackOK       bool     `json:"pow_fallback_ok"`
+		DepletedAtTx        int      `json:"depleted_at_tx"`
 	}
 
 	startM := frontierMomentum().Height
@@ -1571,8 +1579,8 @@ func runRegen(idx uint32, qsrAmt int64) {
 
 	// Step 4: Regeneration curve — sample plasma at increasing momentum intervals
 	type regenSample struct {
-		MomentaWaited int    `json:"momenta_waited"`
-		Plasma        uint64 `json:"plasma"`
+		MomentaWaited  int    `json:"momenta_waited"`
+		Plasma         uint64 `json:"plasma"`
 		MomentumHeight uint64 `json:"momentum_height"`
 	}
 	var regenCurve []regenSample
@@ -1610,20 +1618,20 @@ func runRegen(idx uint32, qsrAmt int64) {
 	fusedPlasma := uint64(qsrAmt * 2100) // 2100 plasma per QSR
 	type regenResult struct {
 		runSummary
-		AccountIndex       uint64        `json:"account_index"`
-		AccountAddress     string        `json:"account_address"`
-		QSRFused           int64         `json:"qsr_fused"`
-		FusedPlasma        uint64        `json:"fused_plasma"`
-		InitialPlasma      uint64        `json:"initial_plasma"`
-		PostFusionPlasma   uint64        `json:"post_fusion_plasma"`
-		DepletedPlasma     uint64        `json:"depleted_plasma"`
-		DepletedAtTx       int           `json:"depleted_at_tx"`
-		RegenCurve         []regenSample `json:"regen_curve"`
-		TimeSamplePlasma   uint64        `json:"time_sample_plasma"`
-		TimeSampleHeight   uint64        `json:"time_sample_height"`
-		RegenPerMomentum   float64       `json:"regen_per_momentum"`
-		RegenPerSecond     float64       `json:"regen_per_second"`
-		FullRegenMomenta   int           `json:"full_regen_momenta"`
+		AccountIndex     uint64        `json:"account_index"`
+		AccountAddress   string        `json:"account_address"`
+		QSRFused         int64         `json:"qsr_fused"`
+		FusedPlasma      uint64        `json:"fused_plasma"`
+		InitialPlasma    uint64        `json:"initial_plasma"`
+		PostFusionPlasma uint64        `json:"post_fusion_plasma"`
+		DepletedPlasma   uint64        `json:"depleted_plasma"`
+		DepletedAtTx     int           `json:"depleted_at_tx"`
+		RegenCurve       []regenSample `json:"regen_curve"`
+		TimeSamplePlasma uint64        `json:"time_sample_plasma"`
+		TimeSampleHeight uint64        `json:"time_sample_height"`
+		RegenPerMomentum float64       `json:"regen_per_momentum"`
+		RegenPerSecond   float64       `json:"regen_per_second"`
+		FullRegenMomenta int           `json:"full_regen_momenta"`
 	}
 
 	// Calculate per-momentum regeneration rate from curve
@@ -1645,21 +1653,21 @@ func runRegen(idx uint32, qsrAmt int64) {
 	}
 
 	out := regenResult{
-		runSummary:        summarize("regen", depleteResults, 0, 0, 0, 0),
-		AccountIndex:      uint64(idx),
-		AccountAddress:    target.addrStr,
-		QSRFused:          qsrAmt,
-		FusedPlasma:       fusedPlasma,
-		InitialPlasma:     initialPlasma,
-		PostFusionPlasma:  postFusionPlasma,
-		DepletedPlasma:    depletedPlasma,
-		DepletedAtTx:      len(depleteResults),
-		RegenCurve:        regenCurve,
-		TimeSamplePlasma:  timeSample,
-		TimeSampleHeight:  timeSampleHeight,
-		RegenPerMomentum:  regenPerMomentum,
-		RegenPerSecond:    float64(timeSample) / 20.0,
-		FullRegenMomenta:  fullRegenMomenta,
+		runSummary:       summarize("regen", depleteResults, 0, 0, 0, 0),
+		AccountIndex:     uint64(idx),
+		AccountAddress:   target.addrStr,
+		QSRFused:         qsrAmt,
+		FusedPlasma:      fusedPlasma,
+		InitialPlasma:    initialPlasma,
+		PostFusionPlasma: postFusionPlasma,
+		DepletedPlasma:   depletedPlasma,
+		DepletedAtTx:     len(depleteResults),
+		RegenCurve:       regenCurve,
+		TimeSamplePlasma: timeSample,
+		TimeSampleHeight: timeSampleHeight,
+		RegenPerMomentum: regenPerMomentum,
+		RegenPerSecond:   float64(timeSample) / 20.0,
+		FullRegenMomenta: fullRegenMomenta,
 	}
 	// Fix summary fields
 	out.runSummary.StartMomentum = depleteResults[0].SubmitMomentum
@@ -1788,7 +1796,7 @@ func runHVBurst(n int, amt int64) {
 	// Add price tracking to output
 	type hvOutput struct {
 		runSummary
-		MomentumPrices []momentumPrice `json:"momentum_prices"`
+		MomentumPrices  []momentumPrice `json:"momentum_prices"`
 		PreFusionPrice  uint64          `json:"pre_fusion_price"`
 		PreWorkPrice    uint64          `json:"pre_work_price"`
 		PostFusionPrice uint64          `json:"post_fusion_price"`
@@ -1811,7 +1819,7 @@ func runHVBurst(n int, amt int64) {
 
 // momentumContent tracks how many transactions from each account were included in a momentum.
 type momentumContent struct {
-	Height   uint64 `json:"momentum_height"`
+	Height   uint64      `json:"momentum_height"`
 	Accounts map[int]int `json:"accounts"`
 }
 
@@ -2047,9 +2055,9 @@ func runContend(numAccounts int, txPerAccount int, amt int64) {
 
 	type contendOutput struct {
 		runSummary
-		AccountBreakdowns  []accountBreakdown  `json:"account_breakdowns"`
-		MomentumContents   []momentumContent   `json:"momentum_contents"`
-		TotalMomentumTxs   int                 `json:"total_momentum_txs"`
+		AccountBreakdowns []accountBreakdown `json:"account_breakdowns"`
+		MomentumContents  []momentumContent  `json:"momentum_contents"`
+		TotalMomentumTxs  int                `json:"total_momentum_txs"`
 	}
 
 	// Count total txs across all momenta
@@ -2236,6 +2244,25 @@ func runFuse(amt int64) {
 }
 
 // runFund: send ZNN from agent to a derived account
+// runSendQSR: move QSR from the agent to a derived account (agent provisioning
+// on a long-lived devnet; mirror of runFund for the QSR token).
+func runSendQSR(idx uint32, amt int64) {
+	agent := agentAccount()
+	target := derivedAccount(idx)
+	b, _, err := buildSend(agent, target.addr, qsr, dec(amt), nil, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL: %v\n", err)
+		os.Exit(1)
+	}
+	if err := publish(b); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL publish: %v\n", err)
+		os.Exit(1)
+	}
+	lat, mh, ok := waitIncluded(agent.addrStr, b.Height, 120*time.Second)
+	fmt.Printf("sendqsr [%d] %s: %d QSR height=%d included=%v latency=%v momentum=%d\n",
+		idx, target.addrStr, amt, b.Height, ok, lat, mh)
+}
+
 func runFund(idx uint32, amt int64) {
 	agent := agentAccount()
 	target := derivedAccount(idx)
@@ -2310,7 +2337,7 @@ func runMatrix(caseName string, seed int64) {
 // Each account sends n txs in parallel; accounts don't conflict with each other.
 func runMultiBurst(numAccounts int, n int, amt int64) {
 	agent := agentAccount()
-	
+
 	// Fund accounts if needed
 	for i := 1; i <= numAccounts; i++ {
 		w := derivedAccount(uint32(i))
@@ -2595,7 +2622,6 @@ func runSustain(secs int, numAccounts int) {
 	enc.Encode(out)
 }
 
-
 // ---- Phase 9: PoW Repricing ----
 
 // runPowBurst: PoW repricing experiment.
@@ -2807,7 +2833,6 @@ func runPowBurst(numAccounts int, durationSecs int, amt int64) {
 	enc.SetIndent("", "  ")
 	enc.Encode(out)
 }
-
 
 // ---- Phase 9: PoW Latency Measurement ----
 
@@ -3300,19 +3325,19 @@ func runMixContend(numFused int, numUnfused int, txPerAccount int, amt int64, fu
 
 	type mixContendOutput struct {
 		runSummary
-		FusedAccounts         int                  `json:"fused_accounts"`
-		UnfusedAccounts       int                  `json:"unfused_accounts"`
-		FusedAttempted        int                  `json:"fused_attempted"`
-		FusedIncluded         int                  `json:"fused_included"`
-		FusedRejected         int                  `json:"fused_rejected"`
-		FusedUnresolved       int                  `json:"fused_unresolved"`
-		UnfusedAttempted      int                  `json:"unfused_attempted"`
-		UnfusedIncluded       int                  `json:"unfused_included"`
-		UnfusedRejected       int                  `json:"unfused_rejected"`
-		UnfusedUnresolved     int                  `json:"unfused_unresolved"`
-		Breakdowns            []mixGroupBreakdown  `json:"breakdowns"`
-		MomentumContents      []momentumContent    `json:"momentum_contents"`
-		TotalMomentumTxs      int                  `json:"total_momentum_txs"`
+		FusedAccounts     int                 `json:"fused_accounts"`
+		UnfusedAccounts   int                 `json:"unfused_accounts"`
+		FusedAttempted    int                 `json:"fused_attempted"`
+		FusedIncluded     int                 `json:"fused_included"`
+		FusedRejected     int                 `json:"fused_rejected"`
+		FusedUnresolved   int                 `json:"fused_unresolved"`
+		UnfusedAttempted  int                 `json:"unfused_attempted"`
+		UnfusedIncluded   int                 `json:"unfused_included"`
+		UnfusedRejected   int                 `json:"unfused_rejected"`
+		UnfusedUnresolved int                 `json:"unfused_unresolved"`
+		Breakdowns        []mixGroupBreakdown `json:"breakdowns"`
+		MomentumContents  []momentumContent   `json:"momentum_contents"`
+		TotalMomentumTxs  int                 `json:"total_momentum_txs"`
 	}
 	out := mixContendOutput{
 		runSummary:        s,
@@ -3762,7 +3787,6 @@ func runMixSaturate(numFused int, numUnfused int, fusedTxPer int, unfusedTxPer i
 	enc.Encode(out)
 }
 
-
 // ---- Phase 14: Content Selector Price Priority ----
 
 // buildSendOverpay creates a self-transfer with a custom FusedPlasma amount,
@@ -3808,7 +3832,7 @@ type overpayBreakdown struct {
 }
 
 type overpayMomentumContent struct {
-	Height   uint64 `json:"height"`
+	Height   uint64      `json:"height"`
 	Accounts map[int]int `json:"accounts"`
 }
 
@@ -4107,14 +4131,14 @@ func runOverpay(groups int, accountsPerGroup int, txPerAcct int, amt int64) {
 
 	type overpayOutput struct {
 		runSummary
-		Groups           int                      `json:"groups"`
-		AccountsPerGroup int                      `json:"accounts_per_group"`
-		TxPerAcct        int                      `json:"tx_per_acct"`
-		TotalTxs         int                      `json:"total_txs"`
-		MomentumLimit    int                      `json:"momentum_limit"`
+		Groups           int                       `json:"groups"`
+		AccountsPerGroup int                       `json:"accounts_per_group"`
+		TxPerAcct        int                       `json:"tx_per_acct"`
+		TotalTxs         int                       `json:"total_txs"`
+		MomentumLimit    int                       `json:"momentum_limit"`
 		GroupStats       map[string]map[string]int `json:"group_stats"`
-		Breakdowns       []overpayBreakdown       `json:"breakdowns"`
-		MomentumContents []overpayMomentumContent `json:"momentum_contents"`
+		Breakdowns       []overpayBreakdown        `json:"breakdowns"`
+		MomentumContents []overpayMomentumContent  `json:"momentum_contents"`
 	}
 
 	out := overpayOutput{
@@ -4132,7 +4156,6 @@ func runOverpay(groups int, accountsPerGroup int, txPerAcct int, amt int64) {
 	enc.SetIndent("", "  ")
 	enc.Encode(out)
 }
-
 
 // runTxType: transaction type diversity experiment (phase 16).
 //
@@ -4238,14 +4261,14 @@ func runTxType(idx uint32, qsrAmt int64) {
 	fmt.Fprintf(os.Stderr, "txtype: initial plasma=%d (fused %d QSR)\n", initialPlasma, qsrAmt)
 
 	type txTypeResult struct {
-		TxType          string `json:"tx_type"`
-		PlannedCost     uint64 `json:"planned_cost"`
-		PlasmaBefore    uint64 `json:"plasma_before"`
-		PlasmaAfter     uint64 `json:"plasma_after"`
-		ActualCost      uint64 `json:"actual_cost"`
-		InclusionLatencyMs int64 `json:"inclusion_latency_ms"`
-		PoWUsed         bool   `json:"pow_used"`
-		Included        bool   `json:"included"`
+		TxType             string `json:"tx_type"`
+		PlannedCost        uint64 `json:"planned_cost"`
+		PlasmaBefore       uint64 `json:"plasma_before"`
+		PlasmaAfter        uint64 `json:"plasma_after"`
+		ActualCost         uint64 `json:"actual_cost"`
+		InclusionLatencyMs int64  `json:"inclusion_latency_ms"`
+		PoWUsed            bool   `json:"pow_used"`
+		Included           bool   `json:"included"`
 	}
 
 	var typeResults []txTypeResult
@@ -4281,7 +4304,7 @@ func runTxType(idx uint32, qsrAmt int64) {
 		typeResults = append(typeResults, txTypeResult{
 			TxType: "self_transfer", PlannedCost: 21000,
 			PlasmaBefore: plasmaBefore, PlasmaAfter: plasmaAfter,
-			ActualCost: actualCost,
+			ActualCost:         actualCost,
 			InclusionLatencyMs: lat.Milliseconds(),
 			PoWUsed:            powMs > 0,
 			Included:           ok,
@@ -4325,7 +4348,7 @@ func runTxType(idx uint32, qsrAmt int64) {
 		typeResults = append(typeResults, txTypeResult{
 			TxType: "send_with_data", PlannedCost: expectedDataCost,
 			PlasmaBefore: plasmaBefore, PlasmaAfter: plasmaAfter,
-			ActualCost: actualCost,
+			ActualCost:         actualCost,
 			InclusionLatencyMs: lat.Milliseconds(),
 			PoWUsed:            powMs > 0,
 			Included:           ok,
@@ -4365,7 +4388,7 @@ func runTxType(idx uint32, qsrAmt int64) {
 		typeResults = append(typeResults, txTypeResult{
 			TxType: "cross_send", PlannedCost: 21000,
 			PlasmaBefore: plasmaBeforeSend, PlasmaAfter: plasmaAfterSend,
-			ActualCost: sendCost,
+			ActualCost:         sendCost,
 			InclusionLatencyMs: latSend.Milliseconds(),
 			PoWUsed:            powMs > 0,
 			Included:           okSend,
@@ -4391,9 +4414,9 @@ func runTxType(idx uint32, qsrAmt int64) {
 		typeResults = append(typeResults, txTypeResult{
 			TxType: "cross_receive", PlannedCost: 21000,
 			PlasmaBefore: plasmaBeforeRecv, PlasmaAfter: plasmaAfterRecv,
-			ActualCost:       recvCost,
-			PoWUsed:          false,
-			Included:         recvCount > 0,
+			ActualCost: recvCost,
+			PoWUsed:    false,
+			Included:   recvCount > 0,
 		})
 		fmt.Fprintf(os.Stderr, "txtype: cross-receive %d received=%d cost=%d\n", i, recvCount, recvCost)
 	}
@@ -4439,7 +4462,7 @@ func runTxType(idx uint32, qsrAmt int64) {
 		typeResults = append(typeResults, txTypeResult{
 			TxType: "contract_stake", PlannedCost: expectedStakeCost,
 			PlasmaBefore: plasmaBefore, PlasmaAfter: plasmaAfter,
-			ActualCost: actualCost,
+			ActualCost:         actualCost,
 			InclusionLatencyMs: lat.Milliseconds(),
 			PoWUsed:            powMs > 0,
 			Included:           ok,
@@ -4450,13 +4473,13 @@ func runTxType(idx uint32, qsrAmt int64) {
 
 	// --- Summary ---
 	type txTypeSummary struct {
-		AccountIndex   uint64           `json:"account_index"`
-		AccountAddress string           `json:"account_address"`
-		QSRFused       int64            `json:"qsr_fused"`
-		FusedPlasma    uint64           `json:"fused_plasma"`
-		InitialPlasma  uint64           `json:"initial_plasma"`
-		FinalPlasma    uint64           `json:"final_plasma"`
-		TypeResults    []txTypeResult   `json:"type_results"`
+		AccountIndex   uint64         `json:"account_index"`
+		AccountAddress string         `json:"account_address"`
+		QSRFused       int64          `json:"qsr_fused"`
+		FusedPlasma    uint64         `json:"fused_plasma"`
+		InitialPlasma  uint64         `json:"initial_plasma"`
+		FinalPlasma    uint64         `json:"final_plasma"`
+		TypeResults    []txTypeResult `json:"type_results"`
 	}
 
 	finalPlasma := plasmaLevel(target.addrStr)
@@ -4478,31 +4501,31 @@ func runTxType(idx uint32, qsrAmt int64) {
 // ---- Phase 17: mempool cap + frontier conflict ----
 
 type poolCapResult struct {
-	TxIndex          int    `json:"tx_index"`
-	BlockHeight      uint64 `json:"block_height"`
-	SubmitMomentum   uint64 `json:"submit_momentum"`
-	PlasmaBefore     uint64 `json:"plasma_before"`
-	PublishError     string `json:"publish_error,omitempty"`
-	Included         bool   `json:"included"`
-	InclusionLatencyMs int64 `json:"inclusion_latency_ms,omitempty"`
+	TxIndex            int    `json:"tx_index"`
+	BlockHeight        uint64 `json:"block_height"`
+	SubmitMomentum     uint64 `json:"submit_momentum"`
+	PlasmaBefore       uint64 `json:"plasma_before"`
+	PublishError       string `json:"publish_error,omitempty"`
+	Included           bool   `json:"included"`
+	InclusionLatencyMs int64  `json:"inclusion_latency_ms,omitempty"`
 }
 
 type poolCapSummary struct {
-	AccountIndex     uint64           `json:"account_index"`
-	AccountAddress   string           `json:"account_address"`
-	QSRFused         int64            `json:"qsr_fused"`
-	FusedPlasma      uint64           `json:"fused_plasma"`
-	Attempted        int              `json:"attempted"`
-	Submitted        int              `json:"submitted"`
-	Rejected         int              `json:"rejected"`
-	Included         int              `json:"included"`
-	Unresolved       int              `json:"unresolved"`
-	FirstRejectIdx   int              `json:"first_reject_idx"`
-	FirstRejectError string           `json:"first_reject_error"`
-	MomentaUsed      int              `json:"momenta_used"`
-	StartMomentum    uint64           `json:"start_momentum"`
-	EndMomentum      uint64           `json:"end_momentum"`
-	Results          []poolCapResult  `json:"results"`
+	AccountIndex     uint64          `json:"account_index"`
+	AccountAddress   string          `json:"account_address"`
+	QSRFused         int64           `json:"qsr_fused"`
+	FusedPlasma      uint64          `json:"fused_plasma"`
+	Attempted        int             `json:"attempted"`
+	Submitted        int             `json:"submitted"`
+	Rejected         int             `json:"rejected"`
+	Included         int             `json:"included"`
+	Unresolved       int             `json:"unresolved"`
+	FirstRejectIdx   int             `json:"first_reject_idx"`
+	FirstRejectError string          `json:"first_reject_error"`
+	MomentaUsed      int             `json:"momenta_used"`
+	StartMomentum    uint64          `json:"start_momentum"`
+	EndMomentum      uint64          `json:"end_momentum"`
+	Results          []poolCapResult `json:"results"`
 }
 
 // runPoolCap tests the per-account mempool cap (MaxUncommittedBlocksPerAccount=500).
@@ -4670,16 +4693,16 @@ type frontConfResult struct {
 }
 
 type frontConfSummary struct {
-	AccountIndex     uint64            `json:"account_index"`
-	AccountAddress   string            `json:"account_address"`
-	QSRFused         int64             `json:"qsr_fused"`
-	ConflictsTested  int               `json:"conflicts_tested"`
-	EqualPlasmaRounds int              `json:"equal_plasma_rounds"`
-	OverpayRounds    int               `json:"overpay_rounds"`
-	EqualHashWins    int               `json:"equal_hash_wins"`
-	PriceWins        int               `json:"price_wins"`
-	CorrectPredictions int             `json:"correct_predictions"`
-	Results          []frontConfResult `json:"results"`
+	AccountIndex       uint64            `json:"account_index"`
+	AccountAddress     string            `json:"account_address"`
+	QSRFused           int64             `json:"qsr_fused"`
+	ConflictsTested    int               `json:"conflicts_tested"`
+	EqualPlasmaRounds  int               `json:"equal_plasma_rounds"`
+	OverpayRounds      int               `json:"overpay_rounds"`
+	EqualHashWins      int               `json:"equal_hash_wins"`
+	PriceWins          int               `json:"price_wins"`
+	CorrectPredictions int               `json:"correct_predictions"`
+	Results            []frontConfResult `json:"results"`
 }
 
 // runFrontConf tests frontier conflict resolution in the account pool.
@@ -4847,7 +4870,7 @@ func runFrontConf(idx uint32, qsrAmt int64) {
 		errB := publish(bB)
 
 		resA := frontConfResult{
-			TxIndex: round*2, BlockHeight: bA.Height,
+			TxIndex: round * 2, BlockHeight: bA.Height,
 			Hash: bA.Hash.String(), DataLen: len(dataA),
 			FusedPlasma: bA.FusedPlasma, BasePlasma: reqA.BasePlasma, OverpayMult: cr.overpayA,
 		}
@@ -4958,20 +4981,20 @@ type dataSizeResult struct {
 }
 
 type dataSizeSummary struct {
-	AccountIndex       uint64             `json:"account_index"`
-	AccountAddress     string             `json:"account_address"`
-	QSRFused           int64              `json:"qsr_fused"`
-	FusedPlasma        uint64             `json:"fused_plasma"`
-	InitialPlasma      uint64             `json:"initial_plasma"`
-	FinalPlasma        uint64             `json:"final_plasma"`
-	SizeResults        []dataSizeResult   `json:"size_results"`
-	BurstAttempted     int                `json:"burst_attempted"`
-	BurstSubmitted     int                `json:"burst_submitted"`
-	BurstIncluded      int                `json:"burst_included"`
-	BurstRejected      int                `json:"burst_rejected"`
-	BurstMomenta       []uint64           `json:"burst_momenta"`
-	BurstPlasmaCosts   []uint64           `json:"burst_plasma_costs"`
-	BurstWireSizes     []int              `json:"burst_wire_sizes"`
+	AccountIndex     uint64           `json:"account_index"`
+	AccountAddress   string           `json:"account_address"`
+	QSRFused         int64            `json:"qsr_fused"`
+	FusedPlasma      uint64           `json:"fused_plasma"`
+	InitialPlasma    uint64           `json:"initial_plasma"`
+	FinalPlasma      uint64           `json:"final_plasma"`
+	SizeResults      []dataSizeResult `json:"size_results"`
+	BurstAttempted   int              `json:"burst_attempted"`
+	BurstSubmitted   int              `json:"burst_submitted"`
+	BurstIncluded    int              `json:"burst_included"`
+	BurstRejected    int              `json:"burst_rejected"`
+	BurstMomenta     []uint64         `json:"burst_momenta"`
+	BurstPlasmaCosts []uint64         `json:"burst_plasma_costs"`
+	BurstWireSizes   []int            `json:"burst_wire_sizes"`
 }
 
 // runDataSize tests data payload size limits and the momentum wire size budget (phase 18).
@@ -5276,38 +5299,38 @@ func runDataSize(idx uint32, qsrAmt int64) {
 // ---- Phase 20: Content Mix ----
 
 type contentMixTx struct {
-	AccountIndex  int    `json:"account_index"`
-	Address       string `json:"address"`
-	TxType        string `json:"tx_type"` // "self_transfer" or "stake"
-	Published     bool   `json:"published"`
-	Error         string `json:"error,omitempty"`
+	AccountIndex int    `json:"account_index"`
+	Address      string `json:"address"`
+	TxType       string `json:"tx_type"` // "self_transfer" or "stake"
+	Published    bool   `json:"published"`
+	Error        string `json:"error,omitempty"`
 }
 
 type momentumContentDetail struct {
-	Height               uint64 `json:"height"`
-	TotalContent         int    `json:"total_content"`
-	UserBlocks           int    `json:"user_blocks"`
-	ContractBlocks       int    `json:"contract_blocks"`
-	SelfTransferBlocks   int    `json:"self_transfer_blocks"`
-	StakeSendBlocks      int    `json:"stake_send_blocks"`
-	OtherBlocks          int    `json:"other_blocks"`
+	Height             uint64 `json:"height"`
+	TotalContent       int    `json:"total_content"`
+	UserBlocks         int    `json:"user_blocks"`
+	ContractBlocks     int    `json:"contract_blocks"`
+	SelfTransferBlocks int    `json:"self_transfer_blocks"`
+	StakeSendBlocks    int    `json:"stake_send_blocks"`
+	OtherBlocks        int    `json:"other_blocks"`
 }
 
 type contentMixOutput struct {
-	NumSelfTransferAccounts int                       `json:"num_self_transfer_accounts"`
-	NumStakeAccounts        int                       `json:"num_stake_accounts"`
-	TotalTransactions       int                       `json:"total_transactions"`
-	SelfTransferPlasma      uint64                    `json:"self_transfer_plasma"`
-	StakeCallPlasma         uint64                    `json:"stake_call_plasma"`
-	TotalUserPlasma         uint64                    `json:"total_user_plasma"`
-	TheoreticalMaxContent   int                       `json:"theoretical_max_content"`
-	ActualMaxContent        int                       `json:"actual_max_content"`
-	ActualMaxContentHeight  uint64                    `json:"actual_max_content_height"`
-	Cap280Bind              bool                      `json:"cap_280_bind"`
-	MomentumDetails         []momentumContentDetail   `json:"momentum_details"`
-	Transactions            []contentMixTx            `json:"transactions"`
-	SetupMomentum           uint64                    `json:"setup_momentum"`
-	EndMomentum             uint64                    `json:"end_momentum"`
+	NumSelfTransferAccounts int                     `json:"num_self_transfer_accounts"`
+	NumStakeAccounts        int                     `json:"num_stake_accounts"`
+	TotalTransactions       int                     `json:"total_transactions"`
+	SelfTransferPlasma      uint64                  `json:"self_transfer_plasma"`
+	StakeCallPlasma         uint64                  `json:"stake_call_plasma"`
+	TotalUserPlasma         uint64                  `json:"total_user_plasma"`
+	TheoreticalMaxContent   int                     `json:"theoretical_max_content"`
+	ActualMaxContent        int                     `json:"actual_max_content"`
+	ActualMaxContentHeight  uint64                  `json:"actual_max_content_height"`
+	Cap280Bind              bool                    `json:"cap_280_bind"`
+	MomentumDetails         []momentumContentDetail `json:"momentum_details"`
+	Transactions            []contentMixTx          `json:"transactions"`
+	SetupMomentum           uint64                  `json:"setup_momentum"`
+	EndMomentum             uint64                  `json:"end_momentum"`
 }
 
 // runContentMix: momentum content capacity experiment (phase 20).
@@ -5317,11 +5340,11 @@ type contentMixOutput struct {
 // when mixing user self-transfers with Stake contract calls.
 //
 // Key insight from source analysis:
-// - User blocks consume plasma from MaxBasePlasmaInMomentum (4.2M)
-// - Contract blocks are capped at MaxContractBlocksInMomentum (80)
-// - Contract blocks do NOT consume plasma budget (verifier only counts
-//   non-embedded blocks against basePlasma)
-// - Total content cap = 200 + 80 = 280 (pre-allocation bound)
+//   - User blocks consume plasma from MaxBasePlasmaInMomentum (4.2M)
+//   - Contract blocks are capped at MaxContractBlocksInMomentum (80)
+//   - Contract blocks do NOT consume plasma budget (verifier only counts
+//     non-embedded blocks against basePlasma)
+//   - Total content cap = 200 + 80 = 280 (pre-allocation bound)
 //
 // Pure self-transfers maximize content: 200 × 21000 = 4.2M plasma.
 // Adding Stake calls reduces content because each Stake call costs 52500
@@ -5645,7 +5668,6 @@ func runContentMix(numSelfTransfer int, numStake int, qsrPerAccount int64, baseI
 	enc.SetIndent("", "  ")
 	enc.Encode(out)
 }
-
 
 // ---- Phase 22: Validation Edge Cases ----
 
