@@ -1,8 +1,13 @@
-# Current Findings — v0.1
+# Current Findings — v0.2
 
-**Release date:** 2026-10-25
+**Release date:** 2026-11-09 (v0.1: 2026-10-25)
 **Pinned go-zenon:** `e89f91f68b922a65370b7ffd9cfe860045a99b29`
 **Plasma mode:** static <30 / dynamic >=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
+**Change since v0.1:** folds phases 21–25 into the current conclusions. Phases 21–24 (multi-producer
+confirmation, validation edges, PoW under 10s momenta) CONFIRM the v0.1 mechanics under a 3-pillar
+devnet and add the scaling notes below; phase 25 adds the ZVM relayer batch cost model. One v0.1
+wording is clarified (throughput scaling, see the claims table). Phase 26 (Zeno settlement attack
+checks) lives in `results/phase-26-zeno-attacks/` — separate domain (L2 settlement), not folded here.
 
 ## What this lab measures
 
@@ -18,17 +23,23 @@ cost, and whether a lightly provisioned account can still transact.
 - Plasma is a per-momentum rate limit, not a permanent budget. After confirmation,
   the full fused amount is available again. 100 QSR = 210,000 plasma = 10 simple txs/momentum.
 - Plasma regenerates from 0 to full within 1 momentum (two-counter system: committed/unconfirmed).
+  With 3 active pillars this is 3× faster *per second* (10 s momenta), unchanged per momentum.
 
 ### PoW fallback
 - Fused plasma eliminates PoW entirely. 5 sequential txs: 0.02s with plasma vs 41–79s without.
-- PoW computation dominates latency (3.3–75.8s, geometric distribution). Inclusion itself is near-instant (0–34ms).
+- PoW computation dominates latency (3.3–75.8s, geometric distribution). Inclusion itself is near-instant (0–34ms single-producer, 0–3ms multi-producer).
 - Single-account burst rejection is caused by PoW delay creating account-chain conflicts
   on a stale frontier — not by any protocol-level rejection rule.
+- **Multi-producer (phase 24):** PoW txs still get 100% inclusion and 100% same-momentum
+  inclusion with 10s momenta (13/13 across seeds). PoW compute time is CPU-bound and
+  unchanged (~24s avg); the tx waits out its PoW *before* submission, and the 10s mempool
+  dwell covers the rest.
 
 ### Throughput limits
 - The 200 tx/momentum limit is strictly enforced. Excess is queued, not rejected.
   Queue drain: ~200 txs per 3 momenta (2 empty momenta between batches).
-  Effective sustained throughput: ~67 txs/momentum, not 200.
+  Effective sustained throughput: ~67 txs/momentum — **per-momentum mechanics are identical
+  with 3 active pillars; per-second rates scale 3× (~20 txs/s at 10s momenta, phase 23).**
 - The 280 content cap is a correctness bound, not a throughput limit. Plasma budget
   (4.2M) limits user blocks to exactly 200.
 - Contract block cap of 80/momentum is NOT binding. Plasma budget limits contract calls
@@ -50,20 +61,32 @@ cost, and whether a lightly provisioned account can still transact.
 ### Mempool and validation
 - Per-account mempool cap: 500 uncommitted blocks. Strictly enforced.
 - Frontier conflict resolution: price-then-hash rule (higher price wins; tie → smallest hash).
-- All 13 negative validation cases correctly rejected with informative errors.
-  Zero-amount sends are valid (boundary case).
+- All 13 negative validation cases correctly rejected with informative errors
+  (phase 22, 3 seeds, 13/13 exact error matches). Zero-amount sends are valid (boundary case).
+- **No validation gaps found** in send-block (11 cases) or receive-block (3 cases) pipelines.
 
 ### Momentum production
 - Rate scales as BlockTime × N/K (N pillars, K active). 3 pillars, 1 active: 30s mean.
-  3 pillars, 3 active: 10s mean, near-zero stdev.
+  3 pillars, 3 active: 10s mean, near-zero stdev — every slot filled (delta function at 10s).
 - The deterministic shuffle (math/rand with height seed) is biased toward consecutive
   slots for small permutation spaces. Distribution does NOT match uniform shuffle model.
+  (With 3/3 active there are no gaps to be biased about — moot at full participation.)
 - Momentum timestamps are slot start times (deterministic from genesis), not wall-clock.
-- Transaction load does not affect production rate.
+- Transaction load does not affect production rate (phase 21: 50 acct × 4 tx burst,
+  rate unchanged before/during/after).
 
 ### RPC resilience
 - RPC latency unchanged under burst load (100/200/500 txs). p50: 9–10ms → 10–11ms under load.
   Node is I/O-bound for RPC, not CPU-bound.
+
+### Multi-producer confirmation (phases 21–24, 2026-10-25)
+- Every v0.1 core finding reproduced on a 3-pillar devnet with 10s momenta: 200 tx limit,
+  queue drain mechanics, plasma regen mechanics, fee-market dormancy at floor prices,
+  PoW inclusion, mixed fused/unfused contention (fused all in first momentum; unfused
+  spread by PoW speed; 100% inclusion in both groups).
+- What changes with 3 active pillars is only *time-based scaling*: queue drains and plasma
+  regenerate 3× per second; everything per-momentum is unchanged.
+- Producer distribution across the 3 pillars was uniform in phase 23's 4-minute sample.
 
 ## ZVM relayer batches on NoM L1 (phase 25, 2026-11-05, ZVM devnet L1 chain 69)
 
@@ -80,20 +103,27 @@ cost, and whether a lightly provisioned account can still transact.
   multi-relayer competition, mainnet momentum-rate variance.
   Details: `results/phase-25-zvm-batch-plasma/MODEL.md` (R21a/R21b PASS).
 
-## Superseded claims
+### Related, separate domain: Zeno settlement (phase 26, 2026-11-08)
+- `results/phase-26-zeno-attacks/`: 9 PASS / 0 FAIL / 2 NOT TESTED executable attack checks
+  against the Zeno settlement contract on the chain-69 Zeno devnet. Custody conservation,
+  fee split (30% burn / 70% credit), replay/finality/authority guards all held. Kept out of
+  the findings above: it measures an L2 contract, not L1 plasma mechanics.
 
-| # | Original claim | Superseded by | Why |
+## Superseded or clarified claims
+
+| # | Original claim | Superseded/clarified by | Why |
 |---|---|---|---|
 | 13 | No plasma-based prioritization under saturation | Phase 14 | Phase 13 tested only same-price txs. When prices differ, the content selector DOES prioritize by price-per-base-plasma. |
 | 8 | Plasma regenerates over time (rate TBD) | Phase 15 | Phase 8 implied time-based regeneration. Phase 15 confirmed: regeneration is on confirmation, not over time. Full regen within 1 momentum. |
 | 13 (finding) | 20–40% inclusion for unfused burst | Phase 11, 24 | Original unfused burst tests used a single account with 5 simultaneous txs (goroutines on stale frontier). Multi-account and multi-producer tests show 100% inclusion for unfused txs when sent sequentially or with sufficient time between submissions. |
+| 12 (wording) | Effective sustained throughput ~67 txs/momentum | Phase 23 (clarified, not superseded) | Per-momentum mechanics are identical with 3 active pillars. Only per-second rates scale (3× at 10s momenta, ~20 txs/s). v0.1 numbers were single-producer; the claim now states the scaling explicitly. |
 
 ## Single-producer limits
 
-All phase 2–20 results were obtained on a **single-producer devnet** (1 pillar, 30s momenta).
+Phases 2–20 were obtained on a **single-producer devnet** (1 pillar, 30s momenta) and
+re-verified on the 3-pillar devnet (phases 21–24, 10s momenta) at v0.1/v0.2.
 These results describe resource mechanics only. They say nothing about decentralization,
-fairness, or consensus security. Multi-producer results (phases 21–24) used a 3-pillar
-devnet with 10s momenta and confirmed the core findings hold under faster production.
+fairness, or consensus security.
 
 Specific limits of single-producer results:
 - Queue drain rate and effective throughput scale with momentum rate (3× faster on 10s momenta).
@@ -106,6 +136,9 @@ Specific limits of single-producer results:
 See `suite/README.md` for full instructions. One command: `./run-suite.sh all`.
 Regression assertions: `python3 suite/check-regressions.py` (R1–R20).
 Reset procedure: see `docs/RESET.md`.
+**Fresh-clone proof (v0.2):** `results/v0.2-fresh-clone/` — full run log of the suite executed
+from a clean clone of this repo at `e81a929` against the pinned devnet (see the README
+for the exact clone/boot commands used).
 
 ## Honesty notes
 
@@ -114,3 +147,5 @@ Reset procedure: see `docs/RESET.md`.
 - Failed, skipped, and unverified steps are stated as such in result files.
 - The regression checker reports PASS / FAIL / NOT TESTED — it does not claim coverage
   it does not have.
+- Phase 25's L2 throughput figure (~38–49 txs/s) contains a code-constant estimate
+  (per-tx compressed size); no real L2 traffic exists on the devnet to measure it.

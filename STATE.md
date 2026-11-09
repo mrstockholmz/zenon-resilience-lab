@@ -2,14 +2,14 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 25
+next_phase: 27
 cloud_sessions_run: 1
-local_sessions_run: 18
+local_sessions_run: 20
 pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
-release: v0.1
-updated: 2026-10-25 (v0.1 release: honest regression checks + CURRENT findings + reset procedure)
+release: v0.2
+updated: 2026-11-09 (v0.2: phases 21-26 folded into CURRENT findings, labctl sendqsr + agent provisioning docs, fresh-clone reproduction run in results/v0.2-fresh-clone/)
 ```
 
 ## Phase log
@@ -263,3 +263,27 @@ configured in a mesh. All three nodes share the same lab-patched genesis.
 Only the owner (mr.stockholm.Z) edits this file. After each cloud result: store the report under
 `results/phase-N/`, re-verify the key numbers locally where the machine allows, then bump `next_phase` only if the
 phase's gate in PLAN.md is met; otherwise leave it and write the reason into the table.
+
+## v0.2 release notes (2026-11-09)
+
+Scope per missions M8: fold phases 21–25 + the ZVM plasma model into one current findings report,
+prove reproduction from a fresh clone on this machine.
+
+- `docs/CURRENT-FINDINGS.md` is now the v0.2 report: multi-producer confirmation section
+  (phases 21–24: all v0.1 core findings reproduced on the 3-pillar 10s-momenta devnet;
+  only time-based rates scale 3×), phase 22 validation edges (13/13 exact error matches,
+  3 seeds), phase 24 PoW under 10s momenta (100% inclusion, 100% same-momentum, 13/13),
+  the phase 25 ZVM batch cost model (kept from v0.1's addendum, now integrated), and a
+  pointer to phase 26 (Zeno settlement attacks — separate L2 domain, not folded).
+- Claims table: one v0.1 wording CLARIFIED (throughput scaling, row 12) — per-momentum
+  mechanics unchanged at 3 pillars; per-second rates scale 3×. No v0.1 finding was
+  contradicted by phases 21–25.
+- Tooling: `labctl sendqsr` (QSR moves between derived accounts; `fund` only moved ZNN),
+  suite/README.md "Long-lived devnets" section with the provisioning recipe.
+- Reproduction proof: `results/v0.2-fresh-clone/` — full `./run-suite.sh all` log from a
+  clean clone at `e81a929` against the pinned 3-pillar devnet, regression summary
+  included. Agent = derived account 252 (provisioned, unfused) because the default agent
+  is QSR-drained on this long-lived devnet; documented in the log header and README.
+- Superseded within v0.2: v0.1's "Single-producer limits" caveat is narrowed — phases
+  21–24 re-verified phases 2–4 findings on multi-producer; remaining single-producer-only
+  scope is stated in the report.

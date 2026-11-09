@@ -1,0 +1,77 @@
+{
+  "workload": "ordinary",
+  "plasma_regime": "dynamic",
+  "attempted": 5,
+  "submitted": 5,
+  "included": 5,
+  "rejected": 0,
+  "unresolved": 0,
+  "pow_count": 5,
+  "total_pow_ms": 74682,
+  "latencies_ms": [
+    0,
+    0,
+    1,
+    1,
+    2
+  ],
+  "p50_ms": 1,
+  "p90_ms": 2,
+  "p99_ms": 2,
+  "start_momentum": 96818,
+  "end_momentum": 96825,
+  "duration_sec": 74.718559484,
+  "generator_cpu_sec": 76.44,
+  "results": [
+    {
+      "idx": 0,
+      "block_height": 17,
+      "submit_momentum": 96820,
+      "pow_ms": 19475,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 96820,
+      "plasma_after": 0
+    },
+    {
+      "idx": 1,
+      "block_height": 18,
+      "submit_momentum": 96820,
+      "pow_ms": 1021,
+      "included": true,
+      "latency_ms": 2,
+      "included_momentum": 96820,
+      "plasma_after": 0
+    },
+    {
+      "idx": 2,
+      "block_height": 19,
+      "submit_momentum": 96822,
+      "pow_ms": 21823,
+      "included": true,
+      "latency_ms": 1,
+      "included_momentum": 96822,
+      "plasma_after": 0
+    },
+    {
+      "idx": 3,
+      "block_height": 20,
+      "submit_momentum": 96824,
+      "pow_ms": 15981,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 96824,
+      "plasma_after": 0
+    },
+    {
+      "idx": 4,
+      "block_height": 21,
+      "submit_momentum": 96825,
+      "pow_ms": 16382,
+      "included": true,
+      "latency_ms": 0,
+      "included_momentum": 96825,
+      "plasma_after": 0
+    }
+  ]
+}

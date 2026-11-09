@@ -9,11 +9,26 @@ Reviewed by humans and a second AI (Claude). Status and roadmap: [STATE.md](STAT
 
 Audience: go-zenon maintainers weighing changes, application builders sizing resources, node operators.
 
-## Status (v0.1, 2026-10-25)
+## Status (v0.2, 2026-11-09)
 
-Phases 1–24 complete. Reproducible suite built and documented.
+Phases 1–26 complete. Reproducible suite built, documented, and re-verified from a fresh clone.
 
-**Key findings:**
+**What v0.2 adds over v0.1:**
+1. Multi-producer confirmation (phases 21–24): every v0.1 core finding reproduced on a 3-pillar
+   devnet with 10s momenta. Only time-based rates scale (3× per second); per-momentum mechanics
+   are unchanged.
+2. PoW under 10s momenta (phase 24): 100% inclusion and 100% same-momentum inclusion (13/13);
+   PoW compute is CPU-bound and unchanged (~24s avg).
+3. Validation edges (phase 22): all 13 negative cases rejected with exact error matches, 3 seeds.
+   No validation gaps found.
+4. ZVM relayer batch cost model (phase 25, on the ZVM devnet L1): batch posts cost
+   `21,000 + 68·B` plasma exact to 16 KiB; the 4.2M per-momentum budget binds at 3 full
+   16 KiB blocks per momentum ⇒ ~38–49 L2 txs/s at 10s momenta (estimate flagged as such).
+5. Fresh-clone reproduction proof: `results/v0.2-fresh-clone/` — full suite run log from a clean
+   clone at `e81a929` (the v0.2 code state; this log and the docs are committed on top as the tag)
+   against the pinned devnet.
+
+The v0.1 key findings stand unchanged:
 1. Fused plasma eliminates PoW entirely (0.02s vs 41–79s for 5 sequential txs).
 2. Single-account burst rejection is caused by PoW delay, not account-chain limits.
 3. Each simple self-transfer consumes exactly 21000 plasma.
@@ -22,7 +37,8 @@ Phases 1–24 complete. Reproducible suite built and documented.
 6. Plasma is a per-momentum rate limit, regenerating to full within 1 momentum.
 7. Dynamic Plasma repricing fires at >50 fused txs/momentum, capped at ±10%/momentum.
 
-Full current findings: [docs/CURRENT-FINDINGS.md](docs/CURRENT-FINDINGS.md).
+Full current findings (including the multi-producer and ZVM sections and the
+superseded-claims table): [docs/CURRENT-FINDINGS.md](docs/CURRENT-FINDINGS.md).
 Reset procedure: [docs/RESET.md](docs/RESET.md).
 
 **Suite:** `suite/` contains a one-command runner, workload generator (labctl), regression
