@@ -63,7 +63,7 @@ import {
 
 const ONE_ZNN = 100_000_000n
 const PLASMA_LIMIT = 10_000_000n // the input gas budget of an honest Deposit/CallL2
-const MAX_INPUT_GAS = 1_000_000_000n // vm/constants/settlement.go MaxInputGas
+const MAX_INPUT_GAS = 100_000_000n // vm/constants/settlement.go MaxInputGas (100M since feature/settlement 2835c436; was 1e9 at 938fca3)
 const MAX_CALL_PAYLOAD = 8192 // vm/constants/settlement.go MaxCallPayload
 const SETTLEMENT_SPORK_ID = "0000000000000000000000000000000000000000000000000000000000000004"
 const ZNN_ASSET = settlement.assetIdFromZts(ZNN_ZTS)

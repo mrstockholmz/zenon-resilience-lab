@@ -51,6 +51,23 @@ waits one `WithdrawalDelay` (30 momenta) for batch finalization.
 
 Exit code 0 = no FAIL. Each run appends a timestamped log to `results/`.
 
+## Runs
+
+- **2026-11-08 03:08 CEST, settlement 938fca3** (first run, fresh chain):
+  9 PASS / 0 FAIL / 2 NOT TESTED, 16m22s, exit 0. Fees at that point:
+  burned 7,909,200 + credited 18,454,800 = collected 26,364,000;
+  deposited=100,000,000 released=40,000,000. Log:
+  `results/run-20261108-025228.log`.
+- **2026-11-12 12:53–13:12 CEST, settlement 2835c436** (MaxInputGas lowered
+  1e9 → 1e8; devnet redeployed on the surviving chain at height ~55.4k):
+  9 PASS / 0 FAIL / 2 NOT TESTED, ~19m, exit 0. `MAX_INPUT_GAS` constant in
+  `zeno-attacks.ts` updated to 100,000,000 for this run; the
+  deposit-plasma-limit check now probes 100,000,001 and is still pool-rejected
+  (`forbidden parameter`). Fees at that point: burned 11,982,600 +
+  credited 27,959,400 = collected 39,942,000 (chain survived the binary swap,
+  so counters are cumulative); deposited=200,000,000 released=80,000,000.
+  Log: `results/run-20261112-125259.log`.
+
 ## What a devnet cannot show
 
 - Real value at risk and adversarial pillar/executor behavior (single pillar,
