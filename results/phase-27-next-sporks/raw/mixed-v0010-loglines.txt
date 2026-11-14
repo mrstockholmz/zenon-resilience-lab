@@ -1,0 +1,2 @@
+t=2026-11-14T10:36:57+0100 lvl=info msg="message handling failed" module=handler peer-id=31e8ae15bcb91b9b reason="rlp: input list has too many elements for nom.Momentum, decoding into ([]*nom.DetailedMomentum)[0].Momentum"
+t=2026-11-14T10:36:57+0100 lvl=warn msg="Synchronisation failed" module=handler submodule=downloader reason="no peers to keep download active"

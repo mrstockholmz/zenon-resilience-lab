@@ -1,0 +1,277 @@
++ ZTS=zts1axafdyzcsam59vszpwqtmq
+++ cat raw/spork-refund-id.txt
++ REFUND_ID=07cd58b94ec1db48b087dfdf78a83d5f00d9b8b982ea1975e8da026d54c45caa
++ probe/phase27probe waitfor 963
+height 963 reached (frontier 963)
++ probe/phase27probe bridge-pair 2 123 zts1axafdyzcsam59vszpwqtmq 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+bridge-pair included=true height=27
++ echo CANARY5
++ probe/phase27probe wrap 3 zts1axafdyzcsam59vszpwqtmq 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-1.txt
+wrap included=true height=9
++ sleep 75
++ probe/phase27probe refundstate zts1axafdyzcsam59vszpwqtmq CANARY5
++ tee raw/refundstate-0-stalled.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "15",
+  "canaryTokenExists": true,
+  "frontierHeight": 966,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 969,
+      "name": "p27-refund"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 898,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [
+    {
+      "amount": "9985",
+      "blockType": 4,
+      "from": "z1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsggv2f",
+      "hash": "de7b676d7458148ad045d00c730adbdbbc614be403a5a68ccfcc0a26aeb7bd8e",
+      "zts": "zts1axafdyzcsam59vszpwqtmq"
+    }
+  ],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe issue 3 canary5 CANARY5 100 100 1 false true false
++ tee raw/canary-issue.txt
+issue included=true height=10
+received 1 blocks
+lastOwnedZts zts1axafdyzcsam59vszpwqtmq
++ sleep 100
++ probe/phase27probe refundstate zts1axafdyzcsam59vszpwqtmq CANARY5
++ tee raw/refundstate-0b-canary-blocked.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "15",
+  "canaryTokenExists": true,
+  "frontierHeight": 969,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 969,
+      "name": "p27-refund"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 898,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [
+    {
+      "amount": "100000000",
+      "blockType": 2,
+      "from": "z1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsggv2f",
+      "hash": "b5cf5c3b69e074751856f452a344de64a5a70cb26dc1cf35ce38a5dec53fb136",
+      "zts": "zts1znnxxxxxxxxxxxxx9z4ulx"
+    },
+    {
+      "amount": "9985",
+      "blockType": 4,
+      "from": "z1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsggv2f",
+      "hash": "de7b676d7458148ad045d00c730adbdbbc614be403a5a68ccfcc0a26aeb7bd8e",
+      "zts": "zts1axafdyzcsam59vszpwqtmq"
+    }
+  ],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe sporkactivate 07cd58b94ec1db48b087dfdf78a83d5f00d9b8b982ea1975e8da026d54c45caa
+activate spork send included at account height 28
+++ probe/phase27probe sporkwait p27-refund
++ ENF_R=969
++ echo 'refund enforcement 969'
++ tee raw/refund-enforcement.txt
+refund enforcement 969
++ probe/phase27probe waitfor 973
+height 973 reached (frontier 973)
++ probe/phase27probe refundstate zts1axafdyzcsam59vszpwqtmq CANARY5
++ tee raw/refundstate-1-recovered.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "10000",
+  "canaryTokenExists": true,
+  "frontierHeight": 973,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 969,
+      "name": "p27-refund"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 898,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe wrap 3 zts1axafdyzcsam59vszpwqtmq 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-2.txt
+wrap included=true height=12
++ sleep 75
++ probe/phase27probe refundstate zts1axafdyzcsam59vszpwqtmq CANARY5
++ tee raw/refundstate-2-wrap2.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "10015",
+  "canaryTokenExists": true,
+  "frontierHeight": 974,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 969,
+      "name": "p27-refund"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 898,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe staleack 4 5 stale stale-ack-enf-minus-1 968
++ tee raw/stale-ack-enf-minus-1.json
+=== stale-ack-enf-minus-1 ===
+{
+  "ackHash": "cd9e4ae22b42177217a6dc43743c8db0cb9e07125a2e654e1b867b2e6cedbff2",
+  "ackHeight": 968,
+  "blockHash": "ddd14b2a565f4c2afe8ebf8b37c00d62e977020f4da776d325e6f027e331cb04",
+  "blockHeight": 3,
+  "frontierAtBuild": 974,
+  "label": "stale-ack-enf-minus-1",
+  "mode": "stale",
+  "publishError": "rpc error -32000: account-block momentum-acknowledged predates a spork enforced at the frontier momentum - account-block momentum-acknowledged predates a spork enforced at the parent momentum: spork 07cd58b94ec1db48b087dfdf78a83d5f00d9b8b982ea1975e8da026d54c45caa is enforced at parent height 974 but not at acknowledged height 968"
+}
++ probe/phase27probe staleack 4 5 fresh fresh-ack-after-refund-spork
++ tee raw/fresh-ack-after-refund-spork.json
+=== fresh-ack-after-refund-spork ===
+{
+  "ackHash": "3818c3d990c6014e2432c583d2a7ad84de5d6e5fdb0940bcb7522ef463c8dfe6",
+  "ackHeight": 974,
+  "blockHash": "07cf6f872fa7a77cd3f990a504cadcb7cfe9914e4f9ec4ec732e53aee5775cb0",
+  "blockHeight": 3,
+  "frontierAtBuild": 974,
+  "included": true,
+  "label": "fresh-ack-after-refund-spork",
+  "mode": "fresh",
+  "publishError": null
+}
++ probe/phase27probe recvall 4
+received 0 blocks
++ echo 'RESUME3 DONE'
+RESUME3 DONE

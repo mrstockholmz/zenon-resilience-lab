@@ -1,0 +1,3 @@
+issue included=true height=130
+received 1 blocks
+lastOwnedZts zts1aep8wcfzgkr3swtaatvd86

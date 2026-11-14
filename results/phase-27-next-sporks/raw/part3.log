@@ -1,0 +1,1488 @@
++ V=/home/mrstockholmez/lab-devnet-p27-v0010
+++ cd /tmp/enode
+++ ./enode /home/mrstockholmez/lab-devnet-p27/network-private-key 58001
++ MASTER_PEER=enode://31e8ae15bcb91b9b6e6311a16434b5d1987a7bacbb0980f0f70aa4de089c077de2720765ef306b1d842a447a5d57adfedafc4aeceb32e7d3491568dc8c505a78@127.0.0.1:58001
++ echo 'master enode: enode://31e8ae15bcb91b9b6e6311a16434b5d1987a7bacbb0980f0f70aa4de089c077de2720765ef306b1d842a447a5d57adfedafc4aeceb32e7d3491568dc8c505a78@127.0.0.1:58001'
+master enode: enode://31e8ae15bcb91b9b6e6311a16434b5d1987a7bacbb0980f0f70aa4de089c077de2720765ef306b1d842a447a5d57adfedafc4aeceb32e7d3491568dc8c505a78@127.0.0.1:58001
+++ cat raw/bridge-enforcement.txt
++ ENF=898
++ python3 -
+master config isolated
++ pkill -f 'build/znnd --data /home/mrstockholmez/lab-devnet-p27'
++ sleep 6
++ sleep 20
++ cd /home/mrstockholmez/lab-devnet-p27
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-master/build/znnd --data /home/mrstockholmez/lab-devnet-p27
++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
++ python3 -c 'import json,sys; print('\''master back at'\'', json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+master back at 1025
++ rm -rf /home/mrstockholmez/lab-devnet-p27-v0010
++ mkdir -p /home/mrstockholmez/lab-devnet-p27-v0010
++ cp /home/mrstockholmez/zenon-resilience-lab/suite/devnet/genesis.json /home/mrstockholmez/lab-devnet-p27-v0010/genesis.json
++ python3 - /home/mrstockholmez/lab-devnet-p27-v0010 enode://31e8ae15bcb91b9b6e6311a16434b5d1987a7bacbb0980f0f70aa4de089c077de2720765ef306b1d842a447a5d57adfedafc4aeceb32e7d3491568dc8c505a78@127.0.0.1:58001
++ cd /home/mrstockholmez/lab-devnet-p27-v0010
++ VPID=1609470
++ echo 'v0010 pid 1609470'
+v0010 pid 1609470
++ MASTER_H=0
++ V_H=0
++ REACHED=0
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-v0010/znnd-linux-amd64 --data /home/mrstockholmez/lab-devnet-p27-v0010
+++ seq 1 120
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1025
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+5s master=1025 v0010=1 enf=898'
+t+5s master=1025 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1025
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+10s master=1025 v0010=1 enf=898'
+t+10s master=1025 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1025
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+15s master=1025 v0010=1 enf=898'
+t+15s master=1025 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1025
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+20s master=1025 v0010=1 enf=898'
+t+20s master=1025 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1025
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+25s master=1025 v0010=1 enf=898'
+t+25s master=1025 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1026
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+30s master=1026 v0010=1 enf=898'
+t+30s master=1026 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1026
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+35s master=1026 v0010=1 enf=898'
+t+35s master=1026 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1026
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+40s master=1026 v0010=1 enf=898'
+t+40s master=1026 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1026
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+45s master=1026 v0010=1 enf=898'
+t+45s master=1026 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1027
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+50s master=1027 v0010=1 enf=898'
+t+50s master=1027 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1027
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+55s master=1027 v0010=1 enf=898'
+t+55s master=1027 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1027
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+60s master=1027 v0010=1 enf=898'
+t+60s master=1027 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1027
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+65s master=1027 v0010=1 enf=898'
+t+65s master=1027 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1028
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+70s master=1028 v0010=1 enf=898'
+t+70s master=1028 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1028
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+75s master=1028 v0010=1 enf=898'
+t+75s master=1028 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1029
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+80s master=1029 v0010=1 enf=898'
+t+80s master=1029 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1029
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+85s master=1029 v0010=1 enf=898'
+t+85s master=1029 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1029
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+90s master=1029 v0010=1 enf=898'
+t+90s master=1029 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1029
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+95s master=1029 v0010=1 enf=898'
+t+95s master=1029 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+100s master=1030 v0010=1 enf=898'
+t+100s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+105s master=1030 v0010=1 enf=898'
+t+105s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+110s master=1030 v0010=1 enf=898'
+t+110s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+115s master=1030 v0010=1 enf=898'
+t+115s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+120s master=1030 v0010=1 enf=898'
+t+120s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+125s master=1030 v0010=1 enf=898'
+t+125s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+130s master=1030 v0010=1 enf=898'
+t+130s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+135s master=1030 v0010=1 enf=898'
+t+135s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+140s master=1030 v0010=1 enf=898'
+t+140s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+145s master=1030 v0010=1 enf=898'
+t+145s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+150s master=1030 v0010=1 enf=898'
+t+150s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+155s master=1030 v0010=1 enf=898'
+t+155s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+160s master=1030 v0010=1 enf=898'
+t+160s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+165s master=1030 v0010=1 enf=898'
+t+165s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+170s master=1030 v0010=1 enf=898'
+t+170s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+175s master=1030 v0010=1 enf=898'
+t+175s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+180s master=1030 v0010=1 enf=898'
+t+180s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+185s master=1030 v0010=1 enf=898'
+t+185s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+190s master=1030 v0010=1 enf=898'
+t+190s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+195s master=1030 v0010=1 enf=898'
+t+195s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+200s master=1030 v0010=1 enf=898'
+t+200s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+205s master=1030 v0010=1 enf=898'
+t+205s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1030
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+210s master=1030 v0010=1 enf=898'
+t+210s master=1030 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1031
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+215s master=1031 v0010=1 enf=898'
+t+215s master=1031 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1031
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+220s master=1031 v0010=1 enf=898'
+t+220s master=1031 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1031
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+225s master=1031 v0010=1 enf=898'
+t+225s master=1031 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1031
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+230s master=1031 v0010=1 enf=898'
+t+230s master=1031 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1031
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+235s master=1031 v0010=1 enf=898'
+t+235s master=1031 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1031
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+240s master=1031 v0010=1 enf=898'
+t+240s master=1031 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1032
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+245s master=1032 v0010=1 enf=898'
+t+245s master=1032 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1032
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+250s master=1032 v0010=1 enf=898'
+t+250s master=1032 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+255s master=1033 v0010=1 enf=898'
+t+255s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+260s master=1033 v0010=1 enf=898'
+t+260s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+265s master=1033 v0010=1 enf=898'
+t+265s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+270s master=1033 v0010=1 enf=898'
+t+270s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+275s master=1033 v0010=1 enf=898'
+t+275s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+280s master=1033 v0010=1 enf=898'
+t+280s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+285s master=1033 v0010=1 enf=898'
+t+285s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+290s master=1033 v0010=1 enf=898'
+t+290s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+295s master=1033 v0010=1 enf=898'
+t+295s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1033
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+300s master=1033 v0010=1 enf=898'
+t+300s master=1033 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1034
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+305s master=1034 v0010=1 enf=898'
+t+305s master=1034 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1034
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+310s master=1034 v0010=1 enf=898'
+t+310s master=1034 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1034
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+315s master=1034 v0010=1 enf=898'
+t+315s master=1034 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1034
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+320s master=1034 v0010=1 enf=898'
+t+320s master=1034 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+325s master=1035 v0010=1 enf=898'
+t+325s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+330s master=1035 v0010=1 enf=898'
+t+330s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+335s master=1035 v0010=1 enf=898'
+t+335s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+340s master=1035 v0010=1 enf=898'
+t+340s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+345s master=1035 v0010=1 enf=898'
+t+345s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+350s master=1035 v0010=1 enf=898'
+t+350s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+355s master=1035 v0010=1 enf=898'
+t+355s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1035
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+360s master=1035 v0010=1 enf=898'
+t+360s master=1035 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1036
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+365s master=1036 v0010=1 enf=898'
+t+365s master=1036 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1036
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+370s master=1036 v0010=1 enf=898'
+t+370s master=1036 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1037
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+375s master=1037 v0010=1 enf=898'
+t+375s master=1037 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1037
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+380s master=1037 v0010=1 enf=898'
+t+380s master=1037 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1037
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+385s master=1037 v0010=1 enf=898'
+t+385s master=1037 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1037
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+390s master=1037 v0010=1 enf=898'
+t+390s master=1037 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1038
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+395s master=1038 v0010=1 enf=898'
+t+395s master=1038 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1038
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+400s master=1038 v0010=1 enf=898'
+t+400s master=1038 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1038
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+405s master=1038 v0010=1 enf=898'
+t+405s master=1038 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1038
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+410s master=1038 v0010=1 enf=898'
+t+410s master=1038 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1038
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+415s master=1038 v0010=1 enf=898'
+t+415s master=1038 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1038
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+420s master=1038 v0010=1 enf=898'
+t+420s master=1038 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1039
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+425s master=1039 v0010=1 enf=898'
+t+425s master=1039 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1039
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+430s master=1039 v0010=1 enf=898'
+t+430s master=1039 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+435s master=1040 v0010=1 enf=898'
+t+435s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+440s master=1040 v0010=1 enf=898'
+t+440s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+445s master=1040 v0010=1 enf=898'
+t+445s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+450s master=1040 v0010=1 enf=898'
+t+450s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+455s master=1040 v0010=1 enf=898'
+t+455s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+460s master=1040 v0010=1 enf=898'
+t+460s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+465s master=1040 v0010=1 enf=898'
+t+465s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+470s master=1040 v0010=1 enf=898'
+t+470s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+475s master=1040 v0010=1 enf=898'
+t+475s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+480s master=1040 v0010=1 enf=898'
+t+480s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+485s master=1040 v0010=1 enf=898'
+t+485s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+490s master=1040 v0010=1 enf=898'
+t+490s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+495s master=1040 v0010=1 enf=898'
+t+495s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+500s master=1040 v0010=1 enf=898'
+t+500s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+505s master=1040 v0010=1 enf=898'
+t+505s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+510s master=1040 v0010=1 enf=898'
+t+510s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+515s master=1040 v0010=1 enf=898'
+t+515s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1040
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+520s master=1040 v0010=1 enf=898'
+t+520s master=1040 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1041
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+525s master=1041 v0010=1 enf=898'
+t+525s master=1041 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1041
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+530s master=1041 v0010=1 enf=898'
+t+530s master=1041 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1041
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+535s master=1041 v0010=1 enf=898'
+t+535s master=1041 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1041
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+540s master=1041 v0010=1 enf=898'
+t+540s master=1041 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1041
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+545s master=1041 v0010=1 enf=898'
+t+545s master=1041 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1041
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+550s master=1041 v0010=1 enf=898'
+t+550s master=1041 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1042
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+555s master=1042 v0010=1 enf=898'
+t+555s master=1042 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1042
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+560s master=1042 v0010=1 enf=898'
+t+560s master=1042 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+565s master=1043 v0010=1 enf=898'
+t+565s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+570s master=1043 v0010=1 enf=898'
+t+570s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+575s master=1043 v0010=1 enf=898'
+t+575s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+580s master=1043 v0010=1 enf=898'
+t+580s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+585s master=1043 v0010=1 enf=898'
+t+585s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+590s master=1043 v0010=1 enf=898'
+t+590s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+595s master=1043 v0010=1 enf=898'
+t+595s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
++ for i in $(seq 1 120)
++ sleep 5
++ kill -0 1609470
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MASTER_H=1043
+++ curl -s -m 5 -X POST http://127.0.0.1:48002 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ V_H=1
++ echo 't+600s master=1043 v0010=1 enf=898'
+t+600s master=1043 v0010=1 enf=898
++ '[' 1 -ge 897 ']'
+++ wait 1609470
+++ echo -1
++ EXIT_CODE=-1
++ kill -0 1609470
++ STILL_RUNNING=1
++ echo 'v0010 still_running=1 exit_code=-1 lastHeight=1 reachedPreEnforcement=0'
+v0010 still_running=1 exit_code=-1 lastHeight=1 reachedPreEnforcement=0
++ grep -i 'spork\|terminat\|unimplemented\|fatal\|panic' /home/mrstockholmez/lab-devnet-p27-v0010/boot.log /home/mrstockholmez/lab-devnet-p27-v0010/log/error/zenon.error.log
++ tail -20
++ tee raw/mixed-v0010-loglines.txt
+tee: raw/mixed-v0010-loglines.txt: No such file or directory
++ python3 - 1 898 0 1
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: 'raw/mixed-v0010-result.json'
++ echo 'PART3 DONE'
+PART3 DONE

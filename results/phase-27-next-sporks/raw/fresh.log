@@ -1,0 +1,392 @@
++ stop_node
++ pkill -f 'znnd --data /home/mrstockholmez/lab-devnet-p27'
++ pkill -f 'build/znnd --data /home/mrstockholmez/lab-devnet-p27'
++ true
++ sleep 6
++ D=/home/mrstockholmez/lab-devnet-p27
++ rm -rf /home/mrstockholmez/lab-devnet-p27
++ mkdir -p /home/mrstockholmez/lab-devnet-p27/wallet
++ cp /home/mrstockholmez/zenon-resilience-lab/suite/devnet/genesis.json /home/mrstockholmez/lab-devnet-p27/genesis.json
++ cp /home/mrstockholmez/go-zenon/docker/devnet/pillar/wallet/z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq /home/mrstockholmez/lab-devnet-p27/wallet/
++ python3 - /home/mrstockholmez/lab-devnet-p27
++ start_node /home/mrstockholmez/lab-go-zenon-master/build/znnd
++ sleep 20
++ cd /home/mrstockholmez/lab-devnet-p27
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-master/build/znnd --data /home/mrstockholmez/lab-devnet-p27
++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
++ python3 -c 'import json,sys; print('\''boot frontier'\'', json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+boot frontier 2
++ probe/phase27probe send 3 0 QSR 1500000000000
+send included=true height=2
++ probe/phase27probe send 3 0 ZNN 500000000
+send included=true height=3
++ probe/phase27probe fuse 0 10000000000
+panic: argument count mismatch: 0 for 1
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/vm/abi.ABIContract.PackMethodPanic({0xc0002caf60?, 0xc0002caf90?}, {0x96a681?, 0xa?}, {0x0?, 0xc0001f20a0?, 0x0?})
+	/home/mrstockholmez/lab-go-zenon-master/vm/abi/abi.go:89 +0x3e
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:514 +0x18e
++ probe/phase27probe fuse 3 10000000000
+panic: argument count mismatch: 0 for 1
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/vm/abi.ABIContract.PackMethodPanic({0xc0002e0f60?, 0xc0002e0f90?}, {0x96a681?, 0xa?}, {0x0?, 0xc0001fa0a0?, 0x3?})
+	/home/mrstockholmez/lab-go-zenon-master/vm/abi/abi.go:89 +0x3e
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:514 +0x18e
++ sleep 40
++ probe/phase27probe sporkcreate p27-bridge 'phase27 bridge activation'
+created spork send included at account height 1
++ probe/phase27probe sporkid p27-bridge
++ tee raw/spork-bridge-id.txt
+FATAL: spork "p27-bridge" not found
++ probe/phase27probe sporkcreate p27-refund 'phase27 embedded refund'
+created spork send included at account height 2
++ probe/phase27probe sporkid p27-refund
++ tee raw/spork-refund-id.txt
+FATAL: spork "p27-refund" not found
++ stop_node
++ pkill -f 'znnd --data /home/mrstockholmez/lab-devnet-p27'
++ pkill -f 'build/znnd --data /home/mrstockholmez/lab-devnet-p27'
++ true
++ sleep 6
+++ cat raw/spork-bridge-id.txt
++ BRIDGE_ID=
+++ cat raw/spork-refund-id.txt
++ REFUND_ID=
++ cd /home/mrstockholmez/lab-go-zenon-master
++ sed -i 's|BridgeAndLiquiditySpork = NewImplementedSpork("[0-9a-f]*") // LAB p27 devnet spork|BridgeAndLiquiditySpork = NewImplementedSpork("") // LAB p27 devnet spork|' common/types/spork.go
++ sed -i 's|EmbeddedRefundSpork = NewImplementedSpork("[0-9a-f]*") // LAB p27 devnet spork|EmbeddedRefundSpork = NewImplementedSpork("") // LAB p27 devnet spork|' common/types/spork.go
++ grep 'LAB p27 devnet spork' common/types/spork.go
+	BridgeAndLiquiditySpork = NewImplementedSpork("") // LAB p27 devnet spork
+	EmbeddedRefundSpork = NewImplementedSpork("") // LAB p27 devnet spork
++ make znnd
++ echo 'build B exit=0'
+build B exit=0
++ start_node /home/mrstockholmez/lab-go-zenon-master/build/znnd
++ sleep 20
++ cd /home/mrstockholmez/lab-devnet-p27
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-master/build/znnd --data /home/mrstockholmez/lab-devnet-p27
++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
++ python3 -c 'import json,sys; print('\''boot frontier'\'', json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json,sys; print('boot frontier', json.load(sys.stdin)['result']['height'])
+                                            ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
++ probe/phase27probe sporkactivate
+./run-fresh.sh: line 73: probe/phase27probe: No such file or directory
+++ probe/phase27probe sporkwait p27-bridge
+./run-fresh.sh: line 74: probe/phase27probe: No such file or directory
++ ENF_B=
++ echo 'bridge enforcement '
+bridge enforcement 
++ probe/phase27probe waitfor 8
+./run-fresh.sh: line 76: probe/phase27probe: No such file or directory
++ probe/phase27probe bridge-orch 6 3 15 10
+./run-fresh.sh: line 78: probe/phase27probe: No such file or directory
++ probe/phase27probe bridge-guardians
+./run-fresh.sh: line 79: probe/phase27probe: No such file or directory
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json,sys; print(json.load(sys.stdin)['result']['height'])
+                           ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
++ FM=
++ probe/phase27probe waitfor 23
+./run-fresh.sh: line 81: probe/phase27probe: No such file or directory
++ probe/phase27probe bridge-guardians
+./run-fresh.sh: line 82: probe/phase27probe: No such file or directory
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+./run-fresh.sh: line 83: probe/phase27probe: No such file or directory
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json,sys; print(json.load(sys.stdin)['result']['height'])
+                           ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
++ FM=
++ probe/phase27probe waitfor 13
+./run-fresh.sh: line 85: probe/phase27probe: No such file or directory
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+./run-fresh.sh: line 86: probe/phase27probe: No such file or directory
++ probe/phase27probe bridge-network 2 123 Ethereum 0x323b5d4c32345ced77393b3530b1eed0f346429d '{}'
+./run-fresh.sh: line 87: probe/phase27probe: No such file or directory
++ probe/phase27probe issue 3 unburnable UNBURN 100000 1000000 1 true false
++ tee raw/issue-unburnable.txt
+./run-fresh.sh: line 88: probe/phase27probe: No such file or directory
+tee: raw/issue-unburnable.txt: No such file or directory
+++ grep lastOwnedZts raw/issue-unburnable.txt
+++ awk '{print $2}'
+grep: raw/issue-unburnable.txt: No such file or directory
++ ZTS=
++ echo ZTS=
+ZTS=
++ probe/phase27probe bridge-pair 2 123 '' 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+./run-fresh.sh: line 91: probe/phase27probe: No such file or directory
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json,sys; print(json.load(sys.stdin)['result']['height'])
+                           ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
++ FM=
++ probe/phase27probe waitfor 13
+./run-fresh.sh: line 93: probe/phase27probe: No such file or directory
++ probe/phase27probe bridge-pair 2 123 '' 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+./run-fresh.sh: line 94: probe/phase27probe: No such file or directory
++ echo CANARY5
+./run-fresh.sh: line 96: raw/canary-symbol.txt: No such file or directory
++ probe/phase27probe wrap 3 '' 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
+./run-fresh.sh: line 98: probe/phase27probe: No such file or directory
++ tee raw/wrap-1.txt
+tee: raw/wrap-1.txt: No such file or directory
++ sleep 60
++ probe/phase27probe refundstate '' CANARY5
+./run-fresh.sh: line 100: probe/phase27probe: No such file or directory
++ tee raw/refundstate-0-stalled.json
+tee: raw/refundstate-0-stalled.json: No such file or directory
++ probe/phase27probe issue 3 canary5 CANARY5 100 100 1 false true false
+./run-fresh.sh: line 101: probe/phase27probe: No such file or directory
++ tee raw/canary5-issue.txt
+tee: raw/canary5-issue.txt: No such file or directory
++ sleep 60
++ probe/phase27probe refundstate '' CANARY5
+./run-fresh.sh: line 103: probe/phase27probe: No such file or directory
++ tee raw/refundstate-0b-canary-blocked.json
+tee: raw/refundstate-0b-canary-blocked.json: No such file or directory
++ probe/phase27probe sporkactivate
+./run-fresh.sh: line 106: probe/phase27probe: No such file or directory
+++ probe/phase27probe sporkwait p27-refund
+./run-fresh.sh: line 107: probe/phase27probe: No such file or directory
++ ENF_R=
++ echo 'refund enforcement '
++ tee raw/refund-enforcement.txt
+tee: raw/refund-enforcement.txt: No such file or directory
+refund enforcement 
++ probe/phase27probe waitfor 4
+./run-fresh.sh: line 109: probe/phase27probe: No such file or directory
++ probe/phase27probe refundstate '' CANARY5
+./run-fresh.sh: line 110: probe/phase27probe: No such file or directory
++ tee raw/refundstate-1-recovered.json
+tee: raw/refundstate-1-recovered.json: No such file or directory
++ probe/phase27probe wrap 3 '' 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
+./run-fresh.sh: line 113: probe/phase27probe: No such file or directory
++ tee raw/wrap-2.txt
+tee: raw/wrap-2.txt: No such file or directory
++ sleep 60
++ probe/phase27probe refundstate '' CANARY5
+./run-fresh.sh: line 115: probe/phase27probe: No such file or directory
++ tee raw/refundstate-2-wrap2.json
+tee: raw/refundstate-2-wrap2.json: No such file or directory
++ probe/phase27probe staleack 4 5 stale stale-ack-enf-minus-1 -1
+./run-fresh.sh: line 118: probe/phase27probe: No such file or directory
++ tee raw/stale-ack-enf-minus-1.json
+tee: raw/stale-ack-enf-minus-1.json: No such file or directory
++ probe/phase27probe staleack 4 5 fresh fresh-ack-after-refund-spork
+./run-fresh.sh: line 119: probe/phase27probe: No such file or directory
++ tee raw/fresh-ack-after-refund-spork.json
+tee: raw/fresh-ack-after-refund-spork.json: No such file or directory
++ echo 'FRESH DONE'
+FRESH DONE
++ stop_node
++ pkill -f 'znnd --data /home/mrstockholmez/lab-devnet-p27'
++ true
++ pkill -f 'build/znnd --data /home/mrstockholmez/lab-devnet-p27'
++ true
++ sleep 6
++ D=/home/mrstockholmez/lab-devnet-p27
++ rm -rf /home/mrstockholmez/lab-devnet-p27
++ mkdir -p /home/mrstockholmez/lab-devnet-p27/wallet
++ cp /home/mrstockholmez/zenon-resilience-lab/suite/devnet/genesis.json /home/mrstockholmez/lab-devnet-p27/genesis.json
++ cp /home/mrstockholmez/go-zenon/docker/devnet/pillar/wallet/z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq /home/mrstockholmez/lab-devnet-p27/wallet/
++ python3 - /home/mrstockholmez/lab-devnet-p27
++ start_node /home/mrstockholmez/lab-go-zenon-master/build/znnd
++ sleep 20
++ cd /home/mrstockholmez/lab-devnet-p27
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-master/build/znnd --data /home/mrstockholmez/lab-devnet-p27
++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
++ python3 -c 'import json,sys; print('\''boot frontier'\'', json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import json,sys; print('boot frontier', json.load(sys.stdin)['result']['height'])
+                                            ~~~~~~~~~^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+        cls=cls, object_hook=object_hook,
+        parse_float=parse_float, parse_int=parse_int,
+        parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.13/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
++ probe/phase27probe waitfor 15
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ probe/phase27probe send 3 0 QSR 1500000000000
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ probe/phase27probe send 3 0 ZNN 500000000
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ probe/phase27probe fuse 0 10000000000
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ probe/phase27probe fuse 3 10000000000
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ sleep 40
++ probe/phase27probe sporkcreate p27-bridge 'phase27 bridge activation'
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ probe/phase27probe sporkid p27-bridge
++ tee raw/spork-bridge-id.txt
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ probe/phase27probe sporkcreate p27-refund 'phase27 embedded refund'
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ probe/phase27probe sporkid p27-refund
++ tee raw/spork-refund-id.txt
+panic: error hex hash size 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.HexToHashPanic(...)
+	/home/mrstockholmez/lab-go-zenon-master/common/types/hash.go:94
+github.com/zenon-network/go-zenon/common/types.NewImplementedSpork({0x0?, 0x3761a0d6f0e5da3a?})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:100 +0x73
+github.com/zenon-network/go-zenon/common/types.init()
+	/home/mrstockholmez/lab-go-zenon-master/common/types/spork.go:59 +0x619
++ stop_node
++ pkill -f 'znnd --data /home/mrstockholmez/lab-devnet-p27'
++ true
++ pkill -f 'build/znnd --data /home/mrstockholmez/lab-devnet-p27'
++ true
++ sleep 6
+++ cat raw/spork-bridge-id.txt
++ BRIDGE_ID=
+++ cat raw/spork-refund-id.txt
++ REFUND_ID=
++ '[' -z '' ']'
++ echo 'spork ids missing — aborting before build B'
+spork ids missing — aborting before build B
++ exit 1

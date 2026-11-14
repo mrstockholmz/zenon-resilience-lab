@@ -1,0 +1,11 @@
+=== fresh-ack-after-refund-spork ===
+{
+  "ackHash": "584bb95c3441938470583cb23e32f6be87c951b6e4acef9b481be5f27a569194",
+  "ackHeight": 104,
+  "blockHash": "436f1dada1745fc3ce5a9e7f431ba57cfdb47b9aa26f0ecb47f85aae5709cd72",
+  "blockHeight": 1,
+  "frontierAtBuild": 104,
+  "label": "fresh-ack-after-refund-spork",
+  "mode": "fresh",
+  "publishError": "rpc error -32000: insufficient balance for transfer"
+}

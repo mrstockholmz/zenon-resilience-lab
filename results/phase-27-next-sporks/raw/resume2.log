@@ -1,0 +1,12 @@
++ ZTS=zts1axafdyzcsam59vszpwqtmq
++ echo ZTS=zts1axafdyzcsam59vszpwqtmq
++ tee raw/zts.txt
+ZTS=zts1axafdyzcsam59vszpwqtmq
+++ cat raw/spork-refund-id.txt
++ REFUND_ID=07cd58b94ec1db48b087dfdf78a83d5f00d9b8b982ea1975e8da026d54c45caa
++ probe/phase27probe bridge-pair 2 123 zts1axafdyzcsam59vszpwqtmq 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+bridge-pair included=true height=25
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 962

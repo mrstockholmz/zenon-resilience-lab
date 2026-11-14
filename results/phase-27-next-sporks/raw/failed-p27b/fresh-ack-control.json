@@ -1,0 +1,11 @@
+=== fresh-ack-control ===
+{
+  "ackHash": "acd12f563ffefc2c4b71d77e5591bbada5364d5112eec25ef25cda3bdc20e121",
+  "ackHeight": 81,
+  "blockHash": "9f9eedcbec1ea6f5238a63e22d944baefeeeda4a2cbf9e03bbdbb845e99ec1c9",
+  "blockHeight": 1,
+  "frontierAtBuild": 81,
+  "label": "fresh-ack-control",
+  "mode": "fresh",
+  "publishError": "rpc error -32000: insufficient balance for transfer"
+}

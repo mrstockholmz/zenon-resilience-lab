@@ -1,0 +1,77 @@
+=== post-canary ===
+{
+  "frontier": {
+    "hash": "71423ea90371c9a6d18e2de08613411a3c9933d4c4af5a9307855b0212e6044b",
+    "height": 375
+  },
+  "sporks": {
+    "count": 7,
+    "list": [
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "name": "libp2p",
+        "description": "Activates the libp2p networking stack",
+        "activated": true,
+        "enforcementHeight": 20
+      },
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000002",
+        "name": "dynamic-plasma",
+        "description": "Activates Dynamic Plasma",
+        "activated": true,
+        "enforcementHeight": 30
+      },
+      {
+        "id": "2d304b88e4762c169bad3be367d19dff2f31ffdad86e1eb310664c45b4af1b2a",
+        "name": "p27-bridge",
+        "description": "phase27 bridge activation",
+        "activated": true,
+        "enforcementHeight": 333
+      },
+      {
+        "id": "6281c65e3dcfd761e03db2c80dc70a2dc8d42a1f2f8a107e00d2c50c9796d8b4",
+        "name": "p27-refund",
+        "description": "phase27 embedded refund",
+        "activated": false,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "6d2b1e6cb4025f2f45533f0fe22e9b7ce2014d91cc960471045fa64eee5a6ba3",
+        "name": "az",
+        "description": "az",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ceb7e3808ef17ea910adda2f3ab547be4cdfb54de8400ce3683258d06be1354b",
+        "name": "htlc",
+        "description": "htlc",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ddd43466769461c5b5d109c639da0f50a7eeb96ad6e7274b1928a35c431d7b1b",
+        "name": "bridge-liq",
+        "description": "bridge-liq",
+        "activated": false,
+        "enforcementHeight": 0
+      }
+    ]
+  },
+  "tokenContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "bridgeContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "sporkContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "accountBalances": {}
+}

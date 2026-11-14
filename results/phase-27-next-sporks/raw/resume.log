@@ -1,0 +1,198 @@
+++ cat raw/spork-bridge-id.txt
++ BRIDGE_ID=81ef31bdcb8a82cc3416194027a3f13f3780c2296261d8182a539cc3353bc42a
+++ cat raw/spork-refund-id.txt
++ REFUND_ID=07cd58b94ec1db48b087dfdf78a83d5f00d9b8b982ea1975e8da026d54c45caa
++ probe/phase27probe send 3 4 ZNN 1000000000
+send included=true height=5
++ probe/phase27probe recvall 4
+received 0 blocks
++ probe/phase27probe staleack 4 5 fresh fresh-ack-control
++ tee raw/fresh-ack-control.json
+=== fresh-ack-control ===
+{
+  "ackHash": "842a187006a673f0ff9b31405bd4022ef2960c0a7a82393a6824671d94006c79",
+  "ackHeight": 889,
+  "blockHash": "80ea54413bf7e1014564ded704748ddad23568acbfb81293d22d7e8a4ec1d8b0",
+  "blockHeight": 1,
+  "frontierAtBuild": 889,
+  "label": "fresh-ack-control",
+  "mode": "fresh",
+  "publishError": "rpc error -32000: insufficient balance for transfer"
+}
++ probe/phase27probe staleack 4 5 stale stale-ack-h29 29
++ tee raw/stale-ack-h29.json
+=== stale-ack-h29 ===
+{
+  "ackHash": "b5f633f91815226f1f09c9cfe46fa651c5cf53fb71e24c95ba300f9acdeaa30f",
+  "ackHeight": 29,
+  "blockHash": "763444a7d52f0c3e94dd7735d544a4e774ef40b34a49a142b2f224a957e99101",
+  "blockHeight": 1,
+  "frontierAtBuild": 890,
+  "label": "stale-ack-h29",
+  "mode": "stale",
+  "publishError": "rpc error -32000: account-block momentum-acknowledged predates a spork enforced at the frontier momentum - account-block momentum-acknowledged predates a spork enforced at the parent momentum: spork 0000000000000000000000000000000000000000000000000000000000000002 is enforced at parent height 891 but not at acknowledged height 29"
+}
++ probe/phase27probe sporkactivate 81ef31bdcb8a82cc3416194027a3f13f3780c2296261d8182a539cc3353bc42a
+activate spork send included at account height 13
+++ probe/phase27probe sporkwait p27-bridge
++ ENF_B=898
++ echo 'bridge enforcement 898'
+bridge enforcement 898
++ probe/phase27probe waitfor 906
+height 906 reached (frontier 906)
++ probe/phase27probe bridge-orch 6 3 15 10
+bridge-orch included=true height=19
++ probe/phase27probe bridge-guardians
+bridge-guardians included=true height=20
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 929
+height 929 reached (frontier 929)
++ probe/phase27probe bridge-guardians
+bridge-guardians included=true height=21
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=22
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 942
+height 942 reached (frontier 942)
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=23
++ probe/phase27probe bridge-network 2 123 Ethereum 0x323b5d4c32345ced77393b3530b1eed0f346429d '{}'
+bridge-network included=true height=24
++ probe/phase27probe issue 3 unburnable UNBURN 100000 1000000 1 true false
++ tee raw/issue-unburnable.txt
+issue included=true height=6
+received 0 blocks
+++ grep lastOwnedZts raw/issue-unburnable.txt
+++ awk '{print $2}'
++ ZTS=
++ echo ZTS=
++ tee raw/zts.txt
+ZTS=
++ probe/phase27probe bridge-pair 2 123 '' 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7ffe4e72cdd0, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:575 +0x276d
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 955
+height 955 reached (frontier 955)
++ probe/phase27probe bridge-pair 2 123 '' 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7ffc1d42bdd0, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:575 +0x276d
++ echo CANARY5
++ probe/phase27probe wrap 3 '' 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-1.txt
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7fff213f5de0, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:616 +0x8e7
++ sleep 60
++ probe/phase27probe refundstate '' CANARY5
++ tee raw/refundstate-0-stalled.json
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7ffe88279e0f, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:413 +0x1d7d
++ probe/phase27probe issue 3 canary5 CANARY5 100 100 1 false true false
++ tee raw/canary-issue.txt
+issue included=true height=8
+received 0 blocks
+lastOwnedZts zts1axafdyzcsam59vszpwqtmq
++ sleep 90
++ probe/phase27probe refundstate '' CANARY5
++ tee raw/refundstate-0b-canary-blocked.json
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7ffe73073e0f, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:413 +0x1d7d
++ probe/phase27probe sporkactivate 07cd58b94ec1db48b087dfdf78a83d5f00d9b8b982ea1975e8da026d54c45caa
+activate spork send included at account height 26
+++ probe/phase27probe sporkwait p27-refund
++ ENF_R=969
++ echo 'refund enforcement 969'
++ tee raw/refund-enforcement.txt
+refund enforcement 969
++ probe/phase27probe waitfor 973
+height 973 reached (frontier 973)
++ probe/phase27probe refundstate '' CANARY5
++ tee raw/refundstate-1-recovered.json
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7ffc7345ae0f, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:413 +0x1d7d
++ probe/phase27probe wrap 3 '' 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-2.txt
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7ffdaeb26de0, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:616 +0x8e7
++ sleep 60
++ probe/phase27probe refundstate '' CANARY5
++ tee raw/refundstate-2-wrap2.json
+panic: failed to parse ; reason invalid bech32 string length 0
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/common/types.ParseZTSPanic({0x7ffdc9aafe0f, 0x0})
+	/home/mrstockholmez/lab-go-zenon-master/common/types/tokenstandard.go:119 +0x106
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:413 +0x1d7d
++ probe/phase27probe staleack 4 5 stale stale-ack-enf-minus-1 968
++ tee raw/stale-ack-enf-minus-1.json
+=== stale-ack-enf-minus-1 ===
+{
+  "ackHash": "cd9e4ae22b42177217a6dc43743c8db0cb9e07125a2e654e1b867b2e6cedbff2",
+  "ackHeight": 968,
+  "blockHash": "0637f7c23197128bd0ba0f33ba230ebfa2521ab2568f846b8afdbdb4a2161747",
+  "blockHeight": 3,
+  "frontierAtBuild": 974,
+  "label": "stale-ack-enf-minus-1",
+  "mode": "stale",
+  "publishError": "rpc error -32000: account-block momentum-acknowledged predates a spork enforced at the frontier momentum - account-block momentum-acknowledged predates a spork enforced at the parent momentum: spork 07cd58b94ec1db48b087dfdf78a83d5f00d9b8b982ea1975e8da026d54c45caa is enforced at parent height 974 but not at acknowledged height 968"
+}
++ probe/phase27probe staleack 4 5 fresh fresh-ack-after-refund-spork
++ tee raw/fresh-ack-after-refund-spork.json
+=== fresh-ack-after-refund-spork ===
+{
+  "ackHash": "3818c3d990c6014e2432c583d2a7ad84de5d6e5fdb0940bcb7522ef463c8dfe6",
+  "ackHeight": 974,
+  "blockHash": "cfff8e0a93164fefc25d28011e856697700e6141878bc73cada785f56130cf5d",
+  "blockHeight": 3,
+  "frontierAtBuild": 974,
+  "included": true,
+  "label": "fresh-ack-after-refund-spork",
+  "mode": "fresh",
+  "publishError": null
+}
++ probe/phase27probe recvall 4
+received 0 blocks
++ echo 'RESUME DONE'
+RESUME DONE

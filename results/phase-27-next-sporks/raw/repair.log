@@ -1,0 +1,129 @@
++ probe/phase27probe waitfor 433
+height 433 reached (frontier 433)
++ probe/phase27probe bridge-guardians
+bridge-guardians included=true height=19
++ sleep 75
++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"embedded.bridge.getSecurityInfo","params":[]}'
++ python3 -c 'import json,sys; d=json.load(sys.stdin)['\''result'\'']; print('\''guardians:'\'', len(d['\''guardians'\'']))'
+guardians: 6
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=20
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ FM=434
++ probe/phase27probe waitfor 447
+height 447 reached (frontier 447)
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=21
++ sleep 80
++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"embedded.bridge.getBridgeInfo","params":[]}'
++ python3 -c 'import json,sys; d=json.load(sys.stdin)['\''result'\'']; print('\''tss set:'\'', d['\''compressedTssECDSAPubKey'\''] != '\'''\'')'
+tss set: True
++ probe/phase27probe wrap 3 zts1223q8jl79yamzynyjk2paf 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-1.txt
+wrap included=true height=132
++ sleep 90
++ probe/phase27probe refundstate zts1223q8jl79yamzynyjk2paf CANARY3
++ tee raw/refundstate-0-stalled.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "0",
+  "canaryTokenExists": false,
+  "frontierHeight": 452,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 333,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "p27-refund"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe issue 3 canary3 CANARY3 100 100 1 false true false
++ tee raw/canary3-issue.txt
+issue included=true height=133
+received 2 blocks
+lastOwnedZts zts1aep8wcfzgkr3swtaatvd86
++ sleep 100
++ probe/phase27probe refundstate zts1223q8jl79yamzynyjk2paf CANARY3
++ tee raw/refundstate-0b-canary-blocked.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "0",
+  "canaryTokenExists": true,
+  "frontierHeight": 454,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 333,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "p27-refund"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ echo 'REPAIR DONE'
+REPAIR DONE

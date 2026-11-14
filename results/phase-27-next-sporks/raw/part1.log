@@ -1,0 +1,322 @@
+++ probe/phase27probe sporkwait p27-bridge
++ ENF=333
++ echo 'bridge spork enforcement height: 333'
+bridge spork enforcement height: 333
++ probe/phase27probe waitfor 336
+height 336 reached (frontier 338)
++ probe/phase27probe bridge-orch 6 3 15 10
+panic: abi: cannot use uint32 as type uint64 as argument
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/vm/abi.ABIContract.PackMethodPanic({0xc0002ac180?, 0xc0002ac1b0?}, {0x96d0c6?, 0xc0002d21b0?}, {0xc000251e98?, 0xc0001f20a0?, 0x0?})
+	/home/mrstockholmez/lab-go-zenon-master/vm/abi/abi.go:89 +0x3e
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:410 +0x1954
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=9
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ FM=338
++ probe/phase27probe waitfor 350
+++ probe/phase27probe sporkwait p27-bridge
++ ENF=333
++ echo 'bridge spork enforcement height: 333'
+bridge spork enforcement height: 333
++ probe/phase27probe waitfor 336
+height 336 reached (frontier 339)
++ probe/phase27probe bridge-orch 6 3 15 10
+panic: abi: cannot use uint32 as type uint64 as argument
+
+goroutine 1 [running]:
+github.com/zenon-network/go-zenon/vm/abi.ABIContract.PackMethodPanic({0xc0002ac180?, 0xc0002ac1b0?}, {0x96f3ea?, 0xc0002d2150?}, {0xc000033e50?, 0xc0001f20a0?, 0x0?})
+	/home/mrstockholmez/lab-go-zenon-master/vm/abi/abi.go:89 +0x3e
+main.main()
+	/home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks/probe/main.go:491 +0x1d7c
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=10
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ FM=339
++ probe/phase27probe waitfor 351
+height 351 reached (frontier 351)
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=11
++ probe/phase27probe bridge-network 2 123 Ethereum 0x323b5d4c32345ced77393b3530b1eed0f346429d '{}'
+bridge-network included=true height=12
++ probe/phase27probe issue 3 unburnable UNBURN 100000 1000000 1 true false
++ tee raw/issue-unburnable.txt
+issue included=true height=65
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+received 48 blocks
+lastOwnedZts zts1223q8jl79yamzynyjk2paf
+++ grep lastOwnedZts raw/issue-unburnable.txt
+++ awk '{print $2}'
++ ZTS=zts1223q8jl79yamzynyjk2paf
++ echo ZTS=zts1223q8jl79yamzynyjk2paf
++ tee raw/zts.txt
+ZTS=zts1223q8jl79yamzynyjk2paf
++ probe/phase27probe bridge-pair 2 123 zts1223q8jl79yamzynyjk2paf 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+bridge-pair included=true height=13
+++ curl -s -m 5 -X POST http://127.0.0.1:48001 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ FM=354
++ probe/phase27probe waitfor 366
+height 366 reached (frontier 366)
++ probe/phase27probe bridge-pair 2 123 zts1223q8jl79yamzynyjk2paf 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+bridge-pair included=true height=14
++ probe/phase27probe observe pre-wrap-1
++ tee raw/observe-pre-wrap-1.json
+=== pre-wrap-1 ===
+{
+  "frontier": {
+    "hash": "ab2af29e378f4c12f8b6b0547cb6b36ac096d305c848b32b50cd405dd0ce6c4d",
+    "height": 366
+  },
+  "sporks": {
+    "count": 7,
+    "list": [
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "name": "libp2p",
+        "description": "Activates the libp2p networking stack",
+        "activated": true,
+        "enforcementHeight": 20
+      },
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000002",
+        "name": "dynamic-plasma",
+        "description": "Activates Dynamic Plasma",
+        "activated": true,
+        "enforcementHeight": 30
+      },
+      {
+        "id": "2d304b88e4762c169bad3be367d19dff2f31ffdad86e1eb310664c45b4af1b2a",
+        "name": "p27-bridge",
+        "description": "phase27 bridge activation",
+        "activated": true,
+        "enforcementHeight": 333
+      },
+      {
+        "id": "6281c65e3dcfd761e03db2c80dc70a2dc8d42a1f2f8a107e00d2c50c9796d8b4",
+        "name": "p27-refund",
+        "description": "phase27 embedded refund",
+        "activated": false,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "6d2b1e6cb4025f2f45533f0fe22e9b7ce2014d91cc960471045fa64eee5a6ba3",
+        "name": "az",
+        "description": "az",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ceb7e3808ef17ea910adda2f3ab547be4cdfb54de8400ce3683258d06be1354b",
+        "name": "htlc",
+        "description": "htlc",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ddd43466769461c5b5d109c639da0f50a7eeb96ad6e7274b1928a35c431d7b1b",
+        "name": "bridge-liq",
+        "description": "bridge-liq",
+        "activated": false,
+        "enforcementHeight": 0
+      }
+    ]
+  },
+  "tokenContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "bridgeContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "sporkContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "accountBalances": {}
+}
++ probe/phase27probe wrap 3 zts1223q8jl79yamzynyjk2paf 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-1.txt
+FATAL: publish from z1qp3yph55qgresyytz83anynr2f4z39x2z3ej3e: rpc error -32000: insufficient balance for transfer
++ sleep 60
++ probe/phase27probe observe post-wrap-1-stall
++ tee raw/observe-post-wrap-1.json
+=== post-wrap-1-stall ===
+{
+  "frontier": {
+    "hash": "81bffd0cedeb26ac19819b06554fca0e55d328e9be6841e595a32a558658be88",
+    "height": 369
+  },
+  "sporks": {
+    "count": 7,
+    "list": [
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "name": "libp2p",
+        "description": "Activates the libp2p networking stack",
+        "activated": true,
+        "enforcementHeight": 20
+      },
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000002",
+        "name": "dynamic-plasma",
+        "description": "Activates Dynamic Plasma",
+        "activated": true,
+        "enforcementHeight": 30
+      },
+      {
+        "id": "2d304b88e4762c169bad3be367d19dff2f31ffdad86e1eb310664c45b4af1b2a",
+        "name": "p27-bridge",
+        "description": "phase27 bridge activation",
+        "activated": true,
+        "enforcementHeight": 333
+      },
+      {
+        "id": "6281c65e3dcfd761e03db2c80dc70a2dc8d42a1f2f8a107e00d2c50c9796d8b4",
+        "name": "p27-refund",
+        "description": "phase27 embedded refund",
+        "activated": false,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "6d2b1e6cb4025f2f45533f0fe22e9b7ce2014d91cc960471045fa64eee5a6ba3",
+        "name": "az",
+        "description": "az",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ceb7e3808ef17ea910adda2f3ab547be4cdfb54de8400ce3683258d06be1354b",
+        "name": "htlc",
+        "description": "htlc",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ddd43466769461c5b5d109c639da0f50a7eeb96ad6e7274b1928a35c431d7b1b",
+        "name": "bridge-liq",
+        "description": "bridge-liq",
+        "activated": false,
+        "enforcementHeight": 0
+      }
+    ]
+  },
+  "tokenContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "bridgeContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "sporkContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "accountBalances": {}
+}
++ probe/phase27probe issue 3 canary QUEUED 100 100 1 false true false
++ tee raw/canary-issue.txt
+issue included=true height=114
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+receive publish err: rpc error -32000: not enough TotalPlasma provided for account-block (PoW + Fused)
+received 7 blocks
+lastOwnedZts zts1aep8wcfzgkr3swtaatvd86
++ sleep 90
++ probe/phase27probe observe post-canary
++ tee raw/observe-post-canary.json
+=== post-canary ===
+{
+  "frontier": {
+    "hash": "71423ea90371c9a6d18e2de08613411a3c9933d4c4af5a9307855b0212e6044b",
+    "height": 375
+  },
+  "sporks": {
+    "count": 7,
+    "list": [
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000001",
+        "name": "libp2p",
+        "description": "Activates the libp2p networking stack",
+        "activated": true,
+        "enforcementHeight": 20
+      },
+      {
+        "id": "0000000000000000000000000000000000000000000000000000000000000002",
+        "name": "dynamic-plasma",
+        "description": "Activates Dynamic Plasma",
+        "activated": true,
+        "enforcementHeight": 30
+      },
+      {
+        "id": "2d304b88e4762c169bad3be367d19dff2f31ffdad86e1eb310664c45b4af1b2a",
+        "name": "p27-bridge",
+        "description": "phase27 bridge activation",
+        "activated": true,
+        "enforcementHeight": 333
+      },
+      {
+        "id": "6281c65e3dcfd761e03db2c80dc70a2dc8d42a1f2f8a107e00d2c50c9796d8b4",
+        "name": "p27-refund",
+        "description": "phase27 embedded refund",
+        "activated": false,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "6d2b1e6cb4025f2f45533f0fe22e9b7ce2014d91cc960471045fa64eee5a6ba3",
+        "name": "az",
+        "description": "az",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ceb7e3808ef17ea910adda2f3ab547be4cdfb54de8400ce3683258d06be1354b",
+        "name": "htlc",
+        "description": "htlc",
+        "activated": true,
+        "enforcementHeight": 0
+      },
+      {
+        "id": "ddd43466769461c5b5d109c639da0f50a7eeb96ad6e7274b1928a35c431d7b1b",
+        "name": "bridge-liq",
+        "description": "bridge-liq",
+        "activated": false,
+        "enforcementHeight": 0
+      }
+    ]
+  },
+  "tokenContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "bridgeContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "sporkContractUnreceived": {
+    "list": [],
+    "count": 0,
+    "more": false
+  },
+  "accountBalances": {}
+}
++ echo 'PART1 DONE'
+PART1 DONE

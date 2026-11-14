@@ -1,0 +1,403 @@
++ stop_node
++ pkill -f lab-devnet-p27b
++ true
++ sleep 6
++ D=/home/mrstockholmez/lab-devnet-p27b
++ rm -rf /home/mrstockholmez/lab-devnet-p27b
++ mkdir -p /home/mrstockholmez/lab-devnet-p27b/wallet
++ cp /home/mrstockholmez/zenon-resilience-lab/suite/devnet/genesis.json /home/mrstockholmez/lab-devnet-p27b/genesis.json
++ cp /home/mrstockholmez/go-zenon/docker/devnet/pillar/wallet/z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq /home/mrstockholmez/lab-devnet-p27b/wallet/
++ python3 - /home/mrstockholmez/lab-devnet-p27b
++ start_node
++ sleep 15
++ cd /home/mrstockholmez/lab-devnet-p27b
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-master/build/znnd --data /home/mrstockholmez/lab-devnet-p27b
++ probe/phase27probe waitfor 8
+height 8 reached (frontier 8)
++ probe/phase27probe send 3 0 QSR 1500000000000
+send included=true height=2
++ probe/phase27probe send 3 0 ZNN 500000000
+send included=true height=3
++ probe/phase27probe fuse 0 10000000000
+FATAL: publish from z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq: rpc error -32000: insufficient balance for transfer
++ probe/phase27probe fuse 3 10000000000
+fuse included=true height=4
++ probe/phase27probe send 3 4 ZNN 1000000000
+send included=true height=5
++ sleep 45
++ probe/phase27probe recvall 4
+received 0 blocks
++ probe/phase27probe sporkcreate p27-bridge 'phase27 bridge activation'
+created spork send included at account height 1
++ probe/phase27probe sporkid p27-bridge
++ tee raw/p27b-spork-bridge-id.txt
+3e52d27d5cf85fc08d5739140f0e4bf2476f50eab8c0d863e6e7cadad4005149
++ probe/phase27probe sporkcreate p27-refund 'phase27 embedded refund'
+created spork send included at account height 2
++ probe/phase27probe sporkid p27-refund
++ tee raw/p27b-spork-refund-id.txt
+d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a
++ stop_node
++ pkill -f lab-devnet-p27b
++ sleep 6
+++ cat raw/p27b-spork-bridge-id.txt
++ BRIDGE_ID=3e52d27d5cf85fc08d5739140f0e4bf2476f50eab8c0d863e6e7cadad4005149
+++ cat raw/p27b-spork-refund-id.txt
++ REFUND_ID=d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a
++ '[' -z 3e52d27d5cf85fc08d5739140f0e4bf2476f50eab8c0d863e6e7cadad4005149 ']'
++ '[' -z d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a ']'
++ cd /home/mrstockholmez/lab-go-zenon-master
++ sed -i 's|BridgeAndLiquiditySpork = NewImplementedSpork("[0-9a-f]*") // LAB p27 devnet spork|BridgeAndLiquiditySpork = NewImplementedSpork("3e52d27d5cf85fc08d5739140f0e4bf2476f50eab8c0d863e6e7cadad4005149") // LAB p27 devnet spork|' common/types/spork.go
++ sed -i 's|EmbeddedRefundSpork = NewImplementedSpork("[0-9a-f]*") // LAB p27 devnet spork|EmbeddedRefundSpork = NewImplementedSpork("d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a") // LAB p27 devnet spork|' common/types/spork.go
++ grep 'LAB p27 devnet spork' common/types/spork.go
+	BridgeAndLiquiditySpork = NewImplementedSpork("3e52d27d5cf85fc08d5739140f0e4bf2476f50eab8c0d863e6e7cadad4005149") // LAB p27 devnet spork
+	EmbeddedRefundSpork = NewImplementedSpork("d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a") // LAB p27 devnet spork
++ make znnd
++ echo 'p27b build exit=0'
+p27b build exit=0
++ cd /home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks
++ start_node
++ sleep 15
++ cd /home/mrstockholmez/lab-devnet-p27b
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-master/build/znnd --data /home/mrstockholmez/lab-devnet-p27b
++ probe/phase27probe sporkactivate 3e52d27d5cf85fc08d5739140f0e4bf2476f50eab8c0d863e6e7cadad4005149
+activate spork send included at account height 3
+++ probe/phase27probe sporkwait p27-bridge
++ ENF_B=22
++ echo 'p27b bridge enforcement 22'
++ tee raw/p27b-bridge-enforcement.txt
+p27b bridge enforcement 22
++ probe/phase27probe waitfor 28
+height 28 reached (frontier 28)
++ probe/phase27probe bridge-orch 6 3 15 10
+bridge-orch included=true height=4
++ probe/phase27probe bridge-guardians
+bridge-guardians included=true height=5
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48011 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 52
+height 52 reached (frontier 52)
++ probe/phase27probe bridge-guardians
+bridge-guardians included=true height=6
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=7
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48011 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 66
+height 66 reached (frontier 66)
++ probe/phase27probe bridge-tss AsAQx1M3LVXCuozDOqO5b9adj/PItYgwZFG/xTDBiZzT
+bridge-tss included=true height=8
++ probe/phase27probe bridge-network 2 123 Ethereum 0x323b5d4c32345ced77393b3530b1eed0f346429d '{}'
+bridge-network included=true height=9
++ probe/phase27probe issue 3 unburnable UNBURN 100000 1000000 1 true false
++ tee raw/issue-unburnable.txt
+issue included=true height=6
+received 0 blocks
+++ grep lastOwnedZts raw/issue-unburnable.txt
+++ awk '{print $2}'
++ ZTS=
++ '[' -z '' ']'
++ sleep 30
++ probe/phase27probe recvall 3
+received 0 blocks
+++ curl -s -m 5 -X POST http://127.0.0.1:48011 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"embedded.token.getByOwner","params":["z1qp3yph55qgresyytz83anynr2f4z39x2z3ej3e",0,10]}'
+++ python3 -c 'import json,sys; l=json.load(sys.stdin)['\''result'\'']['\''list'\'']; print(l[-1]['\''tokenStandard'\''] if l else '\'''\'')'
++ ZTS=zts1g3k6ll46dq6ngx7cwqjtef
++ echo ZTS=zts1g3k6ll46dq6ngx7cwqjtef
++ tee raw/zts.txt
+ZTS=zts1g3k6ll46dq6ngx7cwqjtef
++ probe/phase27probe bridge-pair 2 123 zts1g3k6ll46dq6ngx7cwqjtef 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+bridge-pair included=true height=10
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48011 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 81
+height 81 reached (frontier 81)
++ probe/phase27probe bridge-pair 2 123 zts1g3k6ll46dq6ngx7cwqjtef 0x5fbdb2315678afecb367f032d93f642f64180aa3 true true true 100 15 20 '{}'
+bridge-pair included=true height=11
++ probe/phase27probe staleack 4 5 fresh fresh-ack-control
++ tee raw/fresh-ack-control.json
+=== fresh-ack-control ===
+{
+  "ackHash": "acd12f563ffefc2c4b71d77e5591bbada5364d5112eec25ef25cda3bdc20e121",
+  "ackHeight": 81,
+  "blockHash": "9f9eedcbec1ea6f5238a63e22d944baefeeeda4a2cbf9e03bbdbb845e99ec1c9",
+  "blockHeight": 1,
+  "frontierAtBuild": 81,
+  "label": "fresh-ack-control",
+  "mode": "fresh",
+  "publishError": "rpc error -32000: insufficient balance for transfer"
+}
++ probe/phase27probe staleack 4 5 stale stale-ack-h29 29
++ tee raw/stale-ack-h29.json
+=== stale-ack-h29 ===
+{
+  "ackHash": "c3609a787419448efc1f0cfa4252f25fe5a885dbef98aa115e28e831c3a79bdd",
+  "ackHeight": 29,
+  "blockHash": "451eeec98a2a2dd62842fbfde4ace35748c87a0c7740aa6f4837b5c14e7714c8",
+  "blockHeight": 1,
+  "frontierAtBuild": 81,
+  "label": "stale-ack-h29",
+  "mode": "stale",
+  "publishError": "rpc error -32000: account-block momentum-acknowledged predates a spork enforced at the frontier momentum - account-block momentum-acknowledged predates a spork enforced at the parent momentum: spork 0000000000000000000000000000000000000000000000000000000000000002 is enforced at parent height 81 but not at acknowledged height 29"
+}
++ echo CANARY5
++ probe/phase27probe wrap 3 zts1g3k6ll46dq6ngx7cwqjtef 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-1.txt
+FATAL: publish from z1qp3yph55qgresyytz83anynr2f4z39x2z3ej3e: rpc error -32000: insufficient balance for transfer
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48011 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 85
+height 85 reached (frontier 85)
++ probe/phase27probe refundstate zts1g3k6ll46dq6ngx7cwqjtef CANARY5
++ tee raw/refundstate-0-stalled.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "0",
+  "canaryTokenExists": false,
+  "frontierHeight": 85,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 22,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "p27-refund"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe issue 3 canary5 CANARY5 100 100 1 false true false
++ tee raw/canary-issue.txt
+issue included=true height=7
+received 1 blocks
+lastOwnedZts zts1g3k6ll46dq6ngx7cwqjtef
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48011 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 89
+height 89 reached (frontier 89)
++ probe/phase27probe refundstate zts1g3k6ll46dq6ngx7cwqjtef CANARY5
++ tee raw/refundstate-0b-canary-blocked.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "0",
+  "canaryTokenExists": true,
+  "frontierHeight": 89,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 22,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "p27-refund"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe sporkactivate d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a
+activate spork send included at account height 12
+++ probe/phase27probe sporkwait p27-refund
++ ENF_R=96
++ echo 'refund enforcement 96'
++ tee raw/refund-enforcement.txt
+refund enforcement 96
++ probe/phase27probe waitfor 100
+height 100 reached (frontier 100)
++ probe/phase27probe refundstate zts1g3k6ll46dq6ngx7cwqjtef CANARY5
++ tee raw/refundstate-1-recovered.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "0",
+  "canaryTokenExists": true,
+  "frontierHeight": 100,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 22,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 96,
+      "name": "p27-refund"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe wrap 3 zts1g3k6ll46dq6ngx7cwqjtef 10000 2 123 0xb794f5ea0ba39494ce839613fffba74279579268
++ tee raw/wrap-2.txt
+wrap included=true height=9
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48011 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ probe/phase27probe waitfor 104
+height 104 reached (frontier 104)
++ probe/phase27probe refundstate zts1g3k6ll46dq6ngx7cwqjtef CANARY5
++ tee raw/refundstate-2-wrap2.json
+=== refundstate ===
+{
+  "bridgeZtsBalance": "10000",
+  "canaryTokenExists": true,
+  "frontierHeight": 104,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 22,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 96,
+      "name": "p27-refund"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}
++ probe/phase27probe staleack 4 5 stale stale-ack-enf-minus-1 95
++ tee raw/stale-ack-enf-minus-1.json
+=== stale-ack-enf-minus-1 ===
+{
+  "ackHash": "17601e103b4a89563a43ad6cb731785ab2be55af3837b3ae24d003eb81ef27e0",
+  "ackHeight": 95,
+  "blockHash": "5b20d917913753d98d1b2eff2011bb09b6804ccc44162e3613aa12be7b77c9f6",
+  "blockHeight": 1,
+  "frontierAtBuild": 104,
+  "label": "stale-ack-enf-minus-1",
+  "mode": "stale",
+  "publishError": "rpc error -32000: account-block momentum-acknowledged predates a spork enforced at the frontier momentum - account-block momentum-acknowledged predates a spork enforced at the parent momentum: spork d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a is enforced at parent height 104 but not at acknowledged height 95"
+}
++ probe/phase27probe staleack 4 5 fresh fresh-ack-after-refund-spork
++ tee raw/fresh-ack-after-refund-spork.json
+=== fresh-ack-after-refund-spork ===
+{
+  "ackHash": "584bb95c3441938470583cb23e32f6be87c951b6e4acef9b481be5f27a569194",
+  "ackHeight": 104,
+  "blockHash": "436f1dada1745fc3ce5a9e7f431ba57cfdb47b9aa26f0ecb47f85aae5709cd72",
+  "blockHeight": 1,
+  "frontierAtBuild": 104,
+  "label": "fresh-ack-after-refund-spork",
+  "mode": "fresh",
+  "publishError": "rpc error -32000: insufficient balance for transfer"
+}
++ probe/phase27probe recvall 4
+received 1 blocks
++ echo 'P27B DONE'
+P27B DONE
