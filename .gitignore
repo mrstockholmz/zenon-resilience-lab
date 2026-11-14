@@ -7,3 +7,4 @@ datadir*/
 *.log
 /bin/
 suite/labctl
+results/phase-27-next-sporks/probe/phase27probe
