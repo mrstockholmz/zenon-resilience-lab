@@ -40,9 +40,16 @@ def main():
                     "rejected by the #280 recency rule (first block of the account, "
                     "so the old older-than-previous rule cannot apply): " + e.split(" - ")[0])
         elif "older momentum than previous" in e:
+            # on the funded chain the fresh control consumed block height 1, so
+            # the old rule fires first. Rule-isolated evidence (empty account,
+            # recency message) is preserved in failed-p27b/stale-ack-h29.json.
+            iso = load("failed-p27b/stale-ack-h29.json")
+            note = ""
+            if iso and "predates a spork enforced" in (iso.get("publishError") or ""):
+                note = "; rule-isolated evidence (empty account, first block): failed-p27b/stale-ack-h29.json"
             verdict("b1-stale-ack-h29-rejected", "PASS",
-                    "rejected (via the long-standing older-than-previous rule, "
-                    "NOT the #280 recency rule)")
+                    "rejected (old older-than-previous rule fired first on this funded "
+                    f"account; still a pre-enforcement ack){note}")
         else:
             verdict("b1-stale-ack-h29-rejected", "FAIL", f"unexpected: {e}")
             ok = False
@@ -88,13 +95,15 @@ def main():
         verdict("b4-fresh-ack-after-spork-accepted", "NOT TESTED", "artifacts missing")
 
     # ---- unit-test evidence (unmodified tree, -race) ----
-    ut = os.path.join("/tmp", "p27-unittests.log")
-    vt = os.path.join("/tmp", "p27-vmtests.log")
-    if os.path.exists(ut) and "EXIT=0" in open(ut).read():
+    ut_candidates = [os.path.join(RAW, "p27-unittests.log"), os.path.join("/tmp", "p27-unittests.log")]
+    vt_candidates = [os.path.join(RAW, "p27-vmtests.log"), os.path.join("/tmp", "p27-vmtests.log")]
+    ut = next((p for p in ut_candidates if os.path.exists(p)), None)
+    vt = next((p for p in vt_candidates if os.path.exists(p)), None)
+    if ut and "EXIT=0" in open(ut).read():
         verdict("b5-unit-tests-chain-verifier-pillar-race", "PASS", ut)
     else:
         verdict("b5-unit-tests-chain-verifier-pillar-race", "NOT TESTED", "log missing or failed")
-    if os.path.exists(vt) and "EXIT=0" in open(vt).read():
+    if vt and "EXIT=0" in open(vt).read():
         verdict("b6-unit-tests-vm-ack-recency-refund-race", "PASS", vt)
     else:
         verdict("b6-unit-tests-vm-ack-recency-refund-race", "NOT TESTED", "log missing or failed")
@@ -110,10 +119,20 @@ def main():
     wrap1 = load("wrap-1.txt")  # not json; probe prints plain text
     if s0:
         q = [b for b in s0["tokenContractQueue"]]
-        burnq = [b for b in q if b["from"].startswith("z1qxemdeddedxbridge")]
+        # the stuck item is the bridge Burn: a contract send (blockType 4).
+        # Probe <2026-11-14 late: fromAddress is zero on sends, so match on
+        # addr (probe >= fixed) or fall back to blockType 4 / bridge prefix.
+        def is_burn(b):
+            if str(b.get("addr", "")).startswith("z1qxemdeddedxbridge"):
+                return True
+            if str(b.get("from", "")).startswith("z1qxemdeddedxbridge"):
+                return True
+            return b.get("blockType") == 4
+        burnq = [b for b in q if is_burn(b)]
         if burnq:
             verdict("a1-pre-spork-burn-stuck-at-queue-head", "PASS",
-                    f"Token contract queue holds the bridge Burn unreceived: {burnq[0]['hash'][:16]}…")
+                    f"Token contract queue holds the bridge Burn unreceived: {burnq[0]['hash'][:16]}… "
+                    f"(amount {burnq[0].get('amount')}, blockType {burnq[0].get('blockType')})")
         else:
             verdict("a1-pre-spork-burn-stuck-at-queue-head", "FAIL",
                     f"no bridge Burn in token queue: {q}")
@@ -128,12 +147,19 @@ def main():
             verdict("a1-pre-spork-queue-stalled-canary-blocked", "FAIL",
                     "canary token exists before spork activation")
             ok = False
-        if s0.get("bridgeZtsBalance") == "0":
-            verdict("a1-pre-spork-no-refund", "PASS",
-                    "bridge holds none of the wrapped token (no refund pre-spork)")
-        else:
-            verdict("a1-pre-spork-no-refund", "FAIL",
-                    f"bridge balance pre-spork = {s0.get('bridgeZtsBalance')}")
+        # no refund pre-spork: the bridge keeps only the wrap fee (15),
+        # the burned 9985 stays with the stuck burn send
+        try:
+            if int(s0.get("bridgeZtsBalance", "0")) < 9985:
+                verdict("a1-pre-spork-no-refund", "PASS",
+                        f"bridge holds only the wrap fee ({s0.get('bridgeZtsBalance')}); "
+                        "the burned amount did not return pre-spork")
+            else:
+                verdict("a1-pre-spork-no-refund", "FAIL",
+                        f"bridge balance pre-spork = {s0.get('bridgeZtsBalance')}")
+                ok = False
+        except ValueError:
+            verdict("a1-pre-spork-no-refund", "FAIL", "bad balance")
             ok = False
     else:
         verdict("a1-pre-spork-burn-stuck-at-queue-head", "NOT TESTED", "artifact missing")
@@ -143,8 +169,11 @@ def main():
     if s0 and s1:
         burn_hash = None
         for b in s0["tokenContractQueue"]:
-            if b["from"].startswith("z1qxemdeddedxbridge"):
+            if str(b.get("addr", "")).startswith("z1qxemdeddedxbridge") or \
+               str(b.get("from", "")).startswith("z1qxemdeddedxbridge") or \
+               b.get("blockType") == 4:
                 burn_hash = b["hash"]
+                break
         q1 = [b["hash"] for b in s1["tokenContractQueue"]]
         if burn_hash and burn_hash not in q1:
             verdict("a2-stalled-queue-recovers-after-activation", "PASS",
@@ -162,11 +191,12 @@ def main():
             ok = False
         try:
             bal = int(s1.get("bridgeZtsBalance", "0"))
-            if bal > 0:
+            if bal >= 9985:
                 verdict("a2-refund-deposited-on-bridge", "PASS",
-                        f"bridge holds {bal} units of the wrapped token after recovery")
+                        f"bridge holds {bal} units of the wrapped token after recovery "
+                        "(fee + refunded burn)")
             else:
-                verdict("a2-refund-deposited-on-bridge", "FAIL", "bridge balance is 0")
+                verdict("a2-refund-deposited-on-bridge", "FAIL", f"bridge balance is {bal}")
                 ok = False
         except ValueError:
             verdict("a2-refund-deposited-on-bridge", "FAIL", "bad balance")
@@ -179,7 +209,10 @@ def main():
     if s1 and s2 and os.path.exists(os.path.join(RAW, "wrap-2.txt")):
         supply1 = int(s1.get("ztsTotalSupply", "0"))
         supply2 = int(s2.get("ztsTotalSupply", "0"))
-        q2 = [b for b in s2["tokenContractQueue"] if b["from"].startswith("z1qxemdeddedxbridge")]
+        q2 = [b for b in s2["tokenContractQueue"] if
+              str(b.get("addr", "")).startswith("z1qxemdeddedxbridge") or
+              str(b.get("from", "")).startswith("z1qxemdeddedxbridge") or
+              b.get("blockType") == 4]
         if supply1 == supply2 and not q2:
             verdict("a3-post-spork-wrap-no-stall-no-burn", "PASS",
                     f"wrap #2 settled without stalling the queue; supply constant at {supply2}")
@@ -215,7 +248,7 @@ def main():
     if c2:
         if c2.get("cleanExitAtUnknownSpork") is True:
             verdict("c2-v0010-clean-exit-at-unknown-spork", "PASS",
-                    f"v0.0.10 synced to {c2.get('v0010LastHeight')} "
+                    f"v0.0.10 validated momentums 1..{c2.get('v0010SyncedUpTo')} "
                     f"(enforcement {c2.get('enforcementHeight')}) then exited "
                     f"with status {c2.get('exitCode')}")
         else:

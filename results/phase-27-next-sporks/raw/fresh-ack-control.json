@@ -1,0 +1,12 @@
+=== fresh-ack-control ===
+{
+  "ackHash": "32dabddcbc529ac95c4d2f88804db5ea080778c8e74725211262f75cea451e2d",
+  "ackHeight": 88,
+  "blockHash": "c27979754c0e01ffe1d9d52ce5ae4be965dc69163f1ac792e189f5ef10f6b164",
+  "blockHeight": 2,
+  "frontierAtBuild": 88,
+  "included": true,
+  "label": "fresh-ack-control",
+  "mode": "fresh",
+  "publishError": null
+}

@@ -1,0 +1,11 @@
+=== stale-ack-h29 ===
+{
+  "ackHash": "1803bd8a06f3392371b411fdd86b3c7a10b0f05def469b0f8ba4267c4c956620",
+  "ackHeight": 29,
+  "blockHash": "0ef15a541dcb12bd24bd26283113b4ed9e9e8923ddb8097681f5f2c590c3bb80",
+  "blockHeight": 3,
+  "frontierAtBuild": 88,
+  "label": "stale-ack-h29",
+  "mode": "stale",
+  "publishError": "rpc error -32000: account-block momentum-acknowledged points to an older momentum than previous"
+}

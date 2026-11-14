@@ -439,6 +439,7 @@ func main() {
 		for _, b := range tu.List {
 			tokenQ = append(tokenQ, map[string]interface{}{
 				"hash": b.Hash.String(), "from": b.FromAddress.String(),
+				"addr": b.Address.String(),
 				"zts": b.TokenStandard.String(), "amount": b.Amount, "blockType": b.BlockType})
 		}
 		balOf := func(addr types.Address, token types.ZenonTokenStandard) string {

@@ -1,0 +1,12 @@
+=== fresh-ack-after-refund-spork ===
+{
+  "ackHash": "ade4cb82934b37fa577a2b565b9ee8528e1629f79f91ba5f4c575d31cedbec49",
+  "ackHeight": 111,
+  "blockHash": "a8370f87b0d1a96e2e178eac452fefcc134e0ee760163020b636e0aa299759db",
+  "blockHeight": 3,
+  "frontierAtBuild": 111,
+  "included": true,
+  "label": "fresh-ack-after-refund-spork",
+  "mode": "fresh",
+  "publishError": null
+}

@@ -2,14 +2,14 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 27
+next_phase: 28
 cloud_sessions_run: 1
-local_sessions_run: 20
-pinned_go_zenon: e89f91f68b922a65370b7ffd9cfe860045a99b29
+local_sessions_run: 21
+pinned_go_zenon: ab8ee8da3a50231b0910c536632e9b05fff42795 (go-zenon master = merge of #280, includes #277 = d610b48; phase 27 code basis; lab patches: devnet spork ids + accelerated bridge governance delays, documented in results/phase-27-next-sporks/REPORT.md)
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
 release: v0.2
-updated: 2026-11-09 (v0.2: phases 21-26 folded into CURRENT findings, labctl sendqsr + agent provisioning docs, fresh-clone reproduction run in results/v0.2-fresh-clone/)
+updated: 2026-11-14 (phase 27 DONE: next-sporks devnet tests #277/#280, 16/16 PASS; p27d+p27c runs committed; go-zenon pin now ab8ee8d)
 ```
 
 ## Phase log
@@ -38,6 +38,7 @@ updated: 2026-11-09 (v0.2: phases 21-26 folded into CURRENT findings, labctl sen
 | 23 multi-producer devnet | done | results/phase-23/20261025-phase23-multiproducer-results.md | 3/3 active pillars: 10s mean dt (stdev=0), uniform producer distribution, 200 tx limit still enforced, queue drain 3x faster (30s vs 90s), plasma regen 3x faster (10s vs 30s), effective throughput ~20 txs/s. R20 added. |
 | 24 multi-producer PoW latency | done | results/phase-24/20261025-phase24-multiproducer-pow-results.md | PoW txs 100% inclusion + 100% same-momentum with 10s momenta (13/13). PoW time unchanged (~24s avg). Inclusion latency 0-3ms. Mixed contention: fused all in first momentum, unfused spread by PoW speed. 100% inclusion both groups. |
 | 22 validation edge cases | done | results/phase-22/20261025-phase22-valedge-results.md | All 13 negative cases correctly rejected with matching error messages. Zero-amount send accepted (correct boundary). No validation gaps found. 3-seed reproducible. R19 added. |
+| 27 next sporks (#277, #280) | done | results/phase-27-next-sporks/ (REPORT.md, check-phase27.py 16/16 PASS) | On isolated devnets: failed embedded burn stalls the Token contract queue pre-EmbeddedRefundSpork (canary Issue blocked, bridge keeps only the wrap fee); recovers at enforcement (burn receive moved to first in-force momentum, refund as plain transfer). #280 ack recency enforced at admission before balance checks + VM + verifier (unit -race green). Mixed nets: v0.0.10 either cannot decode DP-enforced chains at all (wire split at height 1) or validates to the enforcement height and exits status 2 ("unimplemented spork"). No break found in either merged change. |
 | 26 Zeno settlement attack checks | done | results/phase-26-zeno-attacks/ (script + run logs) | Live negative tests against the Zeno settlement contract on the chain-69 Zeno devnet (domain 1): 9 PASS / 0 FAIL / 2 NOT TESTED. Devnet rejects batch replay (executor + non-executor), pre-finality relay, double withdrawal, and the plasma/payload caps; custody + fee invariants hold on-chain. Substrate differs from the lab suite (Zeno devnet stack, TS runner staged into the zeno-devnet checkout). |
 | 21 momentum production rate | done | results/phase-21/20261025-phase21-momentum-rate-results.md | Mean inter-momentum time: 30.0s (3× slowdown, matching 3-pillar 1-active config). Distribution does NOT match uniform shuffle model — 30.9% at 10s vs 11.1% predicted. Momentum timestamp = slot start time (0s delay). Tx load does not affect production rate. Effective throughput: ~6.7 txs/s not 20 txs/s. R18 added. |
 

@@ -1,0 +1,61 @@
+=== refundstate ===
+{
+  "bridgeZtsBalance": "15",
+  "canaryTokenExists": false,
+  "frontierHeight": 96,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 24,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "p27-refund"
+    }
+  ],
+  "tokenContractQueue": [
+    {
+      "amount": "9985",
+      "blockType": 4,
+      "from": "z1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsggv2f",
+      "hash": "43e7eab18694b3ddb5055ca3b492f2792c565c450bf3b5411aedd732e68cf9b4",
+      "zts": "zts16hld0dcmrpgvgt7qh3mkuz"
+    },
+    {
+      "amount": "100000000",
+      "blockType": 2,
+      "from": "z1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsggv2f",
+      "hash": "5cb76d961f071f50c35527d65252731e00e07cee4596f8b26f10835e4ce16cf6",
+      "zts": "zts1znnxxxxxxxxxxxxx9z4ulx"
+    }
+  ],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}

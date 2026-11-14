@@ -1,0 +1,255 @@
++ M=/home/mrstockholmez/lab-devnet-p27c
++ V=/home/mrstockholmez/lab-devnet-p27c-v0010
++ W=/home/mrstockholmez/lab-go-zenon-p27c
++ stop_master
+++ ps aux
+++ grep 'lab-devnet-p27[c]'
+++ grep -v v0010
+++ awk '{print $2}'
++ PID=
++ '[' -n '' ']'
++ sleep 6
++ rm -rf /home/mrstockholmez/lab-devnet-p27c
++ mkdir -p /home/mrstockholmez/lab-devnet-p27c/wallet
++ python3 - /home/mrstockholmez/lab-devnet-p27c
++ sleep 15
++ cd /home/mrstockholmez/lab-devnet-p27c
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-p27c/build/znnd --data /home/mrstockholmez/lab-devnet-p27c
++ cd /home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks
++ probe/phase27probe waitfor 8
+height 8 reached (frontier 8)
++ probe/phase27probe sporkcreate p27c-x 'phase27c unknown spork'
+created spork send included at account height 1
++ probe/phase27probe sporkid p27c-x
++ tee raw/p27c-spork-id.txt
+db089f2b61a6822d1b40247ffc844854b1fe31eddd3aad697ed373cf507f8c79
++ stop_master
+++ ps aux
+++ grep 'lab-devnet-p27[c]'
+++ grep -v v0010
+++ awk '{print $2}'
++ PID=2403980
++ '[' -n 2403980 ']'
++ kill 2403980
++ sleep 6
+++ cat raw/p27c-spork-id.txt
++ XID=db089f2b61a6822d1b40247ffc844854b1fe31eddd3aad697ed373cf507f8c79
++ '[' -z db089f2b61a6822d1b40247ffc844854b1fe31eddd3aad697ed373cf507f8c79 ']'
++ cd /home/mrstockholmez/lab-go-zenon-p27c
++ sed -i 's|BridgeAndLiquiditySpork = NewImplementedSpork("[0-9a-f]*") // LAB p27 devnet spork|BridgeAndLiquiditySpork = NewImplementedSpork("db089f2b61a6822d1b40247ffc844854b1fe31eddd3aad697ed373cf507f8c79") // LAB p27 devnet spork|' common/types/spork.go
++ grep 'LAB p27' common/types/spork.go
+	BridgeAndLiquiditySpork = NewImplementedSpork("db089f2b61a6822d1b40247ffc844854b1fe31eddd3aad697ed373cf507f8c79") // LAB p27 devnet spork
+	EmbeddedRefundSpork = NewImplementedSpork("d6d101f6aff997788d493a026e1f5ae41b6c888cf11e2c1b864b6bdf4731330a") // LAB p27 devnet spork
++ make znnd
++ echo 'p27c build exit=0'
+p27c build exit=0
++ sleep 15
++ cd /home/mrstockholmez/lab-devnet-p27c
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-go-zenon-p27c/build/znnd --data /home/mrstockholmez/lab-devnet-p27c
++ cd /home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks
++ probe/phase27probe sporkactivate db089f2b61a6822d1b40247ffc844854b1fe31eddd3aad697ed373cf507f8c79
+activate spork send included at account height 2
+++ probe/phase27probe sporkwait p27c-x
++ ENF=16
++ echo 'p27c-x enforcement 16'
++ tee raw/p27c-enforcement.txt
+p27c-x enforcement 16
++ probe/phase27probe waitfor 19
+height 19 reached (frontier 19)
+++ cd /tmp/enode
+++ ./enode /home/mrstockholmez/lab-devnet-p27c/network-private-key 58021
++ ENODE=enode://ef1a2b996c3918f1f14b6af5e6f7a2733b886b79a449dedcb84b9ae83d0e44250cc9c38262b5d061c585d18ea9c3bb6070e3ca92392712cd4d37f8601feb5133@127.0.0.1:58021
++ echo 'p27c master enode: enode://ef1a2b996c3918f1f14b6af5e6f7a2733b886b79a449dedcb84b9ae83d0e44250cc9c38262b5d061c585d18ea9c3bb6070e3ca92392712cd4d37f8601feb5133@127.0.0.1:58021'
+p27c master enode: enode://ef1a2b996c3918f1f14b6af5e6f7a2733b886b79a449dedcb84b9ae83d0e44250cc9c38262b5d061c585d18ea9c3bb6070e3ca92392712cd4d37f8601feb5133@127.0.0.1:58021
++ rm -rf /home/mrstockholmez/lab-devnet-p27c-v0010
++ mkdir -p /home/mrstockholmez/lab-devnet-p27c-v0010
++ python3 - /home/mrstockholmez/lab-devnet-p27c-v0010 enode://ef1a2b996c3918f1f14b6af5e6f7a2733b886b79a449dedcb84b9ae83d0e44250cc9c38262b5d061c585d18ea9c3bb6070e3ca92392712cd4d37f8601feb5133@127.0.0.1:58021
++ cd /home/mrstockholmez/lab-devnet-p27c-v0010
++ VPID=2416467
++ echo 'p27c v0010 pid 2416467'
+p27c v0010 pid 2416467
++ cd /home/mrstockholmez/zenon-resilience-lab/results/phase-27-next-sporks
++ setsid nohup nice -n 10 /home/mrstockholmez/lab-v0010/znnd-linux-amd64 --data /home/mrstockholmez/lab-devnet-p27c-v0010
++ MAXH=46
++ LASTV=0
++ EXIT_CODE=
+++ seq 1 90
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+++ echo 0
++ VHH=0
++ '[' 0 '!=' 0 ']'
++ '[' 0 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 0 ']'
++ echo 't+10s master=19 v0010=2 enf=16'
+t+10s master=19 v0010=2 enf=16
++ LASTV=2
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
+++ FM
+++ curl -s -m 5 -X POST http://127.0.0.1:48021 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ MH=19
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
++ VHH=2
++ '[' 2 '!=' 2 ']'
++ '[' 2 -ge 46 ']'
++ sleep 5
++ for i in $(seq 1 90)
++ kill -0 2416467
++ wait 2416467
++ EXIT_CODE=2
++ break
++ STILL=0
++ kill -0 2416467
++ '[' 0 -eq 1 ']'
++ '[' -z 2 ']'
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+++ echo 0
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+++ echo 0
++ echo 'v0010 still_running=0 exit_code=2 lastHeight=0 reachedPreEnforcement=0'
+v0010 still_running=0 exit_code=2 lastHeight=0 reachedPreEnforcement=0
++ grep -i 'spork\|terminat\|unimplemented\|fatal\|panic' /home/mrstockholmez/lab-devnet-p27c-v0010/boot.log /home/mrstockholmez/lab-devnet-p27c-v0010/log/error/zenon.error.log
++ tail -12
++ tee raw/p27c-v0010-loglines.txt
+/home/mrstockholmez/lab-devnet-p27c-v0010/boot.log:Detected an unimplemented spork.
+/home/mrstockholmez/lab-devnet-p27c-v0010/boot.log:  Spork name `p27c-x`
+/home/mrstockholmez/lab-devnet-p27c-v0010/boot.log:znnd is terminating
+/home/mrstockholmez/lab-devnet-p27c-v0010/log/error/zenon.error.log:t=2026-11-14T19:39:49+0100 lvl=crit msg="can't insert momentum because don't have all sporks implemented" module=chain submodule=momentum-pool hash=c48ddd27217f2b7716d69e21795396dd96db5700e22d369ea94d0d94f73da74e height=16 unimplemented=[0xc00346e000]
++ tee raw/p27c-v0010-result.json
+++ VH
+++ curl -s -m 5 -X POST http://127.0.0.1:48022 -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ledger.getFrontierMomentum","params":[]}'
+++ python3 -c 'import json,sys; print(json.load(sys.stdin)['\''result'\'']['\''height'\''])'
+++ echo 0
++ python3 - 16 2 0 0
+{
+  "check": "c2-v0010-clean-exit-at-unknown-spork",
+  "unknownSpork": "p27c-x",
+  "enforcementHeight": 16,
+  "v0010LastHeight": 0,
+  "reachedPreEnforcement": false,
+  "processTerminated": true,
+  "exitCode": "2",
+  "expectedExitCode": 2,
+  "cleanExitAtUnknownSpork": false
+}
++ echo 'P27C DONE'
+P27C DONE

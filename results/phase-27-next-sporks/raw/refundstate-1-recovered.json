@@ -1,0 +1,46 @@
+=== refundstate ===
+{
+  "bridgeZtsBalance": "10000",
+  "canaryTokenExists": true,
+  "frontierHeight": 107,
+  "sporks": [
+    {
+      "activated": true,
+      "enforcementHeight": 20,
+      "name": "libp2p"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 30,
+      "name": "dynamic-plasma"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "az"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 24,
+      "name": "p27-bridge"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 0,
+      "name": "htlc"
+    },
+    {
+      "activated": false,
+      "enforcementHeight": 0,
+      "name": "bridge-liq"
+    },
+    {
+      "activated": true,
+      "enforcementHeight": 103,
+      "name": "p27-refund"
+    }
+  ],
+  "tokenContractQueue": [],
+  "tokenContractZtsBalance": "0",
+  "ztsTotalSupply": "100000"
+}

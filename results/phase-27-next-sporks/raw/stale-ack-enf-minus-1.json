@@ -1,0 +1,11 @@
+=== stale-ack-enf-minus-1 ===
+{
+  "ackHash": "dd32015d93ea60e3127927b443fd7ff90b80ccbeb5af9ac6bed513a240b6a70f",
+  "ackHeight": 102,
+  "blockHash": "1311a284413ea5654b1447d7966d7dc6b4377dd15f579c835ef8074790e635e4",
+  "blockHeight": 3,
+  "frontierAtBuild": 111,
+  "label": "stale-ack-enf-minus-1",
+  "mode": "stale",
+  "publishError": "rpc error -32000: account-block momentum-acknowledged predates a spork enforced at the frontier momentum - account-block momentum-acknowledged predates a spork enforced at the parent momentum: spork e8d73c5e9b8380f250778c3299fc01da4996e19e36a0aa18284dc761fa6210a4 is enforced at parent height 111 but not at acknowledged height 102"
+}

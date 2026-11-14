@@ -1,0 +1,4 @@
+/home/mrstockholmez/lab-devnet-p27c-v0010/boot.log:Detected an unimplemented spork.
+/home/mrstockholmez/lab-devnet-p27c-v0010/boot.log:  Spork name `p27c-x`
+/home/mrstockholmez/lab-devnet-p27c-v0010/boot.log:znnd is terminating
+/home/mrstockholmez/lab-devnet-p27c-v0010/log/error/zenon.error.log:t=2026-11-14T19:39:49+0100 lvl=crit msg="can't insert momentum because don't have all sporks implemented" module=chain submodule=momentum-pool hash=c48ddd27217f2b7716d69e21795396dd96db5700e22d369ea94d0d94f73da74e height=16 unimplemented=[0xc00346e000]

@@ -1,0 +1,14 @@
+{
+  "check": "c2-v0010-clean-exit-at-unknown-spork",
+  "unknownSpork": "p27c-x",
+  "sporkId": "db089f2b61a6822d1b40247ffc844854b1fe31eddd3aad697ed373cf507f8c79",
+  "enforcementHeight": 16,
+  "v0010SyncedUpTo": 15,
+  "rejectedMomentumHash": "c48ddd27217f2b7716d69e21795396dd96db5700e22d369ea94d0d94f73da74e",
+  "processTerminated": true,
+  "exitCode": 2,
+  "expectedExitCode": 2,
+  "cleanExitAtUnknownSpork": true,
+  "evidence": "boot.log: 'Can't insert momentum c48ddd27... height 16 / Detected an unimplemented spork. / Spork name `p27c-x` / Please upgrade your znnd binary / znnd is terminating'; error log lvl=crit msg=\"can't insert momentum because don't have all sporks implemented\" height=16",
+  "note": "the run script's RPC height poll returned 0 because the node had already terminated before the first poll; the boot.log is the authoritative evidence. The node validated momentums 1..15 (pre-enforcement, old wire form) and refused momentum 16 exactly at the enforcement height."
+}
