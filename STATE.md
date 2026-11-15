@@ -9,7 +9,7 @@ pinned_go_zenon: ab8ee8da3a50231b0910c536632e9b05fff42795 (go-zenon master = mer
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
 release: v0.2
-updated: 2026-11-14 (phase 27 DONE: next-sporks devnet tests #277/#280, 16/16 PASS; p27d+p27c runs committed; go-zenon pin now ab8ee8d)
+updated: 2026-11-15 (renewal watch: no spork change as of 09:15 CEST, RPC-verified 6-spork baseline on local node + my.hc1node.com, all v0.0.10 in lockstep at h~14.67M; phase 27 DONE since 2026-11-14, 16/16 PASS)
 ```
 
 ## Phase log
