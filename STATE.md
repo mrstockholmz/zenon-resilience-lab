@@ -292,3 +292,7 @@ prove reproduction from a fresh clone on this machine.
   (direct RPC, local node + node.zenonhub.io: identical 7-spork sets, activated=false,
   enforcementHeight=0 both sides; local h14675001, ref h14675001, chain agreement holds).
   Nothing running. Phase 27 complete at 38ff1f2.
+- 2026-11-17 00:20 CET renewal watch check: spork "v0.0.10" still NOT activated
+  (direct RPC, local node + node.zenonhub.io: identical 7-spork sets, activated=false,
+  enforcementHeight=0 both sides; identical frontier h14678299 fea1ade0c885496a…,
+  lockstep). Nothing running. Phase 27 complete at 38ff1f2.
