@@ -288,3 +288,7 @@ prove reproduction from a fresh clone on this machine.
 - Superseded within v0.2: v0.1's "Single-producer limits" caveat is narrowed — phases
   21–24 re-verified phases 2–4 findings on multi-producer; remaining single-producer-only
   scope is stated in the report.
+- 2026-11-16 09:20 CEST renewal watch check: spork "v0.0.10" still NOT activated
+  (direct RPC, local node + node.zenonhub.io: identical 7-spork sets, activated=false,
+  enforcementHeight=0 both sides; local h14675001, ref h14675001, chain agreement holds).
+  Nothing running. Phase 27 complete at 38ff1f2.
