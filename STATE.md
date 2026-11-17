@@ -9,7 +9,7 @@ pinned_go_zenon: ab8ee8da3a50231b0910c536632e9b05fff42795 (go-zenon master = mer
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
 release: v0.2
-updated: 2026-11-17 09:20 CET (renewal watch: spork "v0.0.10" still not activated, RPC-verified local: activated=false/enforcementHeight=0, 7 sporks; fork-watch 09:10 CET shows local + my.hc1node.com + node.zenonhub.io lockstep at h14680241 on v0.0.10; phase 27 DONE since 2026-11-14, 16/16 PASS)
+updated: 2026-11-17 19:15 CET (renewal watch: spork "v0.0.10" still not activated, RPC-verified on all three nodes — local + my.hc1node.com + node.zenonhub.io: identical 7-spork sets, activated=false/enforcementHeight=0; fork-watch 19:10 CET lockstep at h14682530 on v0.0.10; phase 27 DONE since 2026-11-14, 16/16 PASS)
 ```
 
 ## Phase log
