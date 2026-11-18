@@ -296,3 +296,26 @@ prove reproduction from a fresh clone on this machine.
   (direct RPC, local node + node.zenonhub.io: identical 7-spork sets, activated=false,
   enforcementHeight=0 both sides; identical frontier h14678299 fea1ade0c885496a…,
   lockstep). Nothing running. Phase 27 complete at 38ff1f2.
+- 2026-11-18 02:15 CEST phase 29 WRAPPED for the night (session ended; long runs left
+  live ON PURPOSE, collected next lab session):
+  * PR #310 (bb1984fa) chain-70 devnet ~/lab-devnet-p29/n{1,2,3} (RPC 47971-3): n3 (dev3)
+    killed 23:44:02Z; n1 PID 3020436, n2 PID 3021095. First pillar Update at h301/302
+    judged only ticks 0..7 (Update = every 300 momenta) -> correctly NOT jailed; next
+    judgement h602 ~02:35 CEST covers ticks 8..~21, streak from tick 4 -> jail expected.
+    RUNNING PROCESSES: monitor scripts/monitor-p29.py PID 3022650 -> raw/monitor.jsonl;
+    scripts/auto-unjail.py PID ~3031296 -> raw/auto-unjail.log (on isJailed=true:
+    snapshots supply to raw/supply-{before,after}-unjail.txt, runs probe
+    `unjail 7 10000000000 dev3` with LAB_RPC_URL=:47971 LAB_DEVNET_HOME=~/lab-devnet-p29/n1,
+    restarts n3, verifies dev3 produces). NEXT SESSION: collect monitor/auto-unjail logs,
+    re-run check-phase29.py (unjail + resume rows), then teardown n1/n2/n3 optionally.
+  * PR #306 (dfbc164): DONE for this phase — honest negative on the devnet control.
+    -race tests green; liar A/B on chain 71 (victim s306v RPC 47985 PID 3024472 now on
+    PRE-fix binary, liar s306f2 PID 3026544). Victim momentum logs: post-fix gaps
+    70-160s (~0.36x), pre-fix gaps 70-140s (~0.33x) — distributions overlap; the liar's
+    sessions end fast (syncState 1->2) so neither binary sustains a hold. Pre-fix hold
+    hypothesis NOT confirmed on this setup; discriminating repro needs a session that
+    stays open (deeper-hash-drip liar). See REPORT.md Results. Processes may be killed
+    next session (evidence is on disk).
+  * Item A (renewal watch): 00:10 CEST check, no change, nothing recorded (per rule).
+  * Committed as this commit; probe/go.sum intentionally untracked (push-guard regex
+    false positive, regenerable).
