@@ -1,0 +1,6 @@
+2026-11-18T01:00:48Z watcher started
+2026-11-18T01:54:48Z dev3 IS JAILED — starting unjail sequence
+2026-11-18T01:54:48Z supply before: 120500000000000
+2026-11-18T01:54:48Z unjail attempt 0: unjail send included=true height=4
+2026-11-18T01:55:18Z supply after: 120490000000000
+2026-11-18T01:55:18Z isJailed now: False

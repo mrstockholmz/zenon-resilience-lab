@@ -1,8 +1,9 @@
 # Phase 29 — devnet checks of open go-zenon PRs (lab work item C, material for M12)
 
-Status: IN PROGRESS (jail lifecycle completes unattended tonight via scripts/auto-unjail.py;
-306 liar test DONE — control negative, reported honestly)
-Date: 2026-11-18 (session 00:15–02:15 CEST; wrap-up ~02:15)
+Status: #310 DONE (jail lifecycle complete, 7/7 testable checks PASS);
+#306 A/B done with an honest negative on the devnet control — discriminating
+re-run (drip liar) started as a background long-run, see STATE.md
+Date: 2026-11-18 (session 1 00:15–02:15 CEST; session 2 09:15–~11:15 CET)
 
 ## What was tested
 
@@ -24,18 +25,32 @@ Timeline (UTC):
 - 23:41 derived-account map resolved (`raw/derived-addrs.txt`): dev3 stake = index 7.
 - 23:42 dev3 stake funded (300 ZNN + 600 QSR from derived 3) and fused 300 QSR.
 - 23:43 negative check: unjail with 99 ZNN refused by the node (`invalid token or amount`).
-- 23:44:02 node n3 (dev3) killed. dev3 never produces again; network keeps producing
+- 23:44:02 node n3 (dev3) killed (epoch 1794962642). dev3 never produces again; network keeps producing
   on dev1+dev2 only.
-- (jail expected when the finished-tick window covers the first missed tick + 12 ticks,
-  ≈ 01:42-01:50 CEST; monitor: `scripts/monitor-p29.py` → `raw/monitor.jsonl`)
-- UPDATE 01:05 CEST: the first pillar-contract Update at h301/302 judged only ticks 0..7
-  (Update runs every `UpdateMinNumMomentums` = 300 momenta) — streak 4 ticks, below the
-  12-tick jail threshold, correctly NOT jailed. Next judgement at h602 (~02:35 CEST):
-  ticks 8..~21 with streak from tick 4 → 18 ≥ 12 → jail. That is past the session kill,
-  so `scripts/auto-unjail.py` (nohup, PID in STATE.md) was armed: it polls for
-  isJailed=true, snapshots ZNN supply before/after, runs `p29probe unjail 7 10000000000 dev3`
-  (100 ZNN from the dev3 stake address, index 7), restarts n3, and logs every step to
-  `raw/auto-unjail.log`. Next lab session collects the results.
+
+Timeline continued (UTC, from `raw/monitor.jsonl` + `raw/auto-unjail.log`; the watcher
+script writes local CET time with a mislabeled `Z` suffix — its lines anchor to the
+file mtime, e.g. the last line "2026-11-18T01:55:18Z" ≡ epoch 1794966918 ≡ 01:55:18 CET):
+- 23:44:02–00:54:48 kill→jail window: 95 monitor samples, dev3 in producers 0 times,
+  producedMomentums constant at 24 — production stop is clean and the chain does not stall.
+- 00:54:48 (epoch 1794966888, heights 599–604): the armed watcher `scripts/auto-unjail.py`
+  detects dev3 IS JAILED. The pillar-contract Update runs every 300 momenta, so the jail
+  executed at the h601/602 Update — the same cadence that at h301/302 correctly judged
+  the 4-tick streak below the 12-tick threshold. Kill→jail latency: 4246 s ≈ 70.8 min
+  ≈ 14 election ticks of 300 s (window requires ≥ 12 ticks spanning ≥ 3 missed slots —
+  observed latency is consistent with the code constants).
+- 00:55:18: unjail send (100 ZNN from the dev3 stake address, derived index 7) included
+  by h604; total ZNN supply 120500000000000 → 120490000000000 (−100 ZNN exactly, burned);
+  isJailed → false. The ~60 s jail window was shorter than the monitor's 45 s poll, so
+  no monitor row carries isJailed=true — the jail evidence is the watcher log plus the
+  supply drop between monitor samples h599 (supply unchanged) and h604 (supply dropped).
+- 00:55:30-ish: watcher restarts n3; dev3 resumes producing at h612 (first post-unjail
+  production sample ts 1794967012, 124 s after the jail detection). producedMomentums
+  climbs 24 → 793+ over the following hours; dev1+dev2+dev3 all produce again.
+- NOT OBSERVED live: rewards/votes while jailed (jail window ~60 s and dev3's node was
+  down during it; slot-exclusion while jailed is indistinguishable from the dead-node
+  baseline in this setup). Next-epoch jail recurrence needs a 24 h epoch — unreachable
+  in a lab session.
 
 Checks: `python3 check-phase29.py` prints PASS/FAIL/NOT TESTED from the raw evidence.
 
@@ -64,21 +79,35 @@ Checks: `python3 check-phase29.py` prints PASS/FAIL/NOT TESTED from the raw evid
 
 ## Results
 
-`python3 check-phase29.py` output at wrap-up (02:15 CEST):
+`python3 check-phase29.py` final output (2026-11-18 ~09:45 CET):
 
 ```
 PASS  310: dev3 stops producing after its node is killed
 PASS  310: network keeps producing with 2 of 3 pillars (no stall)
-NOT TESTED 310: pillar jailed after >=12-tick miss window  (pending, ~02:35 CEST)
-NOT TESTED 310: unjail accepted from stake address with exactly 100 ZNN
-NOT TESTED 310: unjailed pillar resumes producing after node restart
+PASS  310: pillar jailed after >=12-tick miss window (h601/602 Update; ~14 ticks after kill)
+PASS  310: unjail accepted from stake address with exactly 100 ZNN
+PASS  310: unjail burns exactly 100 ZNN (total supply drops)
+PASS  310: unjailed pillar resumes producing after node restart (h612, 124 s after unjail)
 PASS  310: unjail with 99 ZNN refused (amount gate)
+NOT TESTED 310: rewards/votes while jailed (jail window ~60 s, node down — not observable)
 NOT TESTED 310: jailed pillar in the next epoch (24h epoch, unreachable in-session)
 PASS  306 post-fix: production continues while liar peer attached
-FAIL  306 pre-fix control: sustained hold under the same liar
+FAIL  306 pre-fix control: sustained hold under the same liar (honest negative, see below)
 PASS  306: go test -race ./protocol/... green at head dfbc164
-5 PASS, 1 FAIL, 4 NOT TESTED
+9 PASS, 1 FAIL, 2 NOT TESTED
 ```
+
+### PR #310 — verdict on the devnet lifecycle
+
+Every testable claim of the PR held end to end on the 3-pillar devnet at head `bb1984fa`:
+a stopped pillar is excluded from production without stalling the chain, the network
+keeps producing at full height on the remaining pillars (no fallback election needed with
+2/3 active), the jail lands at the first pillar-contract Update whose judgement window
+covers ≥12 ticks of misses (~70 min after the stop on this 10 s / 300 s-tick devnet),
+the 99 ZNN unjail is refused while exactly 100 ZNN from the stake address is accepted and
+burned (supply −100 ZNN exactly), and the unjailed pillar resumes producing within ~2 min
+of its node restart. What the devnet cannot reach: the 24 h next-epoch recurrence and
+live reward/vote observation during a ~60 s jail window.
 
 ### PR #306 — honest verdict on the devnet control
 
@@ -117,9 +146,9 @@ noted as follow-up in the project file.
 
 ## Follow-ups (next lab session)
 
-1. Collect `raw/monitor.jsonl` + `raw/auto-unjail.log`: jail event (~02:35 CEST),
-   unjail burn (supply delta must be exactly 100 ZNN), n3 restart, dev3 resuming.
-2. Re-run `check-phase29.py` — the remaining NOT TESTED rows should flip.
+1. ~~Collect the #310 jail lifecycle~~ — DONE (see above).
+2. #306: the drip-liar discriminating re-run (`ZNN_LIAR=2`, unknown-hash replies, the fix's
+   own scripted-origin shape) — if left running, collect per STATE.md; then extend
+   `check-phase29.py` with the A2/B2 rows.
 3. Optionally: next-epoch jail-recurrence check needs a 24 h run — schedule via
    STATE.md long-run listing if desired.
-4. #306: build a session-staying-open liar for a discriminating A/B re-run.
