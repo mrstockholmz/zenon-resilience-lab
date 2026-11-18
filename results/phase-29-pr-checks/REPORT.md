@@ -1,9 +1,10 @@
 # Phase 29 — devnet checks of open go-zenon PRs (lab work item C, material for M12)
 
 Status: #310 DONE (jail lifecycle complete, 7/7 testable checks PASS);
-#306 A/B done with an honest negative on the devnet control — discriminating
-re-run (drip liar) started as a background long-run, see STATE.md
-Date: 2026-11-18 (session 1 00:15–02:15 CEST; session 2 09:15–~11:15 CET)
+#306 A/B v1 done (honest negative) + drip-liar discriminating re-run IN PROGRESS:
+A2 (post-fix victim) collecting since 10:22 CET, B2 (pre-fix) swap armed 10:55 CET
+via scripts/swap-b2.sh; collect next lab session per STATE.md
+Date: 2026-11-18 (session 1 00:15–02:15 CEST; session 2 09:15–11:00 CET)
 
 ## What was tested
 
@@ -147,8 +148,14 @@ noted as follow-up in the project file.
 ## Follow-ups (next lab session)
 
 1. ~~Collect the #310 jail lifecycle~~ — DONE (see above).
-2. #306: the drip-liar discriminating re-run (`ZNN_LIAR=2`, unknown-hash replies, the fix's
-   own scripted-origin shape) — if left running, collect per STATE.md; then extend
-   `check-phase29.py` with the A2/B2 rows.
+2. #306 drip A/B (v6 liar): A2 rows since 10:22 CET (raw/liar-test.jsonl label
+   `A2-postfix-dripv6`, victim log ground truth), B2 armed 10:55 CET (label
+   `B2-prefix-dripv6`, swap logged to raw/swap-b2.log). COLLECT: wait until B2
+   has ≥30 min of rows, then compare production rates — pre-fix expectation:
+   held ~90% of producer slots (ReadyToProduce=false while the ~40 s download
+   sessions run back to back, restarting every ~4 s); post-fix: full 0.33x
+   baseline (30 s/momentum) after the first 60 s stall window. Extend
+   check-phase29.py with A2/B2 rows (rates + session duty cycle from the
+   victim zenon.log), then tear down s306v/s306f2.
 3. Optionally: next-epoch jail-recurrence check needs a 24 h run — schedule via
    STATE.md long-run listing if desired.

@@ -296,6 +296,25 @@ prove reproduction from a fresh clone on this machine.
   (direct RPC, local node + node.zenonhub.io: identical 7-spork sets, activated=false,
   enforcementHeight=0 both sides; identical frontier h14678299 fea1ade0c885496a…,
   lockstep). Nothing running. Phase 27 complete at 38ff1f2.
+- 2026-11-18 ~10:25 CET phase 29 #306 DRIP A/B RUNNING (left live ON PURPOSE):
+  * #310 devnet (n1/n2/n3) and its monitor/auto-unjail TEARDOWN — evidence committed (3a563b9).
+  * Drip liar v6 (ZNN_LIAR=2, ~/p29-liar build/znnd-liar @ dfbc164+lab patch,
+    patch exported at results/phase-29-pr-checks/liar-patch-v6.diff): ~40 s download
+    sessions (delayed ancestor-search replies, clean "Synchronization completed"),
+    back to back every ~44 s, peer never dropped. PID: check `ps aux | grep s306f2`.
+  * A2 = victim (~/lab-devnet-p29/s306v, RPC 47985) on post-fix binary
+    (~/review/pr-306/build/znnd = dfbc164), label A2-postfix-dripv6 since 10:22 CET.
+  * B2 swap ARMED at scripts/swap-b2.sh (nohup, fires 10:55 CET): victim restarts on
+    pre-fix binary (~/p29-pre/build/znnd = 65240b1), label B2-prefix-dripv6, log
+    raw/swap-b2.log. Ground truth: victim ~/lab-devnet-p29/s306v/log/zenon.log
+    (debug level; "Synchronizing with the zenon network" / "Synchronization completed")
+    + boot-a2g.log (A2) / boot-b2.log (B2) momentum insert times; logger rows
+    raw/liar-test.jsonl (20 s poll).
+  * NEXT SESSION: after ≥30 min of B2 rows — compare A2 vs B2 production rates
+    (expectation: B2 held ~90% of slots; A2 at 0.33x baseline after the first
+    60 s), extend check-phase29.py, update REPORT, tear down s306v + s306f2.
+    See REPORT.md Follow-ups.
+
 - 2026-11-18 02:15 CEST phase 29 WRAPPED for the night (session ended; long runs left
   live ON PURPOSE, collected next lab session):
   * PR #310 (bb1984fa) chain-70 devnet ~/lab-devnet-p29/n{1,2,3} (RPC 47971-3): n3 (dev3)
