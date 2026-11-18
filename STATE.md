@@ -2,14 +2,14 @@
 
 <!-- machine-readable: the cloud brief and the head read this block -->
 ```
-next_phase: 28
+next_phase: none (phases 27, 28, 29 all done — awaiting next work list)
 cloud_sessions_run: 1
-local_sessions_run: 21
+local_sessions_run: 22
 pinned_go_zenon: ab8ee8da3a50231b0910c536632e9b05fff42795 (go-zenon master = merge of #280, includes #277 = d610b48; phase 27 code basis; lab patches: devnet spork ids + accelerated bridge governance delays, documented in results/phase-27-next-sporks/REPORT.md)
 pinned_sdk: n/a (suite is Go, imports go-zenon module directly at pinned_go_zenon; no separate SDK dependency)
 plasma_mode: static<30 / dynamic>=30 (devnet genesis spork 0000...0002, enforcementHeight 30)
 release: v0.2
-updated: 2026-11-17 19:15 CET (renewal watch: spork "v0.0.10" still not activated, RPC-verified on all three nodes — local + my.hc1node.com + node.zenonhub.io: identical 7-spork sets, activated=false/enforcementHeight=0; fork-watch 19:10 CET lockstep at h14682530 on v0.0.10; phase 27 DONE since 2026-11-14, 16/16 PASS)
+updated: 2026-11-18 20:10 CET (renewal watch 19:15 CET: spork "v0.0.10" still not activated, RPC-verified local node — activated=false/enforcementHeight=0, 7-spork set; fork-watch 19:10 CET lockstep h14688106 v0.0.10 all three nodes; phase 29 #306/#310 both DONE, devnet torn down, lab commit ff4f148; nothing running)
 ```
 
 ## Phase log
