@@ -1,0 +1,4 @@
+commit: abe1fa69ab60fdf6e90ba96f80eaf658a8e2a846
+host: Linux nummer13 6.12.115+deb13.1-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.115-2 (2026-11-01) x86_64 GNU/Linux
+go: go version go1.24.4 linux/amd64
+2026-11-19T00:16:49+01:00

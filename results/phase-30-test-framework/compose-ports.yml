@@ -1,0 +1,12 @@
+# Local overlay (NOT committed) — remap host ports of 0x3639's devnet
+# because this host runs a real znnd mainnet node on 0.0.0.0:35995/35997/35998.
+# Kept in the lab workspace; applied with -f after compose.variant.yml.
+services:
+  rpc:
+    ports: !override
+      - "36997:35997" # HTTP RPC (was 35997:35997, taken by mainnet znnd)
+      - "36998:35998" # WS RPC   (was 35998:35998, taken by mainnet znnd)
+  syncnode:
+    ports: !override
+      - "36999:35997" # HTTP RPC (was 35999:35997)
+      - "36001:35998" # WS RPC   (was 36001:35998)
