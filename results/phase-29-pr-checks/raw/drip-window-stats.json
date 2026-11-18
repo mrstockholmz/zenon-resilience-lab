@@ -1,0 +1,38 @@
+{
+  "A2-postfix-dripv6": {
+    "height_from": 1143,
+    "height_to": 1205,
+    "span_s": 1840,
+    "mom_per_min": 2.022,
+    "n_own_momenta": 63,
+    "gap_median_s": 20.0,
+    "gap_max_s": 120,
+    "sync_starts": 2,
+    "sync_done": 2,
+    "import_failed_too_far": 0
+  },
+  "B2-prefix-disconnected": {
+    "height_from": 1206,
+    "height_to": 2211,
+    "span_s": 30120,
+    "mom_per_min": 2.002,
+    "n_own_momenta": 1006,
+    "gap_median_s": 20,
+    "gap_max_s": 130,
+    "sync_starts": 0,
+    "sync_done": 0,
+    "import_failed_too_far": 0
+  },
+  "B2b-prefix-dripv6": {
+    "height_from": 2212,
+    "height_to": 2274,
+    "span_s": 1890,
+    "mom_per_min": 1.968,
+    "n_own_momenta": 63,
+    "gap_median_s": 20.0,
+    "gap_max_s": 110,
+    "sync_starts": 126,
+    "sync_done": 126,
+    "import_failed_too_far": 126
+  }
+}

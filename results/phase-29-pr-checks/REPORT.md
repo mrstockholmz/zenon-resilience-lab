@@ -145,17 +145,56 @@ session stays open (e.g. serve the fork head hash, then answer block requests wi
 ever-deeper hashes so the queue never drains and the session never completes) —
 noted as follow-up in the project file.
 
+### PR #306 — drip-liar v6 re-run (2026-11-18 session 3)
+
+The v6 liar (`liar-patch-v6.diff`) keeps download sessions open ~40 s with delayed
+ancestor-search replies. Findings from collecting the armed A2/B2 run:
+
+- **B2 (the 10:55 pre-fix swap) was an invalid control**: the victim restarted on
+the pre-fix binary but the liar never re-peered. The liar kept a zombie peer entry
+from the killed post-fix victim process and reset the new victim's eth/61 stream
+(`handshake failed`, victim log 10:55:26); the victim then ran 8.5 h with zero
+sessions (solo baseline 2.002 mom/min, `peers=0` in every logger row). Fix: liar
+restarted 19:19 CET (B2b).
+- **Setup discovery**: victim (dev1) and liar (dev2) each produced their own
+canonical chain from h67 — every mutual sync needs a >30-momentum rollback and is
+refused by the cap. In B2b the victim logged, per session (all within one second):
+`Synchronizing` → `looking for common ancestor` → `Synchronization completed` →
+`Inserting side-chain` → `Block import failed … can't rollback to {… h66}. Too
+far` — 126 such no-op sessions in 31.5 min (one every ~15 s), each importing
+nothing. This is exactly issue #291/#306's session shape, against the pre-fix
+binary.
+- **Result**: the pre-fix victim still produced at 1.968 mom/min (63 momenta,
+gap median 20 s, max 110 s) — 98.4% of its own solo baseline. The hold did NOT
+manifest, because the rollback-cap fast-fail ends every session within the same
+second; a hold needs a session that stays open across producer ticks.
+- **Post-fix comparison**: A2 (post-fix, same liar) produced 2.022 mom/min with
+the liar attached; across all post-fix phases production never stalled.
+
+Verdict: second honest negative on the pre-fix regression, with the mechanism now
+pinned (session lifetime, not session existence, gates the hold). Positive support
+for the PR stands: no post-fix stall in any phase, race tests green.
+
+Ground truth: `raw/drip-window-stats.json` (extractor `scripts/drip-stats.py`),
+`raw/liar-test.jsonl`, `raw/victim-zenon-20261118-part1.log.gz`,
+`raw/{victim,liar}-b2b-keylines.log`, `raw/swap-b2b.log` (below).
+
+Final checker output (2026-11-18 ~20:00 CET): 11 PASS / 2 FAIL / 2 NOT TESTED
+(exit 1 by design — both FAILs are the honest-negative pre-fix controls).
+
 ## Follow-ups (next lab session)
 
 1. ~~Collect the #310 jail lifecycle~~ — DONE (see above).
-2. #306 drip A/B (v6 liar): A2 rows since 10:22 CET (raw/liar-test.jsonl label
-   `A2-postfix-dripv6`, victim log ground truth), B2 armed 10:55 CET (label
-   `B2-prefix-dripv6`, swap logged to raw/swap-b2.log). COLLECT: wait until B2
-   has ≥30 min of rows, then compare production rates — pre-fix expectation:
-   held ~90% of producer slots (ReadyToProduce=false while the ~40 s download
-   sessions run back to back, restarting every ~4 s); post-fix: full 0.33x
-   baseline (30 s/momentum) after the first 60 s stall window. Extend
-   check-phase29.py with A2/B2 rows (rates + session duty cycle from the
-   victim zenon.log), then tear down s306v/s306f2.
+2. ~~#306 drip A/B (v6 liar)~~ — DONE (session 3, see “Drip-liar v6 re-run”
+   below): B2 (10:55 swap) was an invalid control (liar never re-peered —
+   zombie peer entry reset the new victim's eth/61 handshake until the liar
+   itself was restarted 19:19 CET); B2b re-run produced 126 no-op sessions in
+   31.5 min against the pre-fix victim — production still 1.968 mom/min
+   (98.4% of solo baseline). check-phase29.py extended, devnet torn down.
 3. Optionally: next-epoch jail-recurrence check needs a 24 h run — schedule via
    STATE.md long-run listing if desired.
+4. A discriminating pre-fix hold repro needs a liar whose session STAYS OPEN
+   across producer ticks without tripping the rollback-cap fast-fail (e.g. a
+   fork within the last 30 momenta that is never served). Both liar designs so
+   far (never-serve-blocks v1; deep-fork instant-fail v6) end sessions too
+   quickly for the pre-fix hold to manifest.

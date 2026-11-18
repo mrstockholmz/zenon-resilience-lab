@@ -154,6 +154,55 @@ if os.path.exists(t306):
 else:
     check('306: liar devnet test ran', 'NOT TESTED', 'raw/liar-test.jsonl missing')
 
+# ---- PR #306 drip-liar v6 checks (2026-11-18 session 2/3) ----
+# Setup discovery (see REPORT.md): victim (dev1) and liar (dev2) each produced
+# their own canonical chain from h67 — every mutual sync needs a >30-momentum
+# rollback, refused by the cap ('Block import failed ... Too far'). The sync
+# sessions therefore COMPLETE while importing nothing: exactly issue #291/#306's
+# shape, on both binaries.
+#   A2  post-fix dfbc164 + drip liar   -> production must continue
+#   B2  pre-fix 65240b1, liar dead     -> solo baseline only (control invalid,
+#                                          handshake never re-established after
+#                                          the 10:55 swap; liar restarted 19:19)
+#   B2b pre-fix 65240b1 + drip liar    -> the actual pre-fix discriminating run
+ds = f'{RAW}/drip-window-stats.json'
+if os.path.exists(ds):
+    W = json.load(open(ds))
+    BASELINE = 2.0  # measured solo rate, mom/min (B2 disconnected window)
+    a2 = W.get('A2-postfix-dripv6', {})
+    b2b = W.get('B2b-prefix-dripv6', {})
+    if a2.get('n_own_momenta', 0) >= 10:
+        r = a2['mom_per_min']
+        check('306 drip: post-fix production continues with liar attached (no stall)',
+              'PASS' if r >= 0.85 * BASELINE else 'FAIL',
+              f"A2 {r} mom/min (baseline {BASELINE}, {a2['n_own_momenta']} momenta, "
+              f"{a2['sync_done']} no-op sessions, {a2['import_failed_too_far']} import-failed)")
+    else:
+        check('306 drip: post-fix production at baseline under back-to-back no-op sessions',
+              'NOT TESTED', f"A2 has {a2.get('n_own_momenta')} momenta")
+    if b2b.get('n_own_momenta', 0) >= 30:
+        r = b2b['mom_per_min']
+        # Discriminating hypothesis: pre-fix holds production while no-op sessions
+        # run. If the pre-fix rate is also ~baseline, the hold is NOT reproduced
+        # (second honest negative, stronger liar than v1).
+        held = r < 0.85 * BASELINE
+        check('306 drip: pre-fix control held under the same sessions',
+              'FAIL' if not held else 'PASS',
+              f"B2b {r} mom/min ({b2b['n_own_momenta']} momenta, {b2b['sync_done']} "
+              f"no-op sessions, {b2b['import_failed_too_far']} import-failed) — "
+              + ('hold reproduced' if held else
+                 'hold NOT reproduced even with back-to-back sessions (honest negative)'))
+        check('306 drip: sessions import nothing (chains mutually forked, rollback cap)',
+              'PASS' if b2b['import_failed_too_far'] > 0 else 'FAIL',
+              f"{b2b['import_failed_too_far']} 'Block import failed ... Too far' in the B2b window")
+    else:
+        check('306 drip: pre-fix control held under the same sessions',
+              'NOT TESTED', f'B2b has {b2b.get("n_own_momenta")} momenta (<30)')
+        check('306 drip: sessions import nothing (chains mutually forked, rollback cap)',
+              'NOT TESTED', 'B2b window too short')
+else:
+    check('306 drip: stats file missing', 'NOT TESTED', 'raw/drip-window-stats.json not generated yet')
+
 tlog = f'{RAW}/pr306-protocol-race-tests.log'
 if os.path.exists(tlog):
     txt = open(tlog).read()
