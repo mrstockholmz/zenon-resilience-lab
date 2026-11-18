@@ -14,7 +14,7 @@
 //
 // Checks (invariants from the M1 review of digitalSloth/go-zenon
 // feature/settlement @ 938fca3):
-//   spork-gating-active      settlement spork (...0004) is active on this chain
+//   spork-gating-active      settlement spork (…0005) is active on this chain
 //   deposit-while-spork-off  NOT TESTED (needs governance on the shared devnet)
 //   fee-accounting-totals    burned + credited <= collected, rewards <= credited
 //   custody-conservation     totalReleased + pendingReserve <= totalDeposited
@@ -65,7 +65,7 @@ const ONE_ZNN = 100_000_000n
 const PLASMA_LIMIT = 10_000_000n // the input gas budget of an honest Deposit/CallL2
 const MAX_INPUT_GAS = 100_000_000n // vm/constants/settlement.go MaxInputGas (100M since feature/settlement 2835c436; was 1e9 at 938fca3)
 const MAX_CALL_PAYLOAD = 8192 // vm/constants/settlement.go MaxCallPayload
-const SETTLEMENT_SPORK_ID = "0000000000000000000000000000000000000000000000000000000000000004"
+const SETTLEMENT_SPORK_ID = "0000000000000000000000000000000000000000000000000000000000000005"
 const ZNN_ASSET = settlement.assetIdFromZts(ZNN_ZTS)
 const BALANCE_LEAF_BYTES = 96n // quota model: 64 bytes per leaf + 32-byte value
 const IMMUTABLE_METADATA = Buffer.from("0001" + "00".repeat(21), "hex")
@@ -278,26 +278,13 @@ function submitBatchTx(commitment: Buffer): AccountBlockTemplate {
   )
 }
 
-await check("batch-replay-executor", async () => {
-  const batch = await latestBatch()
-  const commitment = buildCommitment(batch, await executorAddress())
-  const countBefore = (await zenon.embedded.settlement.getBatches(DOMAIN_ID, 0, RPC_MAX_PAGE_SIZE)).count
-  const detail = await sendExpectReject(executorKp, submitBatchTx(commitment))
-  const countAfter = (await zenon.embedded.settlement.getBatches(DOMAIN_ID, 0, RPC_MAX_PAGE_SIZE)).count
-  assert.equal(countAfter, countBefore, `batch count changed ${countBefore} -> ${countAfter} on a rejected replay`)
-  return `replayed batch ${batch.batchId}; ${detail}; batch count unchanged at ${countAfter}`
-})
-
-await check("batch-replay-nonexecutor", async () => {
-  const batch = await latestBatch()
-  const commitment = buildCommitment(batch, await executorAddress())
-  const detail = await sendExpectReject(user, submitBatchTx(commitment))
-  return `replayed batch ${batch.batchId} from ${user.address.toString()}; ${detail}`
-})
-
 // ---------------------------------------------------------------------------
 // Withdrawal lifecycle attacks: deploy a vault, deposit, withdraw, then try
 // to cheat the delay, replay the relay and beat the release rate limit.
+//
+// The batch-replay attacks below need at least one existing batch on the
+// domain, so they run after this flow has produced one (on a fresh chain
+// there are no batches until the first withdrawal is submitted).
 // ---------------------------------------------------------------------------
 
 interface Vault {
@@ -442,12 +429,30 @@ try {
   }
 } catch (e) {
   const msg = e instanceof Error ? e.message : String(e)
-  for (const pending of ["withdrawal-early-relay", "double-withdrawal", "release-rate-limit"]) {
+  for (const pending of ["withdrawal-early-relay", "double-withdrawal", "release-rate-limit", "batch-replay-executor", "batch-replay-nonexecutor"]) {
     if (!results.some((r) => r.name === pending)) report(pending, "FAIL", `setup aborted: ${msg}`)
   }
 }
 
 await conservation("final")
+
+await check("batch-replay-executor", async () => {
+  const batch = await latestBatch()
+  const commitment = buildCommitment(batch, await executorAddress())
+  const countBefore = (await zenon.embedded.settlement.getBatches(DOMAIN_ID, 0, RPC_MAX_PAGE_SIZE)).count
+  const detail = await sendExpectReject(executorKp, submitBatchTx(commitment))
+  const countAfter = (await zenon.embedded.settlement.getBatches(DOMAIN_ID, 0, RPC_MAX_PAGE_SIZE)).count
+  assert.equal(countAfter, countBefore, `batch count changed ${countBefore} -> ${countAfter} on a rejected replay`)
+  return `replayed batch ${batch.batchId}; ${detail}; batch count unchanged at ${countAfter}`
+})
+
+await check("batch-replay-nonexecutor", async () => {
+  const batch = await latestBatch()
+  const commitment = buildCommitment(batch, await executorAddress())
+  const detail = await sendExpectReject(user, submitBatchTx(commitment))
+  return `replayed batch ${batch.batchId} from ${user.address.toString()}; ${detail}`
+})
+
 console.log("ok conservation held at the end")
 
 const pass = results.filter((r) => r.status === "PASS").length

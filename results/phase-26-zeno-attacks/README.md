@@ -14,7 +14,7 @@ The checks implement the invariant map from the M1 review of
 
 | check | attack | expected |
 |---|---|---|
-| spork-gating-active | read-only | settlement spork `…0004` active, domain live |
+| spork-gating-active | read-only | settlement spork `…0005` active, domain live |
 | deposit-while-spork-off | deposit with the spork deactivated | NOT TESTED live (needs a pillar-signed spork tx; would halt the shared devnet's executor). Branch unit test `RejectedBeforeSpork` is the authority |
 | fee-accounting-totals | read-only | `burned + credited <= collected`, `rewards <= credited` |
 | custody-conservation | read-only | `totalReleased + pendingReserve <= totalDeposited` |
@@ -67,6 +67,24 @@ Exit code 0 = no FAIL. Each run appends a timestamped log to `results/`.
   credited 27,959,400 = collected 39,942,000 (chain survived the binary swap,
   so counters are cumulative); deposited=200,000,000 released=80,000,000.
   Log: `results/run-20261112-125259.log`.
+- **2026-11-18 03:13–03:29 CET, settlement a8183083** (branch rebased; the
+  offchain-execution settlement spork moved from placeholder `…0004` to
+  `…0005` because `…0004` is EmbeddedRefundSpork upstream, plus a spork-ladder
+  test covering all 64 combinations; fresh chain at the new head, executor and
+  console pins unchanged): **9 PASS / 0 FAIL / 2 NOT TESTED, 16m26s, exit 0**.
+  Suite updated: `SETTLEMENT_SPORK_ID` now `…0005`, and the two batch-replay
+  checks moved after the withdrawal flow (on a fresh chain no batches exist
+  until the first withdrawal is submitted — the 02:54 run failed both replay
+  checks on `no batches on the domain`, an ordering artifact, not a contract
+  break; both PASS after the move). The re-deploy of the vault contract in a
+  repeat run works because finalize consumes the deploy record and re-start
+  is accepted. Batch 11 replay rejected (receive failed, count unchanged at
+  12); non-executor replay pool-rejected (`address cannot call this method`).
+  Fees: burned 0 + credited 0 = collected 13,578,000 (rewards not yet
+  distributed); deposited=100,000,000 released=40,000,000 per the fresh-chain
+  run's own deposit; conservation held at the end. Logs:
+  `results/run-20261118-025422.log` (first, ordering artifact),
+  `results/run-20261118-031304.log` (green).
 
 ## What a devnet cannot show
 

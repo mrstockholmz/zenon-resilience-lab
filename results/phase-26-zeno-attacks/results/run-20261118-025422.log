@@ -1,0 +1,29 @@
+PASS spork-gating-active — spork "offchain-execution" active; domain 1 live
+NOT TESTED deposit-while-spork-off — deactivating the spork needs a pillar-signed spork tx on this shared devnet and would halt the executor; the negative side is covered by the branch unit test RejectedBeforeSpork (mutation-verified 2026-11-06)
+PASS fee-accounting-totals — burned=0 credited=0 collected=0 rewards=0
+PASS custody-conservation — deposited=0 released=0 reserve=0
+PASS deposit-plasma-limit — rejected at pool: forbidden parameter
+PASS calll2-payload-limit — rejected at pool: forbidden parameter
+FAIL batch-replay-executor — no batches on the domain
+FAIL batch-replay-nonexecutor — no batches on the domain
+Published account-block: hash=e8d442b9285af0a0c55a7e1ff77fc2a3668d013efbe706e2f2b788b4c43a875d
+Published account-block: hash=8f057395b3d08e12822ba01312d45afd646e0c2f19538028ba41160c65e29466
+ok deploy chunk 0 held
+Published account-block: hash=ef1ecb67b7e6519f7c677e76d245c622488ee92eadeb41f33b4633107814d2e3
+ok vault-testhook deployed as 4dbe92ecf9f3a3a71d87f561a9f11cfe6b6ba0467d8103d004af0d258150a0e4 (code hash 41c9278ed7f6…)
+Published account-block: hash=40f4bdb8ac4d8a1b0956ad0d22ff8e013220bb9baa11f66ddcb5783d4ece0998
+Published account-block: hash=08fccc2607563d24b19940e6b93d84a26f5a9d25f51522be493d0fdf8d0701b8
+ok deposit held: 08fccc2607563d24b19940e6b93d84a26f5a9d25f51522be493d0fdf8d0701b8
+Published account-block: hash=a2272c5c6b3e33e3651449ae552724771b2d8cd87410978ec99af179f4c00242
+ok withdrawal in flight: outbox 1636921647869704a88d495c22f8dcae4b338690075a06de203452c9400a96d1 in batch 5
+Published account-block: hash=35df7019f3ab524ce051088befe084e608a0d4c2a777e0819c82b7b6aaa6ab64
+PASS withdrawal-early-relay — rejected: block landed, embedded receive failed
+ok batch 5 finalized
+Published account-block: hash=801d595f6dd89d01596255f04091c8858234b1c9809531154e78338ae72de3d2
+Published account-block: hash=b48462afba9cf40e7c9c22636a064ccb19e40bae2ea60248fccde22e0eadcdf8
+PASS double-withdrawal — first relay 801d595f6dd89d01596255f04091c8858234b1c9809531154e78338ae72de3d2 accepted; second relay rejected: block landed, embedded receive failed
+Published account-block: hash=128e83767ff6f5f88116a7d9b575680616b6214ada75d548c8295e24fcf0494a
+Published account-block: hash=77115aa9df7eabdb945c519f5b64bc0d37510e31eda4f4beef8f36c6f2b5c341
+NOT TESTED release-rate-limit — second release landed in momentum 152, first in 150; the 1-momentum window had passed (unit tests cover the guard)
+ok conservation held at the end
+SUMMARY pass=7 fail=2 notTested=2 total=11
