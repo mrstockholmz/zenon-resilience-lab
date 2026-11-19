@@ -1,6 +1,6 @@
 # Phase 30a — Running 0x3639's test framework as written (linux/amd64 host)
 
-Status: **in progress** (all-on suite done; mainnet-like P10 and P11 fast pending, next session)
+Status: **in progress** (all-on and mainnet-like done; P11 fast pending, next session)
 
 ## What this is
 
@@ -35,7 +35,7 @@ did not work as written. His reference run: `docs/test-results/2026-11-18-924e6b
 | P6 log collection | done | | 85 eror-lines on 5 nodes, all the two kinds he documents as unexplained (plasma contract gossip ordering) |
 | P7 wipe | done | | devnet down -v, volumes removed |
 | coverage after run | 191/501 | | same gap list as his (record.py merged 1 token) |
-| P10 `mainnet-like` | not run | | next session |
+| P10 `mainnet-like` | **driver PASS** | 486 s | e2e-run-mainnet-like.log, exit=0; no DP groups live, spork-ladder refusals checked |
 | P11 `fast` | not run | | next session |
 
 ## Deviations from his instructions (D) and findings (F)

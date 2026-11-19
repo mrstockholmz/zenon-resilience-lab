@@ -1,0 +1,30 @@
+# Local overlay (NOT committed): add a sixth node running a binary that
+# lacks EmbeddedRefundSpork in ImplementedSporksMap (image
+# go-zenon-devnet-noref:latest, built from abe1fa6 with the one map entry
+# removed). On the staged genesis (EmbeddedRefund enforced at height 70)
+# this node must exit with status 2 at the enforcement height while the
+# five dev nodes continue (TEST-PLAN.md S-4 / X-4). restart "no" keeps the
+# dead container inspectable; recovery restarts a container with the stock
+# image on the same data volume.
+# Apply AFTER compose.variant.yml and compose-ports.yml; it only adds a
+# service, so it does not conflict with the variant's pillar overrides.
+services:
+  oldnode:
+    image: go-zenon-devnet-noref:latest
+    container_name: znnd-devnet-oldnode
+    restart: "no"
+    environment:
+      ZNND_ROLE: syncnode
+    expose:
+      - "35995"
+    ports:
+      - "36996:35997" # HTTP RPC — watch the old node sync and halt
+    volumes:
+      - oldnode-data:/root/.znn
+      - ${DEVNET_GENESIS:?set DEVNET_GENESIS to a genesis file}:/devnet/genesis.json:ro
+    networks:
+      devnet:
+        ipv4_address: 172.30.0.14
+
+volumes:
+  oldnode-data: {}
