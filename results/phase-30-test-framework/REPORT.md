@@ -2,6 +2,42 @@
 
 Status: **in progress** (all-on and mainnet-like done; P11 fast pending, next session)
 
+## 30b — ported lab cases on `test/spork-cases` (fork branch)
+
+Branch `test/spork-cases` in `~/go-zenon-spork-cases` on top of his
+`testing/framework` (`abe1fa6`), pushed to our fork. Suites, all on the
+staged five-node devnet (see the in-branch `docs/test-results/` for
+evidence):
+
+| Suite | Commit | Result | Coverage |
+|---|---|---|---|
+| S-7/S-7b ack-recency (`sporkedge_test.go`) | `0682285` | PASS (staged 101 subcases + stock) | 191→195 |
+| S-4/X-4 unknown binary + recovery (`sporkhalt_test.go`) | `4125350` | 4/4 PASS, 57 s | +1 (EmbeddedRefundSpork E7:S-4) |
+| S-1/S-2/S-5 staged enforcement (`sporkstaged_test.go`) | `3f4edf5` | 6/6 subtests PASS (S-5 fixed + re-run standalone, see below) | 16 tokens, spork 2/8→5/8, total 198/501 |
+
+S-1/S-2/S-5 details: run positioned before the first staged height
+(`E2E_MIN_HEIGHT=12`); per spork (libp2p@20, DP@30, ptlc@60, ER@70, ERT@80)
+the case asserts all five nodes share one momentum hash at H-1/H/H+1, no
+container ever restarted, and — for DP — the format gate: v1 + zero resource
+prices before, v2 + prices ≥ `dp.MinResourcePrice` after. S-5 restarts all
+five nodes and checks the spork table survives and the pre-restart frontier
+stays canonical. Raw logs: `raw/e2e-run-sporkstaged*.log`,
+`raw/coverage-sporkstaged*.tsv`, node logs `raw/logs-staged-s125/`
+(3 benign pillar eror lines: chain-start too-late and post-restart timestamp
+races, his known kinds).
+
+**Finding pinned (30b): the DP momentum-format switch lands one momentum
+past the enforcement height** — the producer builds momentum N on its parent
+N-1's spork state (`pillar/worker_momentum.go`), so momentum 30 on staged is
+still v1 0/0 and the first v2 momentum is 31 (network accepts both; the
+verifier applies the same parent-based rule). First S-5 attempt failed on
+this wrong expectation in the case itself; fixed (check h+1) and S-5 re-ran
+standalone PASS 14.6 s. Evidence: in-branch `docs/test-results/2026-11-19-spork-staged/`.
+
+Not coverable on the stock staged genesis: the ER refund send semantics
+(bridge admin delays are epoch-scale) — left to unit tests + phase 27 lab
+evidence, documented in the case comment.
+
 ## What this is
 
 0x3639 pushed a go-zenon test framework to his fork, branch `testing/framework`

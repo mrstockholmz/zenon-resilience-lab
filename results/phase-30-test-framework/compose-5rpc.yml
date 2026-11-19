@@ -1,0 +1,18 @@
+# Local overlay (NOT committed) — expose the RPC of all five devnet nodes
+# on host ports, for S-2 all-five-nodes-agree checks. Applied after
+# compose.variant.yml and compose-ports.yml (which remaps rpc away from the
+# mainnet node's 35997/35998). pillar keeps its stock 35991 mapping.
+services:
+  rpc:
+    ports: !override
+      - "36997:35997" # HTTP RPC (was 35997:35997, taken by mainnet znnd)
+      - "36998:35998" # WS RPC   (was 35998:35998, taken by mainnet znnd)
+  pillar2:
+    ports:
+      - "36992:35997"
+  pillar3:
+    ports:
+      - "36993:35997"
+  observer:
+    ports:
+      - "36994:35997"

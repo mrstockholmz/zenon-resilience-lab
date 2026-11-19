@@ -1,0 +1,6 @@
+rpc-method	LedgerApi.GetMomentumsByHeight	E1:TestSporkStagedEnforcement
+spork	DynamicPlasmaSpork	E7:S-5
+spork	EmbeddedRefundSpork	E7:S-5
+spork	EpochRewardTermsSpork	E7:S-5
+spork	Libp2pSpork	E7:S-5
+spork	PtlcSpork	E7:S-5
