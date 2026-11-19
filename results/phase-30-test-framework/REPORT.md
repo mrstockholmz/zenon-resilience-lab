@@ -1,6 +1,6 @@
 # Phase 30a — Running 0x3639's test framework as written (linux/amd64 host)
 
-Status: **in progress** (all-on and mainnet-like done; P11 fast pending, next session)
+Status: **in progress** (all-on, mainnet-like and fast done; P11 fast collected this session)
 
 ## 30b — ported lab cases on `test/spork-cases` (fork branch)
 
@@ -14,6 +14,17 @@ evidence):
 | S-7/S-7b ack-recency (`sporkedge_test.go`) | `0682285` | PASS (staged 101 subcases + stock) | 191→195 |
 | S-4/X-4 unknown binary + recovery (`sporkhalt_test.go`) | `4125350` | 4/4 PASS, 57 s | +1 (EmbeddedRefundSpork E7:S-4) |
 | S-1/S-2/S-5 staged enforcement (`sporkstaged_test.go`) | `3f4edf5` | 6/6 subtests PASS (S-5 fixed + re-run standalone, see below) | 16 tokens, spork 2/8→5/8, total 198/501 |
+| N-5 fault-peer starting point (`faultpeer_test.go` + `test/devnet/fault/`) | `c5bba33` | not yet run end to end (capability harness; overlay build + gofmt/vet verified) | — |
+
+N-5 details: the phase-29 drip liar ported as a build overlay in his
+`test/devnet/fast/` pattern (`overlay.sh` + `handler.go.in`, ZNN_LIAR-gated,
+never compiled without the overlay). `TestFaultPeerDrip` (E2E_FAULT=1)
+measures production rate with/without the liar and asserts production
+continues (post-#306 expectation); it skips when the libp2p spork is live
+(liar is legacy-devp2p only) and documents the remaining work (libp2p fault
+peer, docker/devnet fault role). The phase-29 honest-negative result (this
+liar's sessions end fast on both pre- and post-fix binaries) is written into
+the case comment — it is a harness, not a fix discriminator.
 
 S-1/S-2/S-5 details: run positioned before the first staged height
 (`E2E_MIN_HEIGHT=12`); per spork (libp2p@20, DP@30, ptlc@60, ER@70, ERT@80)
@@ -72,7 +83,7 @@ did not work as written. His reference run: `docs/test-results/2026-11-18-924e6b
 | P7 wipe | done | | devnet down -v, volumes removed |
 | coverage after run | 191/501 | | same gap list as his (record.py merged 1 token) |
 | P10 `mainnet-like` | **driver PASS** | 486 s | e2e-run-mainnet-like.log, exit=0; no DP groups live, spork-ladder refusals checked |
-| P11 `fast` | not run | | next session |
+| P11 `fast` | **21/21 cases PASS** | driver 1182 s | fast image build ~2 min (warm caches); every normal group skipped by design, TestFast* only; coverage run-fast.tsv (79 tokens); node logs logs-fast/ (83 eror lines, dominated by the known benign "not enough plasma on account" contract-update kind) |
 
 ## Deviations from his instructions (D) and findings (F)
 

@@ -1,0 +1,115 @@
+e2e: endpoints [http://localhost:36997 http://localhost:36999], chain 69, start height 7, account indexes from 1448
+e2e: sporks enforced: [accelerator bridge dynamic-plasma embedded-refund epoch-reward-terms htlc libp2p ptlc]
+e2e: node v0.0.10-alphanet-734-gabe1fa6+fast-constants, fast constants: true
+=== RUN   TestPlasma
+    contracts_test.go:50: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestPlasma (0.00s)
+=== RUN   TestToken
+    contracts_test.go:168: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestToken (0.00s)
+=== RUN   TestStake
+    contracts_test.go:307: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestStake (0.00s)
+=== RUN   TestHtlc
+    contracts_test.go:372: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestHtlc (0.00s)
+=== RUN   TestPillar
+    contracts_test.go:520: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestPillar (0.00s)
+=== RUN   TestSentinel
+    contracts_test.go:662: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestSentinel (0.00s)
+=== RUN   TestAccelerator
+    contracts_test.go:748: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestAccelerator (0.00s)
+=== RUN   TestSpork
+    contracts_test.go:840: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestSpork (0.00s)
+=== RUN   TestHaltOnUnknownSpork
+    contracts_test.go:901: set E2E_DESTRUCTIVE=1 to run; the devnet must be wiped afterwards
+--- SKIP: TestHaltOnUnknownSpork (0.00s)
+=== RUN   TestSporkLadder
+    contracts_test.go:971: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestSporkLadder (0.00s)
+=== RUN   TestFastPlasma
+=== PAUSE TestFastPlasma
+=== RUN   TestFastStake
+=== PAUSE TestFastStake
+=== RUN   TestFastPillar
+=== PAUSE TestFastPillar
+=== RUN   TestFastSentinel
+=== PAUSE TestFastSentinel
+=== RUN   TestFastAccelerator
+=== PAUSE TestFastAccelerator
+=== RUN   TestFastBridgeAdmin
+=== PAUSE TestFastBridgeAdmin
+=== RUN   TestLedger
+    ledger_test.go:18: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestLedger (0.00s)
+=== RUN   TestPtlc
+    ptlc_test.go:23: skipped on the fast test build; its windows are too short for these cases
+--- SKIP: TestPtlc (0.00s)
+=== CONT  TestFastPlasma
+=== CONT  TestFastSentinel
+=== CONT  TestFastPillar
+=== CONT  TestFastBridgeAdmin
+=== CONT  TestFastAccelerator
+=== CONT  TestFastStake
+=== RUN   TestFastAccelerator/FAZ-1_project_accepted_by_the_pillars
+=== RUN   TestFastPlasma/FP-1_cancel_after_expiry_returns_the_qsr
+=== RUN   TestFastBridgeAdmin/FB-1_administrator_is_the_drivers_account
+=== RUN   TestFastBridgeAdmin/FB-2_set_network
+=== RUN   TestFastSentinel/FSE-1_deposit_then_withdraw_qsr
+=== RUN   TestFastStake/FS-1_cancel_after_expiry_returns_the_znn
+=== RUN   TestFastBridgeAdmin/FB-3_set_token_pair
+=== RUN   TestFastSentinel/FSE-2_revoke_in_the_window_returns_the_stake
+=== RUN   TestFastPillar/FPI-1_register_with_the_qsr_deposit
+=== RUN   TestFastPillar/FPI-3_update_by_the_owner
+=== RUN   TestFastStake/FS-2_collect_the_reward_of_a_finished_epoch
+=== NAME  TestFastPillar/FPI-3_update_by_the_owner
+    fast_test.go:198: after the update, with EpochRewardTerms enforced: map[currentStats:map[expectedMomentums:0 producedMomentums:0] giveDelegateRewardPercentage:90 giveMomentumRewardPercentage:10 isRevocable:false name:e2e-fast-7 ownerAddress:z1qrzsntx0rad2h5c3ffjnkvjk6ukpxmrd2a2366 producerAddress:z1qp8t6rgl8slt4kc0sg6hhhtsv0upsz5jhlv09d rank:3 revokeCooldown:90 revokeTimestamp:0 type:2 weight:0 withdrawAddress:z1qrzsntx0rad2h5c3ffjnkvjk6ukpxmrd2a2366]
+=== RUN   TestFastPillar/FPI-4_revoke_inside_the_lock_fails_then_succeeds_in_the_window
+=== RUN   TestFastPlasma/FP-2_second_cancel_fails
+=== RUN   TestFastBridgeAdmin/FB-4_metadata
+=== RUN   TestFastAccelerator/FAZ-2_phase_added_updated_voted_and_paid
+--- PASS: TestFastPlasma (239.84s)
+    --- PASS: TestFastPlasma/FP-1_cancel_after_expiry_returns_the_qsr (170.42s)
+    --- PASS: TestFastPlasma/FP-2_second_cancel_fails (19.10s)
+=== NAME  TestFastAccelerator/FAZ-2_phase_added_updated_voted_and_paid
+    fast_test.go:346: phase id at creation 5551e123a4161a72d7339cd54ab01a133742b448a3ae073780247e65ce73139d, after the update dd57bdf39c005798c71ccd4c70e603eab4de4d20b381799600329182945f8934
+=== RUN   TestFastBridgeAdmin/FB-5_orchestrator_info
+--- PASS: TestFastSentinel (310.62s)
+    --- PASS: TestFastSentinel/FSE-1_deposit_then_withdraw_qsr (50.23s)
+    --- PASS: TestFastSentinel/FSE-2_revoke_in_the_window_returns_the_stake (200.32s)
+=== RUN   TestFastBridgeAdmin/FB-6_remove_token_pair_and_network
+=== RUN   TestFastPillar/FPI-5_delegator_collects_the_reward_of_a_finished_epoch
+--- PASS: TestFastAccelerator (410.27s)
+    --- PASS: TestFastAccelerator/FAZ-1_project_accepted_by_the_pillars (179.94s)
+    --- PASS: TestFastAccelerator/FAZ-2_phase_added_updated_voted_and_paid (180.01s)
+=== RUN   TestFastBridgeAdmin/FB-7_halt_and_unhalt
+--- PASS: TestFastBridgeAdmin (550.61s)
+    --- PASS: TestFastBridgeAdmin/FB-1_administrator_is_the_drivers_account (0.00s)
+    --- PASS: TestFastBridgeAdmin/FB-2_set_network (40.25s)
+    --- PASS: TestFastBridgeAdmin/FB-3_set_token_pair (139.38s)
+    --- PASS: TestFastBridgeAdmin/FB-4_metadata (80.35s)
+    --- PASS: TestFastBridgeAdmin/FB-5_orchestrator_info (40.13s)
+    --- PASS: TestFastBridgeAdmin/FB-6_remove_token_pair_and_network (79.44s)
+    --- PASS: TestFastBridgeAdmin/FB-7_halt_and_unhalt (120.74s)
+=== NAME  TestFastStake/FS-2_collect_the_reward_of_a_finished_epoch
+    fast_test.go:138: stake reward for the first epoch: 999999999999 QSR units
+=== RUN   TestFastStake/FS-3_collect_with_nothing_to_collect_fails
+--- PASS: TestFastStake (590.34s)
+    --- PASS: TestFastStake/FS-1_cancel_after_expiry_returns_the_znn (129.33s)
+    --- PASS: TestFastStake/FS-2_collect_the_reward_of_a_finished_epoch (370.45s)
+    --- PASS: TestFastStake/FS-3_collect_with_nothing_to_collect_fails (20.13s)
+=== NAME  TestFastPillar/FPI-5_delegator_collects_the_reward_of_a_finished_epoch
+    fast_test.go:246: delegation reward for the first epoch: 345600000000 ZNN units
+=== RUN   TestFastPillar/FPI-6_epoch_history_is_recorded
+--- PASS: TestFastPillar (1170.07s)
+    --- PASS: TestFastPillar/FPI-1_register_with_the_qsr_deposit (40.10s)
+    --- PASS: TestFastPillar/FPI-3_update_by_the_owner (20.07s)
+    --- PASS: TestFastPillar/FPI-4_revoke_inside_the_lock_fails_then_succeeds_in_the_window (140.25s)
+    --- PASS: TestFastPillar/FPI-5_delegator_collects_the_reward_of_a_finished_epoch (819.56s)
+    --- PASS: TestFastPillar/FPI-6_epoch_history_is_recorded (0.00s)
+PASS
+ok  	github.com/zenon-network/go-zenon/test/e2e	1182.183s
