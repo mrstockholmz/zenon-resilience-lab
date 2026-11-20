@@ -14,17 +14,54 @@ evidence):
 | S-7/S-7b ack-recency (`sporkedge_test.go`) | `0682285` | PASS (staged 101 subcases + stock) | 191→195 |
 | S-4/X-4 unknown binary + recovery (`sporkhalt_test.go`) | `4125350` | 4/4 PASS, 57 s | +1 (EmbeddedRefundSpork E7:S-4) |
 | S-1/S-2/S-5 staged enforcement (`sporkstaged_test.go`) | `3f4edf5` | 6/6 subtests PASS (S-5 fixed + re-run standalone, see below) | 16 tokens, spork 2/8→5/8, total 198/501 |
-| N-5 fault-peer starting point (`faultpeer_test.go` + `test/devnet/fault/`) | `c5bba33` | not yet run end to end (capability harness; overlay build + gofmt/vet verified) | — |
+| N-5 fault-peer harness (`faultpeer_test.go` + `test/devnet/fault/`) | `c5bba33` → `4d82509` | end-to-end PASS on all-off, 481 s (below) | — (harness, no token) |
 
 N-5 details: the phase-29 drip liar ported as a build overlay in his
 `test/devnet/fast/` pattern (`overlay.sh` + `handler.go.in`, ZNN_LIAR-gated,
 never compiled without the overlay). `TestFaultPeerDrip` (E2E_FAULT=1)
 measures production rate with/without the liar and asserts production
 continues (post-#306 expectation); it skips when the libp2p spork is live
-(liar is legacy-devp2p only) and documents the remaining work (libp2p fault
-peer, docker/devnet fault role). The phase-29 honest-negative result (this
+(the liar is legacy-devp2p only). The phase-29 honest-negative result (this
 liar's sessions end fast on both pre- and post-fix binaries) is written into
 the case comment — it is a harness, not a fix discriminator.
+
+**N-5 end-to-end, 2026-11-20 (`4d82509`, evidence in-branch
+`docs/test-results/2026-11-20-fault-peer/` + `raw/e2e-run-faultpeer.log`):**
+fault role (`docker/devnet/fault`, observer-style config, fresh ephemeral
+network key) + `FAULT=1 test/devnet/build-image.sh` wiring. On the `all-off`
+variant (no sporks → legacy backend): PASS in 481 s, baseline 6.00
+momentums/min, with the liar connected 6.00; the case asserts the liar's
+own syncer reaches the network frontier (195/195 at the end) and the
+pillar's log shows 96 `peer connected ... devnet-fault` lines during the
+run (`raw/` copy: `pillar-fault-connections.log` is in the branch evidence
+dir). Coverage unchanged (198/501, `raw/coverage-faultpeer.tsv`).
+
+**Finding F3 — the fault container needs the devnet's genesis, else the run
+is silently vacuous.** The image bakes the stock
+`docker/devnet/genesis.json`; the entrypoint seeds a data dir only when it
+has no `config.json` yet. A fault container started with a plain
+`docker run` (what the case did) therefore inits the stock genesis block,
+and on any non-stock variant every pillar refuses it at the eth/61
+handshake (`Genesis block mismatch` in the debug log; at info level the
+node just sits at height 1, `stats.syncInfo` state 3 target 0) — while the
+rate assertion passes, measuring the honest network twice. Cost one false
+PASS before caught. Fixed in the case (`docker cp` the genesis out of a
+running devnet container, bind-mount over `/devnet/genesis.json`, assert
+the liar's syncer reached the frontier). Any future standalone-container
+tooling (his syncnode role is compose-managed and gets the variant mount,
+so it is unaffected) needs the same mount.
+
+**Finding F4 — variant-switch trap around `down -v`.** `up.sh` exports
+`DEVNET_GENESIS` only for the compose process; his `down.sh` does not use
+the variant file, so the up/down pair itself is consistent. But a
+`docker compose -f … compose.variant.yml down` without the env var fails at
+interpolation *and leaves containers+volumes running* — and with volumes
+alive, the next `up` on a different variant silently reuses the old chain
+(entrypoint only seeds an empty data dir). Hit in this session: the all-off
+run first came up on the previous stock chain (sporks enforced), the
+driver's skip logic caught it. One-line defense: always tear down with
+`test/devnet/down.sh` (or export `DEVNET_GENESIS` first), and check
+`embedded.spork.getAll` after switching variants.
 
 S-1/S-2/S-5 details: run positioned before the first staged height
 (`E2E_MIN_HEIGHT=12`); per spork (libp2p@20, DP@30, ptlc@60, ER@70, ERT@80)
