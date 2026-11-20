@@ -1,6 +1,8 @@
 # Phase 30a — Running 0x3639's test framework as written (linux/amd64 host)
 
-Status: **in progress** (all-on, mainnet-like and fast done; P11 fast collected this session)
+Status: **COMPLETE** (2026-11-20) — all procedures P1–P7, P9, P10, P11 repeated on linux/amd64;
+30b suites S-7, S-4/X-4, S-1/S-2/S-5 and N-5 all PASS and pushed (test/spork-cases @ 4d82509,
+deep-verified 2026-11-20).
 
 ## 30b — ported lab cases on `test/spork-cases` (fork branch)
 
@@ -128,8 +130,8 @@ did not work as written. His reference run: `docs/test-results/2026-11-18-924e6b
 His compose publishes `0.0.0.0:35997/35998` (rpc HTTP/WS) — the same ports a real
 znnd node binds. On this box the mainnet node owns 35995/35997/35998, so `up.sh`
 dies with `bind: address already in use` and the rpc container never starts.
-Fix used: a local compose overlay `compose-ports.yml` (in this directory, **not**
-committed) remapping rpc→36997/36998 and syncnode→36999/36001, applied with a
+Fix used: a local compose overlay `compose-ports.yml` (in this directory,
+committed in the lab repo) remapping rpc→36997/36998 and syncnode→36999/36001, applied with a
 fourth `-f` after `compose.variant.yml`, replicating up.sh otherwise. Two sub-notes:
 (a) plain list merging in compose *concatenates* ports, so the overlay needs
 `ports: !override`; (b) `smoke.py` hard-codes ports 35997/35999 with no option, so
@@ -160,8 +162,10 @@ from 31, sync state 2 on all five nodes: PASS.
 On a different OS/arch (linux/amd64 vs darwin/arm64), different container runtime
 (native docker vs Colima) and through a port remap, his framework reproduced his own
 results: 100/100 e2e cases on `all-on`, 3/3 destructive, 29/30 smoke (same single
-check class failing). The framework is portable; the two rough edges for "anyone
-with the repository, Go and docker" are the fixed ports (D1) and the UPnP test (F1).
+check class failing), plus the full driver green on `mainnet-like` (486 s) and
+21/21 on `fast` (1182 s). The framework is portable; the two rough edges for
+"anyone with the repository, Go and docker" are the fixed ports (D1) and the
+UPnP test (F1).
 
 ## Raw evidence
 
@@ -169,4 +173,10 @@ with the repository, Go and docker" are the fixed ports (D1) and the UPnP test (
 - `raw/P2-build-image.log`
 - `raw/P4-smoke-all-on.log` / `.json`, `smoke-ported.py`, `compose-ports.yml`
 - `raw/e2e-run-all-on.log`, `raw/coverage-all-on.tsv`, `raw/e2e-destructive-all-on.log`
-- `raw/logs-{pillar,pillar2,pillar3,rpc,observer}.log`
+- `raw/e2e-run-mainnet-like.log`, `raw/e2e-run-fast.log` (P11, 21/21 TestFast)
+- `raw/e2e-run-sporkhalt*.log`, `raw/e2e-run-sporkstaged*.log`, `raw/e2e-run-faultpeer.log`
+  + `raw/coverage-{sporkhalt,sporkstaged,faultpeer}.tsv`
+- `raw/logs-{pillar,pillar2,pillar3,rpc,observer}.log` (all-on)
+- `raw/logs-fast/`, `raw/logs-staged-s125/` (P11 / 30b node logs)
+- in-branch evidence on `test/spork-cases`: `docs/test-results/2026-11-19-spork-halt/`,
+  `2026-11-19-spork-staged/`, `2026-11-20-fault-peer/`
