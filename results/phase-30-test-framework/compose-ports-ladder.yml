@@ -1,0 +1,20 @@
+# Local overlay (NOT committed) — remap host ports of 0x3639's devnet
+# because this host runs a real znnd mainnet node on 0.0.0.0:35995/35997/35998
+# and the L6 mainnet-history sync node on 127.0.0.1:36995/36997/36998
+# (2026-11-20, see notes/projects/m13-test-framework.md). The previous overlay
+# (compose-ports.yml, phase-30) used 3699x; those are the L6 node's now.
+# Kept in the lab workspace; applied with -f after compose.variant.yml.
+services:
+  pillar2:
+    ports: !override
+      - "37992:35997" # HTTP RPC (stock compose publishes no pillar2 port)
+  pillar3:
+    ports: !override
+      - "37993:35997" # HTTP RPC
+  rpc:
+    ports: !override
+      - "37997:35997" # HTTP RPC (was 35997:35997, taken by mainnet znnd)
+      - "37998:35998" # WS RPC   (was 35998:35998, taken by mainnet znnd)
+  observer:
+    ports: !override
+      - "37994:35997" # HTTP RPC
